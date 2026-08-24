@@ -158,11 +158,6 @@ GitHub disables scheduled workflows in public repositories after 60 days without
 activity, and only commits reset that timer — tags, issues and merged pull requests do not.
 The snapshot job appends a row to the CSV every day, so it always has something to commit.
 
-The commit identity comes from the optional repository variables `SNAPSHOT_AUTHOR_NAME` and
-`SNAPSHOT_AUTHOR_EMAIL`. The push itself is made with the Actions token, so the commit is
-authored by that identity while GitHub attributes the push to the workflow; a personal access
-token would attribute both.
-
 ## License
 
 MIT — see [LICENSE](LICENSE).
