@@ -1,0 +1,48 @@
+name: Publish snapshot
+
+on:
+  schedule:
+    - cron: "20 5 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: snapshot
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - id: snapshot
+        run: npm run snapshot
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+      - name: Commit snapshot
+        env:
+          COMMIT_MESSAGE: ${{ steps.snapshot.outputs.message }}
+          AUTHOR_NAME: ${{ vars.SNAPSHOT_AUTHOR_NAME }}
+          AUTHOR_EMAIL: ${{ vars.SNAPSHOT_AUTHOR_EMAIL }}
+        run: |
+          git config user.name "${AUTHOR_NAME:-martin}"
+          git config user.email "${AUTHOR_EMAIL:-martinlvila@gmail.com}"
+          git add data
+          if git diff --staged --quiet; then
+            echo "No change in the published snapshot."
+            exit 0
+          fi
+          git commit -m "${COMMIT_MESSAGE:-Record network state for $(date -u +%Y-%m-%d)}"
+          git push
