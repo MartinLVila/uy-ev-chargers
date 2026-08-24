@@ -16,6 +16,9 @@ const OPERATIONAL = [
   "reserved",
   "suspendedev",
   "suspendedevse",
+  "disponible",
+  "cargando",
+  "ocupado",
 ] as const;
 
 const FAULTED = [
@@ -28,6 +31,13 @@ const FAULTED = [
   "error",
   "fuera de servicio",
   "no disponible",
+  "sin comunicacion",
+  "sincomunicacion",
+  "no communication",
+  "nocomm",
+  "no comm",
+  "disconnected",
+  "unavaliable",
 ] as const;
 
 const OPERATIONAL_SET = new Set<string>(OPERATIONAL.map(fold));

@@ -1,11 +1,12 @@
 import "./env";
 import { createWriteDatabase } from "../src/lib/db/write-client";
 import { runIngestion } from "../src/lib/ingest/pipeline";
+import { fetchStationFeedV2 } from "../src/lib/ute/v2-client";
 
 async function main() {
   const { db, close } = createWriteDatabase();
   try {
-    const result = await runIngestion(db);
+    const result = await runIngestion(db, { feed: await fetchStationFeedV2() });
     process.stdout.write(`${JSON.stringify(result)}\n`);
 
     if (result.outcome !== "success") {

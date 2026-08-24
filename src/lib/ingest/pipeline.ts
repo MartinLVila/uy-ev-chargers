@@ -2,7 +2,14 @@ import { desc, eq, inArray, isNull } from "drizzle-orm";
 import type { WriteDatabase } from "../db/client";
 import { connectorGroups, connectorStates, pollRuns, stationStates, stations } from "../db/schema";
 import { fetchStationFeed, type FeedResult } from "../ute/client";
-import { coordinateKey, fold, normalizeDepartment, normalizeText, slugify } from "../ute/normalize";
+import {
+  UNKNOWN_DEPARTMENT,
+  coordinateKey,
+  fold,
+  normalizeDepartment,
+  normalizeText,
+  slugify,
+} from "../ute/normalize";
 import {
   ABSENT_STATUS,
   classifyConnectorHealth,
@@ -333,11 +340,15 @@ function changedStationFields(
 
   if (current.name !== entry.name) changes.name = entry.name;
   if (current.nameKey !== entry.nameKey) changes.nameKey = entry.nameKey;
-  if (current.address !== entry.address) changes.address = entry.address;
-  if (current.city !== entry.city) changes.city = entry.city;
-  if (current.department !== entry.department) changes.department = entry.department;
-  if (current.departmentRaw !== entry.departmentRaw) changes.departmentRaw = entry.departmentRaw;
-  if (current.source !== entry.source) changes.source = entry.source;
+  if (current.address !== entry.address && entry.address !== null) changes.address = entry.address;
+  if (current.city !== entry.city && entry.city !== null) changes.city = entry.city;
+  if (entry.department !== UNKNOWN_DEPARTMENT && current.department !== entry.department) {
+    changes.department = entry.department;
+  }
+  if (current.departmentRaw !== entry.departmentRaw && entry.departmentRaw !== null) {
+    changes.departmentRaw = entry.departmentRaw;
+  }
+  if (current.source !== entry.source && entry.source !== null) changes.source = entry.source;
   if (current.latitude !== entry.latitude) changes.latitude = entry.latitude;
   if (current.longitude !== entry.longitude) changes.longitude = entry.longitude;
   if (claimedCoordKey !== null) changes.coordKey = claimedCoordKey;
