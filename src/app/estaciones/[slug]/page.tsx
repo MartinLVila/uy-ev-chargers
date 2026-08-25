@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Card } from "@/components/Card";
+import { ConnectorHistory } from "@/components/ConnectorHistory";
 import { getDb } from "@/lib/db/client";
 import { getStationDetail } from "@/lib/metrics/queries";
 import { windowFromDays } from "@/lib/metrics/window";
@@ -15,9 +16,11 @@ const WINDOW_DAYS = 90;
 export default async function StationPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
 
+  const timeWindow = windowFromDays(WINDOW_DAYS);
+
   let station: Awaited<ReturnType<typeof getStationDetail>>;
   try {
-    station = await getStationDetail(getDb(), slug, windowFromDays(WINDOW_DAYS));
+    station = await getStationDetail(getDb(), slug, timeWindow);
   } catch {
     return (
       <div
@@ -69,6 +72,18 @@ export default async function StationPage({ params }: { params: Promise<{ slug: 
           </span>
         </p>
       </div>
+
+      <Card
+        title={`Historial por cargador (${WINDOW_DAYS} días)`}
+        description="Cada barra muestra la evolución de un conector en el tiempo: libre, en uso o fuera de servicio."
+      >
+        <ConnectorHistory
+          timeline={station.timeline}
+          firstSeenAt={station.firstSeenAt}
+          windowStart={timeWindow.from.toISOString()}
+          windowEnd={timeWindow.to.toISOString()}
+        />
+      </Card>
 
       <Card
         title={`Historial de estados (${WINDOW_DAYS} días)`}

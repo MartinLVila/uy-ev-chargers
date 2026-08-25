@@ -6,6 +6,8 @@ export const ABSENT_STATUS = "Absent";
 
 export const UNKNOWN_STATUS = "Unknown";
 
+export const FREE_STATUS_DETAILS = ["available", "disponible"] as const;
+
 const OPERATIONAL = [
   "available",
   "busy",

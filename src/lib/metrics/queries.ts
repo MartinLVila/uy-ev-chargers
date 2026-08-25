@@ -1,5 +1,6 @@
 import { sql, type SQL } from "drizzle-orm";
 import type { TimeWindow } from "./window";
+import { FREE_STATUS_DETAILS } from "../ute/status";
 
 export interface SqlRunner {
   execute<T extends Record<string, unknown>>(query: SQL): Promise<{ rows: T[] }>;
@@ -8,7 +9,10 @@ export interface SqlRunner {
 const OUT_OF_SERVICE = sql`('faulted', 'absent')`;
 
 const TELEMETRY = sql`cs.health IN ('operational', 'faulted')`;
-const FREE_DETAIL = sql`lower(cs.status_detail) IN ('available', 'disponible', 'libre')`;
+const FREE_DETAIL = sql`lower(btrim(cs.status_detail)) IN (${sql.join(
+  FREE_STATUS_DETAILS.map((value) => sql`${value}`),
+  sql`, `,
+)})`;
 const IN_USE = sql`cs.health = 'operational' AND NOT (${FREE_DETAIL})`;
 
 function overlapSeconds(alias: string, window: TimeWindow): SQL {
@@ -32,6 +36,12 @@ function dailyOverlapSeconds(alias: string): SQL {
       LEAST(COALESCE(${ended}, b.to_at), b.to_at) - GREATEST(${started}, b.from_at)
     ))
   )`;
+}
+
+function bucketOverlap(alias: string): SQL {
+  const started = sql.raw(`${alias}.started_at`);
+  const ended = sql.raw(`${alias}.ended_at`);
+  return sql`${started} < b.to_at AND (${ended} IS NULL OR ${ended} > b.from_at)`;
 }
 
 function overlapsWindow(alias: string, window: TimeWindow): SQL {
@@ -778,7 +788,13 @@ export async function getHourlyUsage(
       WHERE to_at > from_at
     ),
     coverage AS (
-      SELECT hour, SUM(span) AS span_secs FROM framed GROUP BY hour
+      SELECT b.hour, SUM(b.span) AS span_secs
+      FROM framed b
+      WHERE EXISTS (
+        SELECT 1 FROM connector_states cs
+        WHERE ${bucketOverlap("cs")} AND ${TELEMETRY}
+      )
+      GROUP BY b.hour
     )
     SELECT
       b.hour,
@@ -788,9 +804,7 @@ export async function getHourlyUsage(
       MAX(c.span_secs) AS span_secs
     FROM framed b
     JOIN connector_states cs
-      ON cs.started_at < b.to_at
-      AND (cs.ended_at IS NULL OR cs.ended_at > b.from_at)
-      AND ${TELEMETRY}
+      ON ${bucketOverlap("cs")} AND ${TELEMETRY}
     JOIN coverage c ON c.hour = b.hour
     GROUP BY b.hour
     ORDER BY b.hour
