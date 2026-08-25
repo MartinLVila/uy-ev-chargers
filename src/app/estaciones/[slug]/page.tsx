@@ -6,8 +6,7 @@ import { getDb } from "@/lib/db/client";
 import { getStationDetail } from "@/lib/metrics/queries";
 import { windowFromDays } from "@/lib/metrics/window";
 import { formatDateTime, formatNumber } from "@/lib/ui/format";
-import { fold } from "@/lib/ute/normalize";
-import { connectorHealth, stationPresence } from "@/lib/ui/health";
+import { connectorUsage, stationPresence } from "@/lib/ui/health";
 
 export const dynamic = "force-dynamic";
 
@@ -116,7 +115,7 @@ export default async function StationPage({ params }: { params: Promise<{ slug: 
               </thead>
               <tbody>
                 {station.timeline.map((entry, index) => {
-                  const health = connectorHealth(entry.health);
+                  const usage = connectorUsage(entry.health, entry.statusDetail);
                   return (
                     <tr
                       key={`${entry.startedAt}-${entry.connectorType}-${entry.powerKw}-${index}`}
@@ -129,13 +128,11 @@ export default async function StationPage({ params }: { params: Promise<{ slug: 
                         </span>
                       </td>
                       <td style={{ padding: "10px 12px 10px 0" }}>
-                        <span aria-hidden style={{ color: health.color }}>
-                          {health.symbol}
+                        <span aria-hidden style={{ color: usage.color }}>
+                          {usage.symbol}
                         </span>{" "}
-                        {health.label}
-                        {fold(entry.statusDetail) !== entry.health && (
-                          <span style={{ color: "var(--text-muted)" }}> ({entry.statusDetail})</span>
-                        )}
+                        {usage.label}
+                        <span style={{ color: "var(--text-muted)" }}> ({entry.statusDetail})</span>
                       </td>
                       <td
                         style={{

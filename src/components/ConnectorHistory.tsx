@@ -1,34 +1,17 @@
 import type { StationTimelineEntry } from "@/lib/metrics/queries";
 import { formatDateTime, formatNumber } from "@/lib/ui/format";
-import { FREE_STATUS_DETAILS } from "@/lib/ute/status";
+import {
+  connectorUsageState,
+  USAGE_PRESENTATION,
+  type ConnectorUsage,
+} from "@/lib/ui/health";
 
-type UsageState = "free" | "inUse" | "broken" | "absent" | "unknown";
-
-const FREE_DETAIL = new Set<string>(FREE_STATUS_DETAILS);
-
-const STATE_META: Record<UsageState, { label: string; color: string }> = {
-  free: { label: "Libre", color: "var(--status-good)" },
-  inUse: { label: "En uso", color: "var(--accent)" },
-  broken: { label: "Con falla", color: "var(--status-critical)" },
-  absent: { label: "Sin reportar", color: "var(--status-serious)" },
-  unknown: { label: "Desconocido", color: "var(--border-strong)" },
-};
-
-const LEGEND: UsageState[] = ["free", "inUse", "broken", "absent", "unknown"];
-
-function usageState(health: string, statusDetail: string): UsageState {
-  if (health === "faulted") return "broken";
-  if (health === "absent") return "absent";
-  if (health === "operational") {
-    return FREE_DETAIL.has(statusDetail.trim().toLowerCase()) ? "free" : "inUse";
-  }
-  return "unknown";
-}
+const LEGEND: ConnectorUsage[] = ["free", "inUse", "broken", "absent", "unknown"];
 
 interface Segment {
   leftPct: number;
   widthPct: number;
-  state: UsageState;
+  state: ConnectorUsage;
   from: string;
   to: string | null;
 }
@@ -41,10 +24,10 @@ interface ConnectorGroup {
   connectorCount: number;
   latestStartedAt: number;
   segments: Segment[];
-  seconds: Record<UsageState, number>;
+  seconds: Record<ConnectorUsage, number>;
 }
 
-function emptySeconds(): Record<UsageState, number> {
+function emptySeconds(): Record<ConnectorUsage, number> {
   return { free: 0, inUse: 0, broken: 0, absent: 0, unknown: 0 };
 }
 
@@ -79,7 +62,7 @@ function buildGroups(
     const end = Math.min(endedAt, rangeEnd);
     if (!(end > start)) continue;
 
-    const state = usageState(entry.health, entry.statusDetail);
+    const state = connectorUsageState(entry.health, entry.statusDetail);
     group.seconds[state] += ((end - start) / 1000) * entry.connectorCount;
     group.segments.push({
       leftPct: ((start - rangeStart) / span) * 100,
@@ -144,10 +127,10 @@ export function ConnectorHistory({
                 width: 10,
                 height: 10,
                 borderRadius: 2,
-                background: STATE_META[state].color,
+                background: USAGE_PRESENTATION[state].color,
               }}
             />
-            <span style={{ color: "var(--text-secondary)" }}>{STATE_META[state].label}</span>
+            <span style={{ color: "var(--text-secondary)" }}>{USAGE_PRESENTATION[state].label}</span>
           </span>
         ))}
       </div>
@@ -207,7 +190,7 @@ export function ConnectorHistory({
               {group.segments.map((segment, index) => (
                 <div
                   key={`${group.key}-${index}`}
-                  title={`${STATE_META[segment.state].label} · ${formatDateTime(segment.from)} → ${
+                  title={`${USAGE_PRESENTATION[segment.state].label} · ${formatDateTime(segment.from)} → ${
                     segment.to ? formatDateTime(segment.to) : "en curso"
                   }`}
                   style={{
@@ -216,7 +199,7 @@ export function ConnectorHistory({
                     bottom: 0,
                     left: `${segment.leftPct}%`,
                     width: `max(2px, ${segment.widthPct}%)`,
-                    background: STATE_META[segment.state].color,
+                    background: USAGE_PRESENTATION[segment.state].color,
                   }}
                 />
               ))}

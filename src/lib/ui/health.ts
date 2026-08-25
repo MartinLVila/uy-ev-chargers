@@ -1,7 +1,34 @@
+import { FREE_STATUS_DETAILS } from "../ute/status";
+
 export interface HealthPresentation {
   label: string;
   color: string;
   symbol: string;
+}
+
+export type ConnectorUsage = "free" | "inUse" | "broken" | "absent" | "unknown";
+
+const FREE_DETAIL = new Set<string>(FREE_STATUS_DETAILS);
+
+export const USAGE_PRESENTATION: Record<ConnectorUsage, HealthPresentation> = {
+  free: { label: "Libre", color: "var(--status-good)", symbol: "●" },
+  inUse: { label: "En uso", color: "var(--accent)", symbol: "●" },
+  broken: { label: "Con falla", color: "var(--status-critical)", symbol: "✕" },
+  absent: { label: "Sin reportar", color: "var(--status-serious)", symbol: "◍" },
+  unknown: { label: "Desconocido", color: "var(--border-strong)", symbol: "?" },
+};
+
+export function connectorUsageState(health: string, statusDetail: string): ConnectorUsage {
+  if (health === "faulted") return "broken";
+  if (health === "absent") return "absent";
+  if (health === "operational") {
+    return FREE_DETAIL.has(statusDetail.trim().toLowerCase()) ? "free" : "inUse";
+  }
+  return "unknown";
+}
+
+export function connectorUsage(health: string, statusDetail: string): HealthPresentation {
+  return USAGE_PRESENTATION[connectorUsageState(health, statusDetail)];
 }
 
 const CONNECTOR_HEALTH: Record<string, HealthPresentation> = {
