@@ -92,24 +92,8 @@
     "operational": 2,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
-  },
-  {
-    "slug": "ancap-arroyo-grande",
-    "name": "ANCAP Arroyo Grande",
-    "address": "Ruta 3, Departamento de Río Negro",
-    "city": "Arroyo Grande",
-    "department": "Río Negro",
-    "latitude": -32.913389,
-    "longitude": -57.406569,
-    "presence": "listed",
-    "connectors": 1,
-    "operational": 1,
-    "faulted": 0,
-    "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "ancap-bella-union",
@@ -201,11 +185,11 @@
     "longitude": -57.380458,
     "presence": "listed",
     "connectors": 4,
-    "operational": 4,
-    "faulted": 0,
+    "operational": 2,
+    "faulted": 2,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 2
   },
   {
     "slug": "ancap-carmelo",
@@ -457,11 +441,11 @@
     "longitude": -54.644789,
     "presence": "listed",
     "connectors": 4,
-    "operational": 4,
-    "faulted": 0,
+    "operational": 2,
+    "faulted": 2,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 2
   },
   {
     "slug": "ancap-jose-pedro-varela",
@@ -473,11 +457,11 @@
     "longitude": -54.527432,
     "presence": "listed",
     "connectors": 1,
-    "operational": 1,
-    "faulted": 0,
+    "operational": 0,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "ancap-la-paz",
@@ -604,8 +588,8 @@
     "operational": 3,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "ancap-paso-de-los-toros",
@@ -700,8 +684,8 @@
     "operational": 4,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "ancap-roosevelt-punta-del-este",
@@ -896,22 +880,6 @@
     "outOfService": 0
   },
   {
-    "slug": "ancap-solanas",
-    "name": "ANCAP Solanas",
-    "address": "Ruta 93 Km. 118,000",
-    "city": "Maldonado",
-    "department": "Maldonado",
-    "latitude": -34.878541,
-    "longitude": -55.053068,
-    "presence": "listed",
-    "connectors": 4,
-    "operational": 4,
-    "faulted": 0,
-    "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
-  },
-  {
     "slug": "ancap-tala",
     "name": "ANCAP Tala",
     "address": "Tomás Berreta y Guzmán Azuaga",
@@ -924,8 +892,8 @@
     "operational": 1,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "ancap-treinta-y-tres",
@@ -953,11 +921,11 @@
     "longitude": -56.907767,
     "presence": "listed",
     "connectors": 2,
-    "operational": 2,
-    "faulted": 0,
+    "operational": 0,
+    "faulted": 2,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 2
   },
   {
     "slug": "ancap-trinidad-ruta-3",
@@ -1072,6 +1040,102 @@
     "outOfService": 0
   },
   {
+    "slug": "axion-carrasco",
+    "name": "Axion Carrasco",
+    "address": "Puntas de Santiago y Rambla República de M...",
+    "city": "Montevideo",
+    "department": "Montevideo",
+    "latitude": -34.892617,
+    "longitude": -56.058319,
+    "presence": "listed",
+    "connectors": 2,
+    "operational": 2,
+    "faulted": 0,
+    "unknown": 0,
+    "absent": 0,
+    "outOfService": 0
+  },
+  {
+    "slug": "axion-peninsula",
+    "name": "Axion Península",
+    "address": "Calle 20 & Calle 30, Punta del Este Depart...",
+    "city": "Punta del Este Departamento de Maldonado",
+    "department": "Desconocido",
+    "latitude": -34.958432,
+    "longitude": -54.940934,
+    "presence": "listed",
+    "connectors": 2,
+    "operational": 2,
+    "faulted": 0,
+    "unknown": 0,
+    "absent": 0,
+    "outOfService": 0
+  },
+  {
+    "slug": "axion-perimetral",
+    "name": "Axion Perimetral",
+    "address": "Cesar Mayo Gutierrez Y Anillo Perimetral,...",
+    "city": "Montevideo Departamento de Montevideo",
+    "department": "Desconocido",
+    "latitude": -34.783902,
+    "longitude": -56.223558,
+    "presence": "listed",
+    "connectors": 2,
+    "operational": 2,
+    "faulted": 0,
+    "unknown": 0,
+    "absent": 0,
+    "outOfService": 0
+  },
+  {
+    "slug": "axion-prado",
+    "name": "Axion Prado",
+    "address": "Av. Dr. Luis Alberto de Herrera y Joaquín...",
+    "city": "Montevideo",
+    "department": "Montevideo",
+    "latitude": -34.857764,
+    "longitude": -56.196719,
+    "presence": "listed",
+    "connectors": 2,
+    "operational": 2,
+    "faulted": 0,
+    "unknown": 0,
+    "absent": 0,
+    "outOfService": 0
+  },
+  {
+    "slug": "axion-valdense",
+    "name": "Axion Valdense",
+    "address": "Ruta 1 Vieja y Av Artigas",
+    "city": "Colonia",
+    "department": "Colonia",
+    "latitude": -34.336191,
+    "longitude": -57.2594725,
+    "presence": "listed",
+    "connectors": 2,
+    "operational": 2,
+    "faulted": 0,
+    "unknown": 0,
+    "absent": 0,
+    "outOfService": 0
+  },
+  {
+    "slug": "axion-young",
+    "name": "Axion Young",
+    "address": "Ruta 3-General Jose Artigas & Lavalleja",
+    "city": "Young",
+    "department": "Desconocido",
+    "latitude": -32.699712,
+    "longitude": -57.63537,
+    "presence": "listed",
+    "connectors": 2,
+    "operational": 2,
+    "faulted": 0,
+    "unknown": 0,
+    "absent": 0,
+    "outOfService": 0
+  },
+  {
     "slug": "banco-central-del-uruguay",
     "name": "Banco Central del Uruguay",
     "address": "Florida esq. Av Uruguay",
@@ -1097,11 +1161,11 @@
     "longitude": -57.960458,
     "presence": "listed",
     "connectors": 2,
-    "operational": 2,
-    "faulted": 0,
+    "operational": 0,
+    "faulted": 2,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 2
   },
   {
     "slug": "batovi",
@@ -1130,6 +1194,70 @@
     "presence": "listed",
     "connectors": 4,
     "operational": 4,
+    "faulted": 0,
+    "unknown": 0,
+    "absent": 0,
+    "outOfService": 0
+  },
+  {
+    "slug": "car-one-center-1",
+    "name": "Car One Center 1",
+    "address": "Car One Center Acceso B",
+    "city": "Ciudad de la Costa Departamento de Canelon...",
+    "department": "Desconocido",
+    "latitude": -34.816714,
+    "longitude": -55.978687,
+    "presence": "listed",
+    "connectors": 2,
+    "operational": 2,
+    "faulted": 0,
+    "unknown": 0,
+    "absent": 0,
+    "outOfService": 0
+  },
+  {
+    "slug": "car-one-center-2",
+    "name": "Car One Center 2",
+    "address": "Car One Center Acceso B",
+    "city": "Montevideo",
+    "department": "Montevideo",
+    "latitude": -34.816702,
+    "longitude": -55.978758,
+    "presence": "listed",
+    "connectors": 3,
+    "operational": 3,
+    "faulted": 0,
+    "unknown": 0,
+    "absent": 0,
+    "outOfService": 0
+  },
+  {
+    "slug": "car-one-center-3",
+    "name": "Car One Center 3",
+    "address": "Car One, Interbalnearia",
+    "city": "Ciudad de la Costa",
+    "department": "Desconocido",
+    "latitude": -34.817924,
+    "longitude": -55.9820255,
+    "presence": "listed",
+    "connectors": 2,
+    "operational": 2,
+    "faulted": 0,
+    "unknown": 0,
+    "absent": 0,
+    "outOfService": 0
+  },
+  {
+    "slug": "car-one-center-4",
+    "name": "Car One Center 4",
+    "address": "Car One Center, Acceso B",
+    "city": "Ciudad de la Costa",
+    "department": "Desconocido",
+    "latitude": -34.816533,
+    "longitude": -55.978626,
+    "presence": "listed",
+    "connectors": 2,
+    "operational": 2,
     "faulted": 0,
     "unknown": 0,
     "absent": 0,
@@ -1193,11 +1321,11 @@
     "longitude": -54.154971,
     "presence": "listed",
     "connectors": 2,
-    "operational": 2,
-    "faulted": 0,
+    "operational": 1,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "centro-de-atencion-turistica-atlantida",
@@ -1280,6 +1408,22 @@
     "outOfService": 0
   },
   {
+    "slug": "club-de-golf-del-uruguay",
+    "name": "Club de Golf del Uruguay",
+    "address": "Club de Golf del Uruguay, Bulevar General...",
+    "city": "Montevideo",
+    "department": "Montevideo",
+    "latitude": -34.922225,
+    "longitude": -56.163373,
+    "presence": "listed",
+    "connectors": 2,
+    "operational": 2,
+    "faulted": 0,
+    "unknown": 0,
+    "absent": 0,
+    "outOfService": 0
+  },
+  {
     "slug": "colonia-shopping",
     "name": "Colonia Shopping",
     "address": "Franklin Roosevelt y Fray Bentos",
@@ -1306,6 +1450,86 @@
     "presence": "listed",
     "connectors": 1,
     "operational": 1,
+    "faulted": 0,
+    "unknown": 0,
+    "absent": 0,
+    "outOfService": 0
+  },
+  {
+    "slug": "disco-8-de-octubre-y-garibaldi",
+    "name": "Disco 8 de Octubre y Garibaldi",
+    "address": "Av. 8 de Octubre & Av. Gral. José Garibald...",
+    "city": "Montevideo",
+    "department": "Montevideo",
+    "latitude": -34.890037,
+    "longitude": -56.160966,
+    "presence": "listed",
+    "connectors": 2,
+    "operational": 2,
+    "faulted": 0,
+    "unknown": 0,
+    "absent": 0,
+    "outOfService": 0
+  },
+  {
+    "slug": "disco-fresh-market-av-italia-1",
+    "name": "Disco Fresh Market Av Italia 1",
+    "address": "Av Italia y Magariños Cervantes",
+    "city": "Montevideo",
+    "department": "Montevideo",
+    "latitude": -34.886972,
+    "longitude": -56.14145,
+    "presence": "listed",
+    "connectors": 2,
+    "operational": 2,
+    "faulted": 0,
+    "unknown": 0,
+    "absent": 0,
+    "outOfService": 0
+  },
+  {
+    "slug": "disco-fresh-market-legrand",
+    "name": "Disco Fresh Market Legrand",
+    "address": "Avenida Enrique Legrand & Michigan",
+    "city": "Montevideo",
+    "department": "Montevideo",
+    "latitude": -34.889881,
+    "longitude": -56.098493,
+    "presence": "listed",
+    "connectors": 2,
+    "operational": 2,
+    "faulted": 0,
+    "unknown": 0,
+    "absent": 0,
+    "outOfService": 0
+  },
+  {
+    "slug": "disco-fresh-market-parada-5",
+    "name": "Disco Fresh Market Parada 5",
+    "address": "Pedragosa Sierra & Julio Herrera Reissig",
+    "city": "Punta del Este",
+    "department": "Desconocido",
+    "latitude": -34.942857,
+    "longitude": -54.933465,
+    "presence": "listed",
+    "connectors": 2,
+    "operational": 2,
+    "faulted": 0,
+    "unknown": 0,
+    "absent": 0,
+    "outOfService": 0
+  },
+  {
+    "slug": "disco-fresh-market-scoseria",
+    "name": "Disco Fresh Market Scosería",
+    "address": "Doctor José Scoseria & Luis de la Torre",
+    "city": "Montevideo",
+    "department": "Montevideo",
+    "latitude": -34.91543,
+    "longitude": -56.156037,
+    "presence": "listed",
+    "connectors": 2,
+    "operational": 2,
     "faulted": 0,
     "unknown": 0,
     "absent": 0,
@@ -1401,11 +1625,11 @@
     "longitude": -56.140618,
     "presence": "listed",
     "connectors": 22,
-    "operational": 22,
-    "faulted": 0,
+    "operational": 18,
+    "faulted": 4,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 4
   },
   {
     "slug": "electrolinera-malvin",
@@ -1424,6 +1648,22 @@
     "outOfService": 0
   },
   {
+    "slug": "estacion-atlantida",
+    "name": "Estación Atlántida",
+    "address": "Ruta 11 km 162.8, VIVIALEX, Canelones",
+    "city": "Montevideo",
+    "department": "Montevideo",
+    "latitude": -34.737227,
+    "longitude": -55.767286,
+    "presence": "listed",
+    "connectors": 4,
+    "operational": 4,
+    "faulted": 0,
+    "unknown": 0,
+    "absent": 0,
+    "outOfService": 0
+  },
+  {
     "slug": "estacion-cantegril",
     "name": "Estación Cantegril",
     "address": "Patria Vieja & Avenida Franklin Delano Roosevelt",
@@ -1431,6 +1671,70 @@
     "department": "Maldonado",
     "latitude": -34.923599,
     "longitude": -54.951846,
+    "presence": "listed",
+    "connectors": 2,
+    "operational": 2,
+    "faulted": 0,
+    "unknown": 0,
+    "absent": 0,
+    "outOfService": 0
+  },
+  {
+    "slug": "estacion-centenario-montevideo",
+    "name": "Estacion Centenario Montevideo",
+    "address": "Av. Centenario 3109",
+    "city": "Montevideo",
+    "department": "Montevideo",
+    "latitude": -34.882873,
+    "longitude": -56.152962,
+    "presence": "listed",
+    "connectors": 3,
+    "operational": 3,
+    "faulted": 0,
+    "unknown": 0,
+    "absent": 0,
+    "outOfService": 0
+  },
+  {
+    "slug": "estacion-mercedes",
+    "name": "Estación Mercedes",
+    "address": "Ituzaingó 347 Bis Soriano",
+    "city": "Montevideo",
+    "department": "Montevideo",
+    "latitude": -33.249869,
+    "longitude": -58.027995,
+    "presence": "listed",
+    "connectors": 2,
+    "operational": 2,
+    "faulted": 0,
+    "unknown": 0,
+    "absent": 1,
+    "outOfService": 1
+  },
+  {
+    "slug": "estacion-panamericana-ancap-sarandi-grande",
+    "name": "Estación Panamericana (Ancap) Sarandí Grande",
+    "address": "Ruta 5 km. 139.500",
+    "city": "Montevideo",
+    "department": "Montevideo",
+    "latitude": -33.73404,
+    "longitude": -56.321848,
+    "presence": "listed",
+    "connectors": 4,
+    "operational": 4,
+    "faulted": 0,
+    "unknown": 0,
+    "absent": 1,
+    "outOfService": 1
+  },
+  {
+    "slug": "estacion-paysandu-sura",
+    "name": "Estacion Paysandú Sura",
+    "address": "Calle Setembrino Pereda 880 Paysandú",
+    "city": "Montevideo",
+    "department": "Montevideo",
+    "latitude": -32.317517,
+    "longitude": -58.087357,
     "presence": "listed",
     "connectors": 2,
     "operational": 2,
@@ -1456,6 +1760,38 @@
     "outOfService": 0
   },
   {
+    "slug": "estacion-punta-del-este-club-ituzaingo",
+    "name": "Estación Punta del Este Club Ituzaingó",
+    "address": "Av. del Mar Punta del Este",
+    "city": "Montevideo",
+    "department": "Montevideo",
+    "latitude": -34.940428,
+    "longitude": -54.924829,
+    "presence": "listed",
+    "connectors": 4,
+    "operational": 4,
+    "faulted": 0,
+    "unknown": 0,
+    "absent": 0,
+    "outOfService": 0
+  },
+  {
+    "slug": "estacion-sarandi-grande-florida",
+    "name": "Estación Sarandí Grande Florida",
+    "address": "Av. Artigas 705,Sarandí Grande, Florida",
+    "city": "Montevideo",
+    "department": "Montevideo",
+    "latitude": -33.723169,
+    "longitude": -56.331719,
+    "presence": "listed",
+    "connectors": 2,
+    "operational": 2,
+    "faulted": 0,
+    "unknown": 0,
+    "absent": 0,
+    "outOfService": 0
+  },
+  {
     "slug": "estadio-centenario",
     "name": "Estadio Centenario",
     "address": "Av. Dr. Américo Ricaldoni esq. Av. Italia",
@@ -1465,11 +1801,11 @@
     "longitude": -56.1543685,
     "presence": "listed",
     "connectors": 2,
-    "operational": 2,
-    "faulted": 0,
+    "operational": 1,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "estadio-martinez-monegal",
@@ -1500,8 +1836,8 @@
     "operational": 1,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "estadio-parque-artigas",
@@ -1552,6 +1888,38 @@
     "outOfService": 0
   },
   {
+    "slug": "geant-1",
+    "name": "Géant 1",
+    "address": "Av Giannattasio y Av a la Playa",
+    "city": "Montevideo",
+    "department": "Montevideo",
+    "latitude": -34.866572,
+    "longitude": -56.024383,
+    "presence": "listed",
+    "connectors": 2,
+    "operational": 2,
+    "faulted": 0,
+    "unknown": 0,
+    "absent": 0,
+    "outOfService": 0
+  },
+  {
+    "slug": "geant-2",
+    "name": "Géant 2",
+    "address": "Av Giannattasio y Av a la Playa",
+    "city": "Montevideo",
+    "department": "Montevideo",
+    "latitude": -34.866574,
+    "longitude": -56.024385,
+    "presence": "listed",
+    "connectors": 2,
+    "operational": 2,
+    "faulted": 0,
+    "unknown": 0,
+    "absent": 0,
+    "outOfService": 0
+  },
+  {
     "slug": "gino-restaurante",
     "name": "Gino Restaurante",
     "address": "Ruta 1 km 34,200",
@@ -1576,8 +1944,8 @@
     "latitude": -34.927901,
     "longitude": -56.161484,
     "presence": "listed",
-    "connectors": 4,
-    "operational": 4,
+    "connectors": 5,
+    "operational": 5,
     "faulted": 0,
     "unknown": 0,
     "absent": 0,
@@ -1648,6 +2016,22 @@
     "outOfService": 0
   },
   {
+    "slug": "hotel-hampton",
+    "name": "Hotel Hampton",
+    "address": "Av. de las Américas 4239",
+    "city": "Ciudad de la Costa",
+    "department": "Desconocido",
+    "latitude": -34.850641,
+    "longitude": -56.024707,
+    "presence": "listed",
+    "connectors": 2,
+    "operational": 2,
+    "faulted": 0,
+    "unknown": 0,
+    "absent": 0,
+    "outOfService": 0
+  },
+  {
     "slug": "hotel-nh-montevideo",
     "name": "Hotel NH Montevideo",
     "address": "Carlos A. Miles y Misiones",
@@ -1657,11 +2041,11 @@
     "longitude": -56.204714,
     "presence": "listed",
     "connectors": 4,
-    "operational": 4,
-    "faulted": 0,
+    "operational": 2,
+    "faulted": 2,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 3
   },
   {
     "slug": "intendencia",
@@ -1673,11 +2057,11 @@
     "longitude": -56.185525,
     "presence": "listed",
     "connectors": 6,
-    "operational": 6,
-    "faulted": 0,
+    "operational": 5,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "joanico",
@@ -1872,6 +2256,22 @@
     "outOfService": 0
   },
   {
+    "slug": "liv-district-carrasco-1",
+    "name": "LIV District Carrasco 1",
+    "address": "Av. Acosta y Lara & Gral. Máximo Tajes",
+    "city": "Montevideo",
+    "department": "Montevideo",
+    "latitude": -34.87371,
+    "longitude": -56.03831,
+    "presence": "listed",
+    "connectors": 2,
+    "operational": 2,
+    "faulted": 0,
+    "unknown": 0,
+    "absent": 0,
+    "outOfService": 0
+  },
+  {
     "slug": "macromercado-carrasco",
     "name": "Macromercado Carrasco",
     "address": "Avenida Al Parque 2495",
@@ -1916,24 +2316,8 @@
     "operational": 2,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
-  },
-  {
-    "slug": "macromercado-rivera",
-    "name": "Macromercado Rivera",
-    "address": "Julio M. Sosa esquina Frugoni",
-    "city": "Rivera",
-    "department": "Rivera",
-    "latitude": -30.9204939,
-    "longitude": -55.5398168,
-    "presence": "listed",
-    "connectors": 2,
-    "operational": 2,
-    "faulted": 0,
-    "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "macromercado-san-martin",
@@ -1977,6 +2361,22 @@
     "longitude": -56.136669,
     "presence": "listed",
     "connectors": 2,
+    "operational": 1,
+    "faulted": 1,
+    "unknown": 0,
+    "absent": 0,
+    "outOfService": 1
+  },
+  {
+    "slug": "moreira-automoviles-atlantida",
+    "name": "Moreira Automóviles - Atlántida",
+    "address": "Calle 30 & Calle Auxiliar",
+    "city": "Atlántida",
+    "department": "Desconocido",
+    "latitude": -34.766436,
+    "longitude": -55.7608969,
+    "presence": "listed",
+    "connectors": 2,
     "operational": 2,
     "faulted": 0,
     "unknown": 0,
@@ -1993,11 +2393,11 @@
     "longitude": -57.627834,
     "presence": "listed",
     "connectors": 4,
-    "operational": 4,
-    "faulted": 0,
+    "operational": 2,
+    "faulted": 2,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 2
   },
   {
     "slug": "municipio-punta-del-este",
@@ -2009,11 +2409,11 @@
     "longitude": -54.9400916,
     "presence": "listed",
     "connectors": 3,
-    "operational": 3,
-    "faulted": 0,
+    "operational": 2,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "municipio-vergara",
@@ -2025,11 +2425,11 @@
     "longitude": -53.937334,
     "presence": "listed",
     "connectors": 2,
-    "operational": 2,
-    "faulted": 0,
+    "operational": 0,
+    "faulted": 2,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 2
   },
   {
     "slug": "museo-zorrilla",
@@ -2040,12 +2440,12 @@
     "latitude": -34.9277636,
     "longitude": -56.1598697,
     "presence": "listed",
-    "connectors": 2,
-    "operational": 2,
+    "connectors": 1,
+    "operational": 1,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 2,
+    "outOfService": 2
   },
   {
     "slug": "novillo-alegre-punta",
@@ -2160,6 +2560,22 @@
     "outOfService": 0
   },
   {
+    "slug": "parador-fito",
+    "name": "Parador Fito",
+    "address": "Ruta 8 km 61.500",
+    "city": "Canelones",
+    "department": "Canelones",
+    "latitude": -34.66263,
+    "longitude": -55.644312,
+    "presence": "listed",
+    "connectors": 2,
+    "operational": 2,
+    "faulted": 0,
+    "unknown": 0,
+    "absent": 0,
+    "outOfService": 0
+  },
+  {
     "slug": "parking-cinemateca",
     "name": "Parking Cinemateca",
     "address": "Bartolomé Mitre 1224",
@@ -2172,8 +2588,8 @@
     "operational": 1,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "parque-de-la-amistad",
@@ -2457,11 +2873,11 @@
     "longitude": -56.221745,
     "presence": "listed",
     "connectors": 2,
-    "operational": 2,
-    "faulted": 0,
+    "operational": 1,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "plaza-constitucion-fray-bentos",
@@ -2647,13 +3063,13 @@
     "department": "Colonia",
     "latitude": -34.2848757,
     "longitude": -57.2338976,
-    "presence": "listed",
-    "connectors": 1,
-    "operational": 1,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "plaza-pando",
@@ -2729,11 +3145,11 @@
     "longitude": -58.06165,
     "presence": "listed",
     "connectors": 1,
-    "operational": 1,
-    "faulted": 0,
+    "operational": 0,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "plaza-samuel-lafone",
@@ -2864,6 +3280,22 @@
     "outOfService": 0
   },
   {
+    "slug": "punta-shopping",
+    "name": "Punta Shopping",
+    "address": "Parada 7, Av Frankin Delano Roosevelt",
+    "city": "Punta del Este",
+    "department": "Desconocido",
+    "latitude": -34.939691,
+    "longitude": -54.934102,
+    "presence": "listed",
+    "connectors": 4,
+    "operational": 4,
+    "faulted": 0,
+    "unknown": 0,
+    "absent": 0,
+    "outOfService": 0
+  },
+  {
     "slug": "rincon-de-valentin",
     "name": "Rincón de Valentín",
     "address": "Ruta 31 km 75",
@@ -2908,8 +3340,8 @@
     "operational": 1,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "san-rafael",
@@ -2985,7 +3417,23 @@
     "longitude": -56.0580876,
     "presence": "listed",
     "connectors": 10,
-    "operational": 10,
+    "operational": 9,
+    "faulted": 1,
+    "unknown": 0,
+    "absent": 0,
+    "outOfService": 1
+  },
+  {
+    "slug": "talice",
+    "name": "Talice",
+    "address": "Ruta 3-General Jose Artigas, Trinidad Flor...",
+    "city": "Trinidad",
+    "department": "Desconocido",
+    "latitude": -33.508548,
+    "longitude": -56.9300983,
+    "presence": "listed",
+    "connectors": 1,
+    "operational": 1,
     "faulted": 0,
     "unknown": 0,
     "absent": 0,
@@ -3033,11 +3481,11 @@
     "longitude": -56.214462,
     "presence": "listed",
     "connectors": 2,
-    "operational": 2,
-    "faulted": 0,
+    "operational": 1,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "tata-maldonado",
@@ -3116,8 +3564,8 @@
     "operational": 2,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "tata-rocha",
@@ -3129,11 +3577,11 @@
     "longitude": -54.331616,
     "presence": "listed",
     "connectors": 2,
-    "operational": 2,
-    "faulted": 0,
+    "operational": 1,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "tata-tacuarembo",
@@ -3143,6 +3591,22 @@
     "department": "Tacuarembó",
     "latitude": -31.712854,
     "longitude": -55.977657,
+    "presence": "listed",
+    "connectors": 2,
+    "operational": 2,
+    "faulted": 0,
+    "unknown": 0,
+    "absent": 0,
+    "outOfService": 0
+  },
+  {
+    "slug": "tenis-san-nicolas",
+    "name": "Tenis San Nicolás",
+    "address": "Maximiliano Rymarkiewicz & Camino Pichinch...",
+    "city": "Montevideo",
+    "department": "Montevideo",
+    "latitude": -34.861207,
+    "longitude": -56.0733388,
     "presence": "listed",
     "connectors": 2,
     "operational": 2,
@@ -3196,8 +3660,8 @@
     "operational": 2,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "terminal-del-cerro",
@@ -3228,8 +3692,8 @@
     "operational": 2,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "terminal-fray-bentos",
@@ -3257,11 +3721,11 @@
     "longitude": -55.274783,
     "presence": "listed",
     "connectors": 4,
-    "operational": 4,
-    "faulted": 0,
+    "operational": 2,
+    "faulted": 2,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 2
   },
   {
     "slug": "terminal-punta-del-diablo",
@@ -3308,6 +3772,22 @@
     "operational": 1,
     "faulted": 0,
     "unknown": 0,
+    "absent": 1,
+    "outOfService": 1
+  },
+  {
+    "slug": "tienda-inglesa-central",
+    "name": "Tienda Inglesa Central",
+    "address": "Av Italia 5820, Montevideo, Uruguay",
+    "city": "Montevideo",
+    "department": "Montevideo",
+    "latitude": -34.883584,
+    "longitude": -56.0816265,
+    "presence": "listed",
+    "connectors": 3,
+    "operational": 3,
+    "faulted": 0,
+    "unknown": 0,
     "absent": 0,
     "outOfService": 0
   },
@@ -3337,11 +3817,11 @@
     "longitude": -56.2699141,
     "presence": "listed",
     "connectors": 3,
-    "operational": 3,
-    "faulted": 0,
+    "operational": 2,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "utec-durazno",
@@ -3386,6 +3866,22 @@
     "presence": "listed",
     "connectors": 4,
     "operational": 4,
+    "faulted": 0,
+    "unknown": 0,
+    "absent": 0,
+    "outOfService": 0
+  },
+  {
+    "slug": "voltt-test",
+    "name": "Voltt Test",
+    "address": "Parque Industrial Ruta 5 - Grupo RAS",
+    "city": "Villa Felicidad",
+    "department": "Desconocido",
+    "latitude": -34.634662,
+    "longitude": -56.2504042,
+    "presence": "listed",
+    "connectors": 1,
+    "operational": 1,
     "faulted": 0,
     "unknown": 0,
     "absent": 0,
