@@ -6,9 +6,13 @@ import type { StationPayload } from "./types";
 const APP_TOKEN_URL = "https://movilidadelectrica.ute.com.uy/api/v2/token";
 const STATUS_FILTERED_URL =
   "https://movilidadelectrica.ute.com.uy/api/v2/station/statusFiltered";
+const STATUS_FILTERED_ID_URL =
+  "https://movilidadelectrica.ute.com.uy/api/v2/station/statusFilteredId";
 
 const CLIENT_ID = "cargaME";
 const DEFAULT_TIMEOUT_MS = 20_000;
+const DEFAULT_OVERALL_TIMEOUT_MS = 120_000;
+const DETAIL_CONCURRENCY = 8;
 
 const opt = (id: number, text: string, internalCode = "", icon = "") => ({
   id,
@@ -48,7 +52,7 @@ const tokenResponseSchema = z.object({
   token_type: z.string().optional(),
 });
 
-const v2BulkStationSchema = z.object({
+const bulkStationSchema = z.object({
   id: z.number().int(),
   name: z.string().min(1),
   source: z.string().nullable().optional(),
@@ -60,11 +64,40 @@ const v2BulkStationSchema = z.object({
   countryCode: z.string().nullable().optional(),
 });
 
-type V2BulkStation = z.infer<typeof v2BulkStationSchema>;
+type BulkStation = z.infer<typeof bulkStationSchema>;
+
+const bulkEnvelopeSchema = z.union([
+  z.object({ data: z.array(z.unknown()) }),
+  z.array(z.unknown()),
+]);
+
+const connectorGroupSchema = z.object({
+  count: z.number().int().nonnegative(),
+  type: z.string().min(1),
+  power: z.coerce.number().nonnegative(),
+  status: z.number().int().nullable().optional(),
+  statusDetail: z.string().nullable().optional(),
+  hose: z.boolean().nullable().optional(),
+});
+
+const detailDataSchema = z.object({
+  id: z.number().int(),
+  name: z.string().min(1),
+  source: z.string().nullable().optional(),
+  address: z.string().nullable().optional(),
+  lat: z.coerce.number(),
+  lng: z.coerce.number(),
+  department: z.string().nullable().optional(),
+  city: z.string().nullable().optional(),
+  status: z.string().nullable().optional(),
+  connectorStatusAcc: z.array(connectorGroupSchema).nullable().optional(),
+});
+
+const detailEnvelopeSchema = z.object({ data: detailDataSchema.nullable().optional() });
 
 const SYNTHETIC_TYPE = "Estación";
 
-function toStationPayload(st: V2BulkStation): StationPayload {
+function stationLevelPayload(st: BulkStation): StationPayload {
   const detail = st.statusDetails ?? null;
   return {
     source: st.source ?? null,
@@ -88,13 +121,30 @@ function toStationPayload(st: V2BulkStation): StationPayload {
   };
 }
 
-const bulkEnvelopeSchema = z.union([
-  z.object({ data: z.array(z.unknown()) }),
-  z.array(z.unknown()),
-]);
+function detailPayload(data: z.infer<typeof detailDataSchema>): StationPayload {
+  return {
+    source: data.source ?? null,
+    name: data.name,
+    address: data.address ?? null,
+    lat: data.lat,
+    lng: data.lng,
+    department: data.department ?? null,
+    city: data.city ?? null,
+    status: data.status ?? null,
+    connectorStatusAcc: (data.connectorStatusAcc ?? []).map((g) => ({
+      count: g.count,
+      type: g.type,
+      power: g.power,
+      status: g.status ?? null,
+      statusDetail: g.statusDetail ?? null,
+      hose: g.hose ?? null,
+    })),
+  };
+}
 
 export interface FetchFeedV2Options {
   timeoutMs?: number;
+  overallTimeoutMs?: number;
   signal?: AbortSignal;
   token?: string;
 }
@@ -112,6 +162,84 @@ export async function fetchAnonymousToken(
   if (!res.ok) throw new Error(`token endpoint ${res.status}`);
   const parsed = tokenResponseSchema.parse(await res.json());
   return parsed.access_token;
+}
+
+async function fetchBulkStations(
+  token: string,
+  signal: AbortSignal,
+): Promise<{ stations: BulkStation[]; rejected: number }> {
+  const res = await fetch(STATUS_FILTERED_URL, {
+    method: "POST",
+    signal,
+    cache: "no-store",
+    headers: {
+      authorization: `Bearer ${token}`,
+      "content-type": "application/json",
+      accept: "application/json",
+    },
+    body: JSON.stringify(FILTER_OPTIONS_REQUEST),
+  });
+  if (!res.ok) throw new Error(`statusFiltered ${res.status}`);
+  const parsed = bulkEnvelopeSchema.parse(await res.json());
+  const records = Array.isArray(parsed) ? parsed : parsed.data;
+  const stations: BulkStation[] = [];
+  let rejected = 0;
+  for (const record of records) {
+    const st = bulkStationSchema.safeParse(record);
+    if (st.success) stations.push(st.data);
+    else rejected += 1;
+  }
+  return { stations, rejected };
+}
+
+async function fetchStationDetail(
+  token: string,
+  station: BulkStation,
+  signal: AbortSignal,
+): Promise<StationPayload | null> {
+  const res = await fetch(STATUS_FILTERED_ID_URL, {
+    method: "POST",
+    signal,
+    cache: "no-store",
+    headers: {
+      authorization: `Bearer ${token}`,
+      "content-type": "application/json",
+      accept: "application/json",
+    },
+    body: JSON.stringify({
+      filterOptionsRequest: FILTER_OPTIONS_REQUEST,
+      stationIdentifier: {
+        CountryCode: station.countryCode ?? "UY",
+        PartyId: station.chargeNetworkName ?? "PUBLIC",
+        StationId: String(station.id),
+        Source: station.source ?? "CargaME",
+      },
+    }),
+  });
+  if (!res.ok) return null;
+  const parsed = detailEnvelopeSchema.safeParse(await res.json());
+  if (!parsed.success || !parsed.data.data) return null;
+  return detailPayload(parsed.data.data);
+}
+
+async function mapPool<T, R>(
+  items: T[],
+  concurrency: number,
+  fn: (item: T) => Promise<R>,
+): Promise<R[]> {
+  const results = new Array<R>(items.length);
+  let next = 0;
+  const worker = async () => {
+    for (;;) {
+      const index = next++;
+      if (index >= items.length) return;
+      results[index] = await fn(items[index]);
+    }
+  };
+  await Promise.all(
+    Array.from({ length: Math.min(concurrency, items.length) }, worker),
+  );
+  return results;
 }
 
 export async function fetchStationFeedV2(
@@ -133,86 +261,63 @@ export async function fetchStationFeedV2(
     errorMessage: message,
   });
 
-  const timeout = AbortSignal.timeout(timeoutMs);
-  const signal = options.signal ? AbortSignal.any([options.signal, timeout]) : timeout;
+  const overallMs = options.overallTimeoutMs ?? DEFAULT_OVERALL_TIMEOUT_MS;
+  const deadline = AbortSignal.timeout(overallMs);
+  const feedSignal = options.signal ? AbortSignal.any([options.signal, deadline]) : deadline;
+  const reqSignal = () => AbortSignal.any([feedSignal, AbortSignal.timeout(timeoutMs)]);
 
   let token: string;
   try {
-    token = options.token ?? (await fetchAnonymousToken(timeoutMs, signal));
+    token = options.token ?? (await fetchAnonymousToken(timeoutMs, reqSignal()));
   } catch (e) {
     return err("fetch_error", null, e instanceof Error ? e.message : String(e));
   }
 
-  let response: Response;
+  let bulk: BulkStation[];
+  let bulkRejected: number;
   try {
-    response = await fetch(STATUS_FILTERED_URL, {
-      method: "POST",
-      signal,
-      cache: "no-store",
-      headers: {
-        authorization: `Bearer ${token}`,
-        "content-type": "application/json",
-        accept: "application/json",
-      },
-      body: JSON.stringify(FILTER_OPTIONS_REQUEST),
-    });
+    const result = await fetchBulkStations(token, reqSignal());
+    bulk = result.stations;
+    bulkRejected = result.rejected;
   } catch (e) {
     return err("fetch_error", null, e instanceof Error ? e.message : String(e));
   }
 
-  let body: string;
-  try {
-    body = await response.text();
-  } catch (e) {
-    return err("fetch_error", response.status, e instanceof Error ? e.message : String(e));
-  }
-  if (!response.ok) return err("fetch_error", response.status, `statusFiltered ${response.status}`);
-
-  const payloadDigest = createHash("sha256").update(body).digest("hex");
-
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(body);
-  } catch (e) {
-    return err("parse_error", response.status, e instanceof Error ? e.message : String(e));
+  if (bulk.length === 0) {
+    return err("parse_error", 200, "statusFiltered returned no stations");
   }
 
-  const envelope = bulkEnvelopeSchema.safeParse(parsed);
-  if (!envelope.success) {
-    return {
-      ...err("parse_error", response.status, "unexpected statusFiltered envelope"),
-      payloadDigest,
-    };
-  }
-  const records = Array.isArray(envelope.data) ? envelope.data : envelope.data.data;
+  let fallbacks = 0;
+  const stations = await mapPool(bulk, DETAIL_CONCURRENCY, async (st) => {
+    const detail = await fetchStationDetail(token, st, reqSignal()).catch(() => null);
+    if (detail && (detail.connectorStatusAcc?.length ?? 0) > 0) return detail;
+    fallbacks += 1;
+    return stationLevelPayload(st);
+  });
 
-  const stations: StationPayload[] = [];
-  const rejections: string[] = [];
-  for (const [i, record] of records.entries()) {
-    const st = v2BulkStationSchema.safeParse(record);
-    if (st.success) {
-      stations.push(toStationPayload(st.data));
-    } else {
-      const issue = st.error.issues[0];
-      rejections.push(`#${i} ${issue ? `${issue.path.join(".")}: ${issue.message}` : "invalid"}`);
-    }
-  }
+  const digestSource = stations
+    .map((s) => ({
+      name: s.name,
+      groups: [...(s.connectorStatusAcc ?? [])].sort((a, b) =>
+        `${a.type}|${a.power}|${a.statusDetail}`.localeCompare(
+          `${b.type}|${b.power}|${b.statusDetail}`,
+        ),
+      ),
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name));
+  const payloadDigest = createHash("sha256").update(JSON.stringify(digestSource)).digest("hex");
 
-  if (stations.length === 0 && records.length > 0) {
-    return {
-      ...err("parse_error", response.status, `No station validated: ${rejections.slice(0, 3).join("; ")}`),
-      payloadDigest,
-    };
-  }
+  const notes: string[] = [];
+  if (fallbacks > 0) notes.push(`${fallbacks} station(s) fell back to station-level status`);
+  if (bulkRejected > 0) notes.push(`${bulkRejected} bulk record(s) rejected`);
 
   return {
     outcome: "success",
-    httpStatus: response.status,
+    httpStatus: 200,
     durationMs: Date.now() - startedAt,
     payloadDigest,
     stations,
-    rejectedStations: rejections.length,
-    errorMessage:
-      rejections.length > 0 ? `Skipped ${rejections.length}: ${rejections.slice(0, 3).join("; ")}` : null,
+    rejectedStations: bulkRejected,
+    errorMessage: notes.length > 0 ? notes.join("; ") : null,
   };
 }

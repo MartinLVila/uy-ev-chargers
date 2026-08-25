@@ -7,6 +7,10 @@ export interface SqlRunner {
 
 const OUT_OF_SERVICE = sql`('faulted', 'absent')`;
 
+const TELEMETRY = sql`cs.health IN ('operational', 'faulted')`;
+const FREE_DETAIL = sql`lower(cs.status_detail) IN ('available', 'disponible', 'libre')`;
+const IN_USE = sql`cs.health = 'operational' AND NOT (${FREE_DETAIL})`;
+
 function overlapSeconds(alias: string, window: TimeWindow): SQL {
   const started = sql.raw(`${alias}.started_at`);
   const ended = sql.raw(`${alias}.ended_at`);
@@ -646,6 +650,163 @@ export async function getStationDetail(
       endedAt: toIsoString(row.ended_at),
     })),
   };
+}
+
+export interface UsageBreakdown {
+  windowDays: number;
+  connectorHours: { free: number; inUse: number; broken: number };
+  share: { free: number; inUse: number; broken: number };
+  utilization: number;
+  byType: Array<{
+    type: string;
+    powerKw: number;
+    connectorHours: number;
+    utilization: number;
+    brokenShare: number;
+  }>;
+}
+
+export async function getUsageBreakdown(
+  db: SqlRunner,
+  window: TimeWindow,
+): Promise<UsageBreakdown> {
+  const windowDays = Math.round((window.to.getTime() - window.from.getTime()) / 86_400_000);
+  const secs = sql`cs.connector_count * ${overlapSeconds("cs", window)}`;
+
+  const { rows: totals } = await db.execute<{
+    free_secs: number;
+    in_use_secs: number;
+    broken_secs: number;
+  }>(sql`
+    SELECT
+      COALESCE(SUM(${secs}) FILTER (WHERE ${FREE_DETAIL}), 0) AS free_secs,
+      COALESCE(SUM(${secs}) FILTER (WHERE ${IN_USE}), 0) AS in_use_secs,
+      COALESCE(SUM(${secs}) FILTER (WHERE cs.health = 'faulted'), 0) AS broken_secs
+    FROM connector_states cs
+    WHERE ${overlapsWindow("cs", window)} AND ${TELEMETRY}
+  `);
+
+  const { rows: byType } = await db.execute<{
+    connector_type: string;
+    power_kw: number;
+    free_secs: number;
+    in_use_secs: number;
+    broken_secs: number;
+  }>(sql`
+    SELECT
+      cg.connector_type,
+      cg.power_kw,
+      COALESCE(SUM(${secs}) FILTER (WHERE ${FREE_DETAIL}), 0) AS free_secs,
+      COALESCE(SUM(${secs}) FILTER (WHERE ${IN_USE}), 0) AS in_use_secs,
+      COALESCE(SUM(${secs}) FILTER (WHERE cs.health = 'faulted'), 0) AS broken_secs
+    FROM connector_states cs
+    JOIN connector_groups cg ON cg.id = cs.connector_group_id
+    WHERE ${overlapsWindow("cs", window)} AND ${TELEMETRY}
+    GROUP BY cg.connector_type, cg.power_kw
+    ORDER BY SUM(${secs}) DESC
+  `);
+
+  const hours = (value: number) => round(value / 3600, 1);
+  const frac = (numerator: number, denominator: number) =>
+    denominator > 0 ? round(numerator / denominator, 4) : 0;
+
+  const total = totals[0];
+  const free = toNumber(total?.free_secs);
+  const inUse = toNumber(total?.in_use_secs);
+  const broken = toNumber(total?.broken_secs);
+  const grand = free + inUse + broken;
+
+  return {
+    windowDays,
+    connectorHours: { free: hours(free), inUse: hours(inUse), broken: hours(broken) },
+    share: { free: frac(free, grand), inUse: frac(inUse, grand), broken: frac(broken, grand) },
+    utilization: frac(inUse, free + inUse),
+    byType: byType.map((row) => {
+      const f = toNumber(row.free_secs);
+      const u = toNumber(row.in_use_secs);
+      const b = toNumber(row.broken_secs);
+      return {
+        type: row.connector_type,
+        powerKw: toNumber(row.power_kw),
+        connectorHours: hours(f + u + b),
+        utilization: frac(u, f + u),
+        brokenShare: frac(b, f + u + b),
+      };
+    }),
+  };
+}
+
+export interface HourlyUsagePoint {
+  hour: number;
+  utilization: number;
+  brokenShare: number;
+  sampleHours: number;
+}
+
+export async function getHourlyUsage(
+  db: SqlRunner,
+  window: TimeWindow,
+  timeZone: string = REPORTING_TIME_ZONE,
+): Promise<HourlyUsagePoint[]> {
+  const { rows } = await db.execute<{
+    hour: number;
+    in_use_secs: number;
+    free_secs: number;
+    broken_secs: number;
+    span_secs: number;
+  }>(sql`
+    WITH hours AS (
+      SELECT generate_series(
+        date_trunc('hour', ${window.from}::timestamptz AT TIME ZONE ${timeZone}),
+        date_trunc('hour', ${window.to}::timestamptz AT TIME ZONE ${timeZone}),
+        interval '1 hour'
+      ) AS local_hour
+    ),
+    buckets AS (
+      SELECT
+        EXTRACT(HOUR FROM local_hour)::int AS hour,
+        GREATEST(local_hour AT TIME ZONE ${timeZone}, ${window.from}::timestamptz) AS from_at,
+        LEAST(
+          (local_hour + interval '1 hour') AT TIME ZONE ${timeZone},
+          ${window.to}::timestamptz
+        ) AS to_at
+      FROM hours
+    ),
+    framed AS (
+      SELECT hour, from_at, to_at, EXTRACT(EPOCH FROM (to_at - from_at)) AS span
+      FROM buckets
+      WHERE to_at > from_at
+    ),
+    coverage AS (
+      SELECT hour, SUM(span) AS span_secs FROM framed GROUP BY hour
+    )
+    SELECT
+      b.hour,
+      COALESCE(SUM(cs.connector_count * ${dailyOverlapSeconds("cs")}) FILTER (WHERE ${IN_USE}), 0) AS in_use_secs,
+      COALESCE(SUM(cs.connector_count * ${dailyOverlapSeconds("cs")}) FILTER (WHERE ${FREE_DETAIL}), 0) AS free_secs,
+      COALESCE(SUM(cs.connector_count * ${dailyOverlapSeconds("cs")}) FILTER (WHERE cs.health = 'faulted'), 0) AS broken_secs,
+      MAX(c.span_secs) AS span_secs
+    FROM framed b
+    JOIN connector_states cs
+      ON cs.started_at < b.to_at
+      AND (cs.ended_at IS NULL OR cs.ended_at > b.from_at)
+      AND ${TELEMETRY}
+    JOIN coverage c ON c.hour = b.hour
+    GROUP BY b.hour
+    ORDER BY b.hour
+  `);
+
+  return rows.map((row) => {
+    const inUse = toNumber(row.in_use_secs);
+    const free = toNumber(row.free_secs);
+    const broken = toNumber(row.broken_secs);
+    return {
+      hour: toNumber(row.hour),
+      utilization: free + inUse > 0 ? round(inUse / (free + inUse), 4) : 0,
+      brokenShare: free + inUse + broken > 0 ? round(broken / (free + inUse + broken), 4) : 0,
+      sampleHours: round(toNumber(row.span_secs) / 3600, 1),
+    };
+  });
 }
 
 function toNumber(value: unknown): number {
