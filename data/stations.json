@@ -25,11 +25,11 @@
     "longitude": -56.15184,
     "presence": "listed",
     "connectors": 8,
-    "operational": 8,
-    "faulted": 0,
+    "operational": 6,
+    "faulted": 2,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 3
   },
   {
     "slug": "almenara-mall",
@@ -96,6 +96,22 @@
     "outOfService": 1
   },
   {
+    "slug": "ancap-arroyo-grande",
+    "name": "ANCAP Arroyo Grande",
+    "address": "Ruta 3, Departamento de Río Negro",
+    "city": "Arroyo Grande",
+    "department": "Río Negro",
+    "latitude": -32.913389,
+    "longitude": -57.406569,
+    "presence": "listed",
+    "connectors": 1,
+    "operational": 1,
+    "faulted": 0,
+    "unknown": 0,
+    "absent": 0,
+    "outOfService": 0
+  },
+  {
     "slug": "ancap-bella-union",
     "name": "ANCAP Bella Unión",
     "address": "Ruta 3 Km. 628,000, 55100 Artigas",
@@ -105,11 +121,11 @@
     "longitude": -57.585944,
     "presence": "listed",
     "connectors": 1,
-    "operational": 0,
-    "faulted": 1,
+    "operational": 1,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "ancap-buena-union",
@@ -156,8 +172,8 @@
     "operational": 1,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "ancap-caraguata",
@@ -185,11 +201,11 @@
     "longitude": -57.380458,
     "presence": "listed",
     "connectors": 4,
-    "operational": 2,
-    "faulted": 2,
+    "operational": 4,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 2
+    "outOfService": 0
   },
   {
     "slug": "ancap-carmelo",
@@ -231,13 +247,13 @@
     "department": "Rocha",
     "latitude": -33.694694,
     "longitude": -53.455267,
-    "presence": "listed",
-    "connectors": 1,
-    "operational": 1,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "ancap-ciudad-del-plata",
@@ -460,8 +476,8 @@
     "operational": 0,
     "faulted": 1,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 1
+    "absent": 1,
+    "outOfService": 2
   },
   {
     "slug": "ancap-la-paz",
@@ -684,8 +700,8 @@
     "operational": 4,
     "faulted": 0,
     "unknown": 0,
-    "absent": 1,
-    "outOfService": 1
+    "absent": 3,
+    "outOfService": 3
   },
   {
     "slug": "ancap-roosevelt-punta-del-este",
@@ -793,11 +809,11 @@
     "longitude": -56.726218,
     "presence": "listed",
     "connectors": 4,
-    "operational": 4,
-    "faulted": 0,
+    "operational": 2,
+    "faulted": 2,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 2
   },
   {
     "slug": "ancap-san-luis",
@@ -828,8 +844,8 @@
     "operational": 2,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "ancap-sarandi-del-yi",
@@ -921,11 +937,11 @@
     "longitude": -56.907767,
     "presence": "listed",
     "connectors": 2,
-    "operational": 0,
-    "faulted": 2,
+    "operational": 2,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 2
+    "outOfService": 0
   },
   {
     "slug": "ancap-trinidad-ruta-3",
@@ -1228,8 +1244,8 @@
     "operational": 3,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "car-one-center-3",
@@ -1324,8 +1340,8 @@
     "operational": 1,
     "faulted": 1,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 1
+    "absent": 1,
+    "outOfService": 2
   },
   {
     "slug": "centro-de-atencion-turistica-atlantida",
@@ -1372,8 +1388,8 @@
     "operational": 2,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "chuy-dfa",
@@ -1388,8 +1404,8 @@
     "operational": 4,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "ciudad-rodriguez",
@@ -1500,8 +1516,8 @@
     "operational": 2,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "disco-fresh-market-parada-5",
@@ -1624,12 +1640,12 @@
     "latitude": -34.896317,
     "longitude": -56.140618,
     "presence": "listed",
-    "connectors": 22,
-    "operational": 18,
-    "faulted": 4,
+    "connectors": 14,
+    "operational": 12,
+    "faulted": 2,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 4
+    "absent": 6,
+    "outOfService": 8
   },
   {
     "slug": "electrolinera-malvin",
@@ -1801,11 +1817,11 @@
     "longitude": -56.1543685,
     "presence": "listed",
     "connectors": 2,
-    "operational": 1,
-    "faulted": 1,
+    "operational": 2,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "estadio-martinez-monegal",
@@ -1848,8 +1864,8 @@
     "latitude": -32.3224331,
     "longitude": -58.0716883,
     "presence": "listed",
-    "connectors": 3,
-    "operational": 3,
+    "connectors": 4,
+    "operational": 4,
     "faulted": 0,
     "unknown": 0,
     "absent": 1,
@@ -2057,11 +2073,11 @@
     "longitude": -56.185525,
     "presence": "listed",
     "connectors": 6,
-    "operational": 5,
-    "faulted": 1,
+    "operational": 6,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "joanico",
@@ -2072,12 +2088,12 @@
     "latitude": -34.87903,
     "longitude": -56.148899,
     "presence": "listed",
-    "connectors": 4,
-    "operational": 4,
+    "connectors": 1,
+    "operational": 1,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 4,
+    "outOfService": 4
   },
   {
     "slug": "junta-local-centenario",
@@ -2088,12 +2104,12 @@
     "latitude": -32.83409,
     "longitude": -56.496295,
     "presence": "listed",
-    "connectors": 1,
-    "operational": 1,
+    "connectors": 2,
+    "operational": 2,
     "faulted": 0,
     "unknown": 0,
-    "absent": 2,
-    "outOfService": 2
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "la-barra",
@@ -2140,8 +2156,8 @@
     "operational": 4,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "la-paloma",
@@ -2188,8 +2204,8 @@
     "operational": 2,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "lascano",
@@ -2320,6 +2336,22 @@
     "outOfService": 1
   },
   {
+    "slug": "macromercado-rivera",
+    "name": "Macromercado Rivera",
+    "address": "Julio M. Sosa esquina Frugoni",
+    "city": "Rivera",
+    "department": "Rivera",
+    "latitude": -30.9204939,
+    "longitude": -55.5398168,
+    "presence": "listed",
+    "connectors": 2,
+    "operational": 2,
+    "faulted": 0,
+    "unknown": 0,
+    "absent": 0,
+    "outOfService": 0
+  },
+  {
     "slug": "macromercado-san-martin",
     "name": "Macromercado San Martín",
     "address": "San Martín 3222",
@@ -2361,11 +2393,11 @@
     "longitude": -56.136669,
     "presence": "listed",
     "connectors": 2,
-    "operational": 0,
-    "faulted": 2,
+    "operational": 1,
+    "faulted": 1,
     "unknown": 0,
     "absent": 1,
-    "outOfService": 3
+    "outOfService": 2
   },
   {
     "slug": "moreira-automoviles-atlantida",
@@ -2632,12 +2664,12 @@
     "latitude": -34.769568,
     "longitude": -55.7294,
     "presence": "listed",
-    "connectors": 2,
-    "operational": 2,
+    "connectors": 1,
+    "operational": 1,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 2,
+    "outOfService": 2
   },
   {
     "slug": "parque-del-plata-rambla",
@@ -2688,6 +2720,38 @@
     "outOfService": 0
   },
   {
+    "slug": "paseo-del-este-1",
+    "name": "Paseo del Este 1",
+    "address": "Paseo del Este Tu Shopping Outlet, Ruta 39",
+    "city": "Maldonado",
+    "department": "Maldonado",
+    "latitude": -34.880137,
+    "longitude": -54.951178,
+    "presence": "listed",
+    "connectors": 2,
+    "operational": 2,
+    "faulted": 0,
+    "unknown": 0,
+    "absent": 0,
+    "outOfService": 0
+  },
+  {
+    "slug": "paseo-del-este-2",
+    "name": "Paseo del Este 2",
+    "address": "Paseo del Este Tu Shopping Outlet, Ruta 39",
+    "city": "Maldonado",
+    "department": "Maldonado",
+    "latitude": -34.880068,
+    "longitude": -54.951165,
+    "presence": "listed",
+    "connectors": 2,
+    "operational": 2,
+    "faulted": 0,
+    "unknown": 0,
+    "absent": 0,
+    "outOfService": 0
+  },
+  {
     "slug": "plaza-33-orientales",
     "name": "Plaza 33 Orientales",
     "address": "Juan Carlos Gomez esq. Artigas",
@@ -2732,8 +2796,8 @@
     "operational": 1,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "plaza-artigas-la-floresta",
@@ -2764,8 +2828,8 @@
     "operational": 2,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "plaza-artigas-rivera",
@@ -2940,8 +3004,8 @@
     "operational": 1,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "plaza-de-deportes-de-pando",
@@ -3063,13 +3127,13 @@
     "department": "Colonia",
     "latitude": -34.2848757,
     "longitude": -57.2338976,
-    "presence": "delisted",
-    "connectors": 0,
-    "operational": 0,
+    "presence": "listed",
+    "connectors": 1,
+    "operational": 1,
     "faulted": 0,
     "unknown": 0,
-    "absent": 1,
-    "outOfService": 1
+    "absent": 0,
+    "outOfService": 0
   },
   {
     "slug": "plaza-pando",
@@ -3132,8 +3196,8 @@
     "operational": 2,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "plaza-romay-nuevo-berlin",
@@ -3388,8 +3452,8 @@
     "operational": 2,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "shopping-nuevocentro",
@@ -3404,8 +3468,8 @@
     "operational": 2,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "skatepark-carrasco",
@@ -3516,8 +3580,8 @@
     "operational": 2,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "tata-mercedes",
@@ -3721,11 +3785,11 @@
     "longitude": -55.274783,
     "presence": "listed",
     "connectors": 4,
-    "operational": 2,
-    "faulted": 2,
+    "operational": 4,
+    "faulted": 0,
     "unknown": 0,
     "absent": 1,
-    "outOfService": 3
+    "outOfService": 1
   },
   {
     "slug": "terminal-punta-del-diablo",
@@ -3756,8 +3820,8 @@
     "operational": 2,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "terminal-tarariras",
@@ -3784,8 +3848,8 @@
     "latitude": -34.883584,
     "longitude": -56.0816265,
     "presence": "listed",
-    "connectors": 3,
-    "operational": 3,
+    "connectors": 4,
+    "operational": 4,
     "faulted": 0,
     "unknown": 0,
     "absent": 0,
@@ -3817,11 +3881,27 @@
     "longitude": -56.2699141,
     "presence": "listed",
     "connectors": 3,
-    "operational": 2,
-    "faulted": 1,
+    "operational": 3,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
+  },
+  {
+    "slug": "ute-libertad",
+    "name": "UTE Libertad",
+    "address": "José Enrique Rodó, esquina San José",
+    "city": "Libertad",
+    "department": "San José",
+    "latitude": -34.632346,
+    "longitude": -56.615782,
+    "presence": "listed",
+    "connectors": 3,
+    "operational": 3,
+    "faulted": 0,
+    "unknown": 0,
+    "absent": 0,
+    "outOfService": 0
   },
   {
     "slug": "utec-durazno",
