@@ -163,6 +163,57 @@ describe("runIngestion", () => {
     expect(rows[0].coordKey).toBe("-34.60000,-56.60000");
   });
 
+  it.each([
+    ["the new site first", 0],
+    ["the new site second", 1],
+  ])("keeps a station attached to its coordinates when a namesake appears, %s", async (_label, newSiteIndex) => {
+    await runIngestion(db, {
+      observedAt: T0,
+      feed: successFeed([station({ name: "Joanico", lat: -34.9, lng: -56.15 })]),
+    });
+    const [original] = await db.select().from(stations);
+
+    const namesakeAtNewCoordinates = station({ name: "Joanico", lat: -33.0, lng: -55.0 });
+    const originalAtSameCoordinates = station({ name: "Joanico", lat: -34.9, lng: -56.15 });
+    const payload =
+      newSiteIndex === 0
+        ? [namesakeAtNewCoordinates, originalAtSameCoordinates]
+        : [originalAtSameCoordinates, namesakeAtNewCoordinates];
+
+    await runIngestion(db, { observedAt: T1, feed: successFeed(payload) });
+
+    const rows = await db.select().from(stations);
+    expect(rows).toHaveLength(2);
+
+    const kept = rows.find((row) => row.id === original.id);
+    expect(kept?.coordKey).toBe("-34.90000,-56.15000");
+    expect(kept?.firstSeenAt).toEqual(T0);
+
+    const added = rows.find((row) => row.id !== original.id);
+    expect(added?.coordKey).toBe("-33.00000,-55.00000");
+    expect(added?.firstSeenAt).toEqual(T1);
+  });
+
+  it("leaves a station untouched when two namesakes relocate and neither matches its coordinates", async () => {
+    await runIngestion(db, {
+      observedAt: T0,
+      feed: successFeed([station({ name: "Ancap", lat: -34.9, lng: -56.15 })]),
+    });
+    const [original] = await db.select().from(stations);
+
+    await runIngestion(db, {
+      observedAt: T1,
+      feed: successFeed([
+        station({ name: "Ancap", lat: -33.0, lng: -55.0 }),
+        station({ name: "Ancap", lat: -32.0, lng: -54.0 }),
+      ]),
+    });
+
+    const rows = await db.select().from(stations);
+    expect(rows).toHaveLength(3);
+    expect(rows.find((row) => row.id === original.id)?.coordKey).toBe("-34.90000,-56.15000");
+  });
+
   it("normalises inconsistent department spellings to one canonical value", async () => {
     await runIngestion(db, {
       observedAt: T0,
