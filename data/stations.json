@@ -9,11 +9,11 @@
     "longitude": -54.1667246,
     "presence": "listed",
     "connectors": 1,
-    "operational": 1,
-    "faulted": 0,
+    "operational": 0,
+    "faulted": 1,
     "unknown": 0,
     "absent": 1,
-    "outOfService": 1
+    "outOfService": 2
   },
   {
     "slug": "acceso-emergencia-hospital-de-clinicas",
@@ -25,11 +25,11 @@
     "longitude": -56.15184,
     "presence": "listed",
     "connectors": 8,
-    "operational": 6,
-    "faulted": 2,
+    "operational": 8,
+    "faulted": 0,
     "unknown": 0,
     "absent": 1,
-    "outOfService": 3
+    "outOfService": 1
   },
   {
     "slug": "almenara-mall",
@@ -188,8 +188,8 @@
     "operational": 1,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "ancap-cardona",
@@ -247,13 +247,13 @@
     "department": "Rocha",
     "latitude": -33.694694,
     "longitude": -53.455267,
-    "presence": "delisted",
-    "connectors": 0,
-    "operational": 0,
+    "presence": "listed",
+    "connectors": 1,
+    "operational": 1,
     "faulted": 0,
     "unknown": 0,
-    "absent": 1,
-    "outOfService": 1
+    "absent": 0,
+    "outOfService": 0
   },
   {
     "slug": "ancap-ciudad-del-plata",
@@ -456,12 +456,12 @@
     "latitude": -34.835025,
     "longitude": -54.644789,
     "presence": "listed",
-    "connectors": 4,
+    "connectors": 2,
     "operational": 2,
-    "faulted": 2,
+    "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 2
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "ancap-jose-pedro-varela",
@@ -617,11 +617,11 @@
     "longitude": -56.520291,
     "presence": "listed",
     "connectors": 2,
-    "operational": 2,
-    "faulted": 0,
+    "operational": 0,
+    "faulted": 2,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 2
   },
   {
     "slug": "ancap-paysandu",
@@ -1240,8 +1240,8 @@
     "latitude": -34.816702,
     "longitude": -55.978758,
     "presence": "listed",
-    "connectors": 3,
-    "operational": 3,
+    "connectors": 2,
+    "operational": 2,
     "faulted": 0,
     "unknown": 0,
     "absent": 1,
@@ -1401,11 +1401,11 @@
     "longitude": -53.448956,
     "presence": "listed",
     "connectors": 4,
-    "operational": 4,
-    "faulted": 0,
+    "operational": 2,
+    "faulted": 2,
     "unknown": 0,
     "absent": 1,
-    "outOfService": 1
+    "outOfService": 3
   },
   {
     "slug": "ciudad-rodriguez",
@@ -1704,8 +1704,8 @@
     "latitude": -34.882873,
     "longitude": -56.152962,
     "presence": "listed",
-    "connectors": 4,
-    "operational": 4,
+    "connectors": 3,
+    "operational": 3,
     "faulted": 0,
     "unknown": 0,
     "absent": 1,
@@ -1784,8 +1784,8 @@
     "latitude": -34.940428,
     "longitude": -54.924829,
     "presence": "listed",
-    "connectors": 4,
-    "operational": 4,
+    "connectors": 2,
+    "operational": 2,
     "faulted": 0,
     "unknown": 0,
     "absent": 0,
@@ -2088,12 +2088,12 @@
     "latitude": -34.87903,
     "longitude": -56.148899,
     "presence": "listed",
-    "connectors": 1,
-    "operational": 1,
+    "connectors": 4,
+    "operational": 4,
     "faulted": 0,
     "unknown": 0,
-    "absent": 4,
-    "outOfService": 4
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "junta-local-centenario",
@@ -2153,11 +2153,11 @@
     "longitude": -56.1833816,
     "presence": "listed",
     "connectors": 4,
-    "operational": 4,
-    "faulted": 0,
+    "operational": 3,
+    "faulted": 1,
     "unknown": 0,
     "absent": 1,
-    "outOfService": 1
+    "outOfService": 2
   },
   {
     "slug": "la-paloma",
@@ -2636,8 +2636,8 @@
     "operational": 4,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "parque-de-minas",
@@ -2664,12 +2664,12 @@
     "latitude": -34.769568,
     "longitude": -55.7294,
     "presence": "listed",
-    "connectors": 1,
-    "operational": 1,
+    "connectors": 2,
+    "operational": 2,
     "faulted": 0,
     "unknown": 0,
-    "absent": 2,
-    "outOfService": 2
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "parque-del-plata-rambla",
@@ -2728,12 +2728,12 @@
     "latitude": -34.880137,
     "longitude": -54.951178,
     "presence": "listed",
-    "connectors": 2,
-    "operational": 2,
+    "connectors": 1,
+    "operational": 1,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "paseo-del-este-2",
@@ -2936,12 +2936,12 @@
     "latitude": -34.805776,
     "longitude": -56.221745,
     "presence": "listed",
-    "connectors": 2,
+    "connectors": 1,
     "operational": 1,
-    "faulted": 1,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "plaza-constitucion-fray-bentos",
@@ -3017,11 +3017,11 @@
     "longitude": -55.957135,
     "presence": "listed",
     "connectors": 2,
-    "operational": 1,
-    "faulted": 1,
+    "operational": 2,
+    "faulted": 0,
     "unknown": 0,
     "absent": 1,
-    "outOfService": 2
+    "outOfService": 1
   },
   {
     "slug": "plaza-de-la-familia-carmelo",
@@ -3063,13 +3063,13 @@
     "department": "Colonia",
     "latitude": -34.437433,
     "longitude": -57.8650452,
-    "presence": "listed",
-    "connectors": 2,
-    "operational": 2,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 2,
+    "outOfService": 2
   },
   {
     "slug": "plaza-independencia-durazno",
@@ -3191,13 +3191,13 @@
     "department": "Lavalleja",
     "latitude": -34.37563,
     "longitude": -55.242589,
-    "presence": "listed",
-    "connectors": 2,
-    "operational": 2,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 1,
-    "outOfService": 1
+    "absent": 3,
+    "outOfService": 3
   },
   {
     "slug": "plaza-romay-nuevo-berlin",
@@ -3336,12 +3336,12 @@
     "latitude": -34.942108,
     "longitude": -54.932418,
     "presence": "listed",
-    "connectors": 6,
-    "operational": 6,
+    "connectors": 4,
+    "operational": 4,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 2,
+    "outOfService": 2
   },
   {
     "slug": "punta-shopping",
@@ -3464,12 +3464,12 @@
     "latitude": -34.869657,
     "longitude": -56.169246,
     "presence": "listed",
-    "connectors": 2,
-    "operational": 2,
+    "connectors": 1,
+    "operational": 1,
     "faulted": 0,
     "unknown": 0,
-    "absent": 1,
-    "outOfService": 1
+    "absent": 2,
+    "outOfService": 2
   },
   {
     "slug": "skatepark-carrasco",
@@ -3496,8 +3496,8 @@
     "latitude": -33.508548,
     "longitude": -56.9300983,
     "presence": "listed",
-    "connectors": 2,
-    "operational": 2,
+    "connectors": 1,
+    "operational": 1,
     "faulted": 0,
     "unknown": 0,
     "absent": 0,
@@ -3545,11 +3545,11 @@
     "longitude": -56.214462,
     "presence": "listed",
     "connectors": 2,
-    "operational": 1,
-    "faulted": 1,
+    "operational": 2,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "tata-maldonado",
@@ -3784,12 +3784,12 @@
     "latitude": -34.86203,
     "longitude": -55.274783,
     "presence": "listed",
-    "connectors": 4,
+    "connectors": 8,
     "operational": 4,
-    "faulted": 0,
+    "faulted": 4,
     "unknown": 0,
     "absent": 1,
-    "outOfService": 1
+    "outOfService": 5
   },
   {
     "slug": "terminal-punta-del-diablo",
@@ -3833,11 +3833,11 @@
     "longitude": -57.610165,
     "presence": "listed",
     "connectors": 1,
-    "operational": 1,
-    "faulted": 0,
+    "operational": 0,
+    "faulted": 1,
     "unknown": 0,
     "absent": 1,
-    "outOfService": 1
+    "outOfService": 2
   },
   {
     "slug": "tienda-inglesa-central",
@@ -3848,8 +3848,8 @@
     "latitude": -34.883584,
     "longitude": -56.0816265,
     "presence": "listed",
-    "connectors": 4,
-    "operational": 4,
+    "connectors": 3,
+    "operational": 3,
     "faulted": 0,
     "unknown": 0,
     "absent": 0,
