@@ -263,17 +263,7 @@ async function reconcileStations(
   const idByNameKey = indexUniqueIds(stored.stations, (row) => row.nameKey);
   const takenSlugs = new Set(stored.stations.map((row) => row.slug));
 
-  const matched = new Map<number, IncomingStation>();
-  const unmatched: IncomingStation[] = [];
-
-  for (const entry of entries) {
-    const id = findUnclaimedStationId(entry, idByCoordKey, idByNameKey, matched);
-    if (id === undefined) {
-      unmatched.push(entry);
-      continue;
-    }
-    matched.set(id, entry);
-  }
+  const { matched, unmatched } = matchStations(entries, idByCoordKey, idByNameKey);
 
   const updatesByChanges = new Map<string, { changes: StationChanges; ids: number[] }>();
 
@@ -305,14 +295,62 @@ async function reconcileStations(
   return { matched, created };
 }
 
-function findUnclaimedStationId(
-  entry: IncomingStation,
+interface MatchedStations {
+  matched: Map<number, IncomingStation>;
+  unmatched: IncomingStation[];
+}
+
+type StationMatcher = (entry: IncomingStation) => number | undefined;
+
+function matchStations(
+  entries: IncomingStation[],
   idByCoordKey: Map<string, number>,
   idByNameKey: Map<string, number>,
-  claimed: Map<number, IncomingStation>,
-): number | undefined {
-  const candidates = [idByCoordKey.get(entry.coordKey), idByNameKey.get(entry.nameKey)];
-  return candidates.find((id) => id !== undefined && !claimed.has(id));
+): MatchedStations {
+  const matched = new Map<number, IncomingStation>();
+
+  const claimIfUnclaimed = (id: number | undefined, entry: IncomingStation): boolean => {
+    if (id === undefined || matched.has(id)) return false;
+    matched.set(id, entry);
+    return true;
+  };
+
+  const nameKeysBelongingToOneEntryOnly = keysAppearingExactlyOnce(
+    entries.map((entry) => entry.nameKey),
+  );
+
+  const byCoordinatesAndName: StationMatcher = (entry) => {
+    const id = idByCoordKey.get(entry.coordKey);
+    return id === idByNameKey.get(entry.nameKey) ? id : undefined;
+  };
+
+  const byNameThatIdentifiesOneEntry: StationMatcher = (entry) =>
+    nameKeysBelongingToOneEntryOnly.has(entry.nameKey)
+      ? idByNameKey.get(entry.nameKey)
+      : undefined;
+
+  const byCoordinatesAlone: StationMatcher = (entry) => idByCoordKey.get(entry.coordKey);
+
+  const matchersFromStrongestToWeakest: StationMatcher[] = [
+    byCoordinatesAndName,
+    byNameThatIdentifiesOneEntry,
+    byCoordinatesAlone,
+  ];
+
+  let stillUnidentified = entries;
+  for (const identify of matchersFromStrongestToWeakest) {
+    stillUnidentified = stillUnidentified.filter(
+      (entry) => !claimIfUnclaimed(identify(entry), entry),
+    );
+  }
+
+  return { matched, unmatched: stillUnidentified };
+}
+
+function keysAppearingExactlyOnce(keys: string[]): Set<string> {
+  const counts = new Map<string, number>();
+  for (const key of keys) counts.set(key, (counts.get(key) ?? 0) + 1);
+  return new Set([...counts].filter(([, count]) => count === 1).map(([key]) => key));
 }
 
 function claimCoordinateKey(
