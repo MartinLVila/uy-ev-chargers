@@ -8,6 +8,8 @@ import {
   getNetworkSnapshot,
   getStationDetail,
   getStationReliability,
+  getUsageBreakdown,
+  getHourlyUsage,
   type SqlRunner,
 } from "../src/lib/metrics/queries";
 import { createTestDatabase, type TestDatabase } from "./helpers/database";
@@ -258,6 +260,91 @@ describe("metrics", () => {
 
     expect(utc.map((point) => point.day)).toEqual(["2026-03-01"]);
     expect(montevideo.map((point) => point.day)).toEqual(["2026-02-28", "2026-03-01"]);
+  });
+
+  it("splits connector time between free and in use", async () => {
+    await runIngestion(db, {
+      observedAt: DAY_START,
+      feed: successFeed([
+        station({ name: "Joanico", connectors: [{ count: 2, statusDetail: "Disponible" }] }),
+      ]),
+    });
+    await runIngestion(db, {
+      observedAt: MIDDAY,
+      feed: successFeed([
+        station({ name: "Joanico", connectors: [{ count: 2, statusDetail: "Cargando" }] }),
+      ]),
+    });
+
+    const usage = await getUsageBreakdown(runner, { from: DAY_START, to: NEXT_DAY });
+
+    expect(usage.connectorHours.free).toBeCloseTo(24, 5);
+    expect(usage.connectorHours.inUse).toBeCloseTo(24, 5);
+    expect(usage.connectorHours.broken).toBe(0);
+    expect(usage.utilization).toBeCloseTo(0.5, 5);
+  });
+
+  it("keeps faulted time out of the utilization denominator", async () => {
+    await runIngestion(db, {
+      observedAt: DAY_START,
+      feed: successFeed([
+        station({ name: "Joanico", connectors: [{ count: 1, statusDetail: "Disponible" }] }),
+      ]),
+    });
+    await runIngestion(db, {
+      observedAt: MIDDAY,
+      feed: successFeed([
+        station({ name: "Joanico", connectors: [{ count: 1, statusDetail: "Faulted", status: 4 }] }),
+      ]),
+    });
+
+    const usage = await getUsageBreakdown(runner, { from: DAY_START, to: NEXT_DAY });
+
+    expect(usage.utilization).toBe(0);
+    expect(usage.share.broken).toBeCloseTo(0.5, 5);
+  });
+
+  it("attributes connector time to the hour of day it fell in", async () => {
+    await runIngestion(db, {
+      observedAt: new Date("2026-03-01T00:00:00Z"),
+      feed: successFeed([
+        station({ name: "Joanico", connectors: [{ count: 1, statusDetail: "Cargando" }] }),
+      ]),
+    });
+    await runIngestion(db, {
+      observedAt: new Date("2026-03-01T02:00:00Z"),
+      feed: successFeed([
+        station({ name: "Joanico", connectors: [{ count: 1, statusDetail: "Disponible" }] }),
+      ]),
+    });
+
+    const hourly = await getHourlyUsage(
+      runner,
+      { from: new Date("2026-03-01T00:00:00Z"), to: new Date("2026-03-01T04:00:00Z") },
+      "UTC",
+    );
+    const utilizationByHour = new Map(hourly.map((point) => [point.hour, point.utilization]));
+
+    expect(utilizationByHour.get(0)).toBe(1);
+    expect(utilizationByHour.get(1)).toBe(1);
+    expect(utilizationByHour.get(2)).toBe(0);
+    expect(utilizationByHour.get(3)).toBe(0);
+  });
+
+  it("reads the hour of day in the requested time zone rather than the session default", async () => {
+    await runIngestion(db, {
+      observedAt: new Date("2026-03-01T00:00:00Z"),
+      feed: successFeed([
+        station({ name: "Joanico", connectors: [{ count: 1, statusDetail: "Cargando" }] }),
+      ]),
+    });
+
+    const bounds = { from: new Date("2026-03-01T00:00:00Z"), to: new Date("2026-03-01T01:00:00Z") };
+    const utc = await getHourlyUsage(runner, bounds, "UTC");
+    const montevideo = await getHourlyUsage(runner, bounds, "America/Montevideo");
+
+    expect(utc.map((point) => point.hour)).toEqual([0]);
+    expect(montevideo.map((point) => point.hour)).toEqual([21]);
   });
 
   it("groups the current fleet by department", async () => {
