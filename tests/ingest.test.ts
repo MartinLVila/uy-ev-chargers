@@ -111,6 +111,75 @@ describe("runIngestion", () => {
     expect(presence[0].state).toBe("silent");
   });
 
+  it("leaves connector intervals open when a station reports no telemetry at all", async () => {
+    await runIngestion(db, {
+      observedAt: T0,
+      feed: successFeed([
+        station({ name: "Joanico", connectors: [{ count: 2, statusDetail: "Disponible" }] }),
+      ]),
+    });
+
+    const result = await runIngestion(db, {
+      observedAt: T1,
+      feed: successFeed([station({ name: "Joanico", connectors: null })]),
+    });
+
+    expect(result.connectorStateChanges).toBe(0);
+    expect(result.connectorGroupsCreated).toBe(0);
+
+    const rows = await db.select().from(connectorStates);
+    expect(rows).toHaveLength(1);
+    expect(rows[0].health).toBe("operational");
+    expect(rows[0].connectorCount).toBe(2);
+    expect(rows[0].endedAt).toBeNull();
+  });
+
+  it("keeps a station listed while its telemetry is unavailable", async () => {
+    await runIngestion(db, {
+      observedAt: T0,
+      feed: successFeed([station({ name: "Joanico", connectors: [{ count: 2 }] })]),
+    });
+    await runIngestion(db, {
+      observedAt: T1,
+      feed: successFeed([station({ name: "Joanico", connectors: null })]),
+    });
+
+    const presence = await db.select().from(stationStates);
+    expect(presence).toHaveLength(1);
+    expect(presence[0].state).toBe("listed");
+    expect(presence[0].endedAt).toBeNull();
+  });
+
+  it("resumes recording state changes once telemetry comes back", async () => {
+    await runIngestion(db, {
+      observedAt: T0,
+      feed: successFeed([
+        station({ name: "Joanico", connectors: [{ count: 2, statusDetail: "Disponible" }] }),
+      ]),
+    });
+    await runIngestion(db, {
+      observedAt: T1,
+      feed: successFeed([station({ name: "Joanico", connectors: null })]),
+    });
+    await runIngestion(db, {
+      observedAt: T2,
+      feed: successFeed([
+        station({ name: "Joanico", connectors: [{ count: 2, statusDetail: "Faulted", status: 4 }] }),
+      ]),
+    });
+
+    const rows = await db.select().from(connectorStates);
+    expect(rows).toHaveLength(2);
+
+    const closed = rows.find((row) => row.endedAt !== null);
+    const open = rows.find((row) => row.endedAt === null);
+    expect(closed?.health).toBe("operational");
+    expect(closed?.startedAt).toEqual(T0);
+    expect(closed?.endedAt).toEqual(T2);
+    expect(open?.health).toBe("faulted");
+    expect(open?.startedAt).toEqual(T2);
+  });
+
   it("records a failed poll without touching station state", async () => {
     await runIngestion(db, {
       observedAt: T0,
