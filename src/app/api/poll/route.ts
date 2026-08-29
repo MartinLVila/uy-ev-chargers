@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { desc, eq } from "drizzle-orm";
 import { authorizeCronRequest } from "@/lib/api/cron-auth";
+import { rejectIfRateLimited } from "@/lib/api/rate-limit";
 import { createWriteDatabase, withIngestionLock } from "@/lib/db/write-client";
 import { pollRuns } from "@/lib/db/schema";
 import { runIngestion } from "@/lib/ingest/pipeline";
@@ -52,6 +53,10 @@ async function ingest(db: WriteDb, scope: string): Promise<NextResponse> {
 
 async function handle(request: Request): Promise<NextResponse> {
   const scope = `${request.method} /api/poll`;
+
+  const limited = await rejectIfRateLimited(request, "poll");
+  if (limited) return limited;
+
   const authorization = authorizeCronRequest(request);
 
   if (authorization === "not-configured") {
