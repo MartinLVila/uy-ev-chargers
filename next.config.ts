@@ -21,10 +21,13 @@ const strictTransportSecurity = {
   value: "max-age=63072000; includeSubDomains; preload",
 };
 
+const EVERYTHING_EXCEPT_THE_API = "/((?!api/).*)";
+
+const pageOnlyHeaders = [{ key: "Cross-Origin-Resource-Policy", value: "same-origin" }];
+
 const securityHeaders = [
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
-  { key: "Cross-Origin-Resource-Policy", value: "same-origin" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   { key: "X-Frame-Options", value: "DENY" },
   {
@@ -44,7 +47,10 @@ const nextConfig: NextConfig = {
           ]
         : securityHeaders;
 
-    return [{ source: "/:path*", headers }];
+    return [
+      { source: "/:path*", headers },
+      { source: EVERYTHING_EXCEPT_THE_API, headers: pageOnlyHeaders },
+    ];
   },
 };
 
