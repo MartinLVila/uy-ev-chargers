@@ -1,4 +1,5 @@
 import { neonConfig, Pool } from "@neondatabase/serverless";
+import { sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/neon-serverless";
 import ws from "ws";
 import { connectionString } from "./client";
@@ -10,6 +11,37 @@ export function createWriteDatabase() {
   const pool = new Pool({ connectionString: connectionString() });
   return {
     db: drizzle(pool, { schema }),
+    pool,
     close: () => pool.end(),
   };
+}
+
+const INGESTION_LOCK_NAME = "poll";
+const INGESTION_LOCK_SECONDS = 300;
+
+export type WriteDb = ReturnType<typeof createWriteDatabase>["db"];
+
+export async function withIngestionLock<T>(
+  db: WriteDb,
+  run: () => Promise<T>,
+  onBusy: () => T,
+): Promise<T> {
+  const { rows } = await db.execute<{ name: string }>(sql`
+    INSERT INTO ingestion_locks (name, held_until)
+    VALUES (${INGESTION_LOCK_NAME}, now() + ${`${INGESTION_LOCK_SECONDS} seconds`}::interval)
+    ON CONFLICT (name) DO UPDATE
+      SET held_until = EXCLUDED.held_until
+      WHERE ingestion_locks.held_until < now()
+    RETURNING name
+  `);
+
+  if (rows.length === 0) return onBusy();
+
+  try {
+    return await run();
+  } finally {
+    await db
+      .execute(sql`DELETE FROM ingestion_locks WHERE name = ${INGESTION_LOCK_NAME}`)
+      .catch((error: unknown) => console.error("Releasing the ingestion lock failed", error));
+  }
 }
