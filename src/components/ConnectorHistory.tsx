@@ -1,6 +1,7 @@
 import { formatDateTime, formatNumber } from "@/lib/ui/format";
 import {
   buildConnectorTimelines,
+  resolveTimelineRange,
   type TimelineSlice,
 } from "@/lib/ui/connector-timeline";
 import { USAGE_PRESENTATION, type ConnectorUsage } from "@/lib/ui/health";
@@ -23,28 +24,28 @@ function sliceTitle(slice: TimelineSlice): string {
 
 export function ConnectorHistory({
   timeline,
+  timelineTruncated,
   firstSeenAt,
   windowStart,
   windowEnd,
 }: {
   timeline: StationTimelineEntry[];
+  timelineTruncated: boolean;
   firstSeenAt: string;
   windowStart: string;
   windowEnd: string;
 }) {
-  const rangeEnd = new Date(windowEnd).getTime();
-  const windowStartMs = new Date(windowStart).getTime();
-  const firstSeen = new Date(firstSeenAt).getTime();
-  const rangeStart = Number.isFinite(firstSeen)
-    ? Math.max(windowStartMs, firstSeen)
-    : windowStartMs;
+  const range = resolveTimelineRange(
+    timeline,
+    timelineTruncated,
+    firstSeenAt,
+    windowStart,
+    windowEnd,
+  );
 
-  const groups =
-    Number.isFinite(rangeStart) && Number.isFinite(rangeEnd)
-      ? buildConnectorTimelines(timeline, rangeStart, rangeEnd)
-      : [];
+  const groups = range ? buildConnectorTimelines(timeline, range.start, range.end) : [];
 
-  if (groups.length === 0) {
+  if (!range || groups.length === 0) {
     return (
       <p style={{ margin: 0, fontSize: 13, color: "var(--text-muted)" }}>
         Todavía no hay historial registrado para este período.
@@ -153,8 +154,15 @@ export function ConnectorHistory({
       })}
 
       <p style={{ margin: 0, fontSize: 12, color: "var(--text-muted)" }}>
-        Ventana: {formatDateTime(new Date(rangeStart).toISOString())} →{" "}
-        {formatDateTime(new Date(rangeEnd).toISOString())}.
+        Ventana: {formatDateTime(new Date(range.start).toISOString())} →{" "}
+        {formatDateTime(new Date(range.end).toISOString())}.
+        {range.clampedByRowLimit && (
+          <>
+            {" "}
+            Recortada por el límite de registros: los cambios anteriores a esa fecha no se
+            cargaron, y los porcentajes describen solo el tramo dibujado.
+          </>
+        )}
       </p>
     </div>
   );
