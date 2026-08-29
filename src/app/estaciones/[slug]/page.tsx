@@ -3,14 +3,24 @@ import { notFound } from "next/navigation";
 import { Card } from "@/components/Card";
 import { ConnectorHistory } from "@/components/ConnectorHistory";
 import { getDb } from "@/lib/db/client";
-import { getStationDetail } from "@/lib/metrics/queries";
+import { getStationDetail, getStationStatuses } from "@/lib/metrics/queries";
 import { windowFromDays } from "@/lib/metrics/window";
 import { formatDateTime, formatNumber } from "@/lib/ui/format";
 import { connectorUsage, stationPresence } from "@/lib/ui/health";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 const WINDOW_DAYS = 90;
+
+export async function generateStaticParams(): Promise<{ slug: string }[]> {
+  try {
+    const stations = await getStationStatuses(getDb());
+    return stations.map((station) => ({ slug: station.slug }));
+  } catch (error) {
+    console.error("Could not enumerate stations to prerender", error);
+    return [];
+  }
+}
 
 export default async function StationPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
