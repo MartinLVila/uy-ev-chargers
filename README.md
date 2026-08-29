@@ -93,6 +93,7 @@ would fabricate outages.
 | `GET /api/metrics/history?days=90` | Daily series of tracked and out-of-service connectors |
 | `GET /api/metrics/reliability?days=30&limit=50` | Per-station availability ranking |
 | `GET /api/health` | Database reachability and data freshness |
+| `POST /api/poll` | Triggers one ingestion run; requires `Authorization: Bearer $CRON_SECRET` |
 
 ## Published data
 
@@ -137,16 +138,44 @@ npm run lint
 
 ## Deployment
 
-The web app runs on Vercel. The poller runs as a GitHub Actions scheduled workflow instead of
-a Vercel cron job, because Vercel's Hobby plan caps cron jobs at one run per day.
+The web app runs on Vercel. Ingestion is triggered over HTTP:
 
-Both need `DATABASE_URL` — a Vercel environment variable, and a GitHub repository secret of
-the same name.
+```
+POST /api/poll
+Authorization: Bearer $CRON_SECRET
+```
 
-### Why fifteen minutes
+The endpoint fetches the UTE feed, runs the same ingestion pipeline the CLI uses, and returns
+the resulting `poll_run`. It answers `401` without the secret, `503` if `CRON_SECRET` is unset,
+and `429` if a poll ran within the last minute, so a scheduler retrying a request cannot
+double-ingest.
+
+`GET` is accepted with the same header because Vercel Cron issues `GET` and sends
+`Authorization: Bearer $CRON_SECRET` itself.
+
+Needs `DATABASE_URL` and `CRON_SECRET` as Vercel environment variables. `DATABASE_URL` is also
+a GitHub repository secret for the fallback workflow below.
+
+### Scheduling
+
+Any scheduler that can send a header works: Vercel Cron on a Pro plan, or an external service
+such as cron-job.org, Upstash QStash or EasyCron.
+
+**Vercel Cron requires the Pro plan for this.** Hobby is limited to one run per day, and a more
+frequent expression fails at deploy time rather than degrading.
+
+`.github/workflows/poll.yml` remains as a fallback, calling `npm run poll` directly against the
+database rather than through the endpoint. It is scheduled hourly.
+
+**GitHub does not honour frequent schedules.** Scheduled workflows are best effort and runs are
+dropped under load rather than queued. At `*/15` this repository saw 32, 20, 3, 2 and 1 polls on
+five consecutive days, with gaps of up to twelve hours. The hourly schedule is a floor, not a
+guarantee, which is why the primary trigger is an external scheduler hitting the endpoint.
+
+### Polling interval and the Neon free tier
 
 Neon's free tier allows 100 CU-hours per month and scales compute to zero after five minutes
-of inactivity. Polling more often keeps the database permanently awake:
+of inactivity, so polling frequency is bounded by compute rather than by storage:
 
 | Interval | CU-hours/month | Within free tier |
 | --- | --- | --- |
@@ -154,8 +183,9 @@ of inactivity. Polling more often keeps the database permanently awake:
 | 10 min | ~92 | Marginal |
 | 15 min | ~61 | Yes |
 
-Fifteen minutes still gives 96 observations per connector per day, which is well past what
-uptime reporting needs.
+Fifteen minutes gives 96 observations per connector per day. Interval storage only writes on an
+observed change, so the sampling rate sets how fine-grained the history can be: a fault that
+starts and clears between two polls is never recorded at all.
 
 ### Keeping the schedule alive
 
