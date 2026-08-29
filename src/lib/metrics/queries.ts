@@ -380,8 +380,9 @@ export interface StationReliability {
   latitude: number;
   longitude: number;
   connectorSeconds: number;
+  unknownSeconds: number;
   outOfServiceSeconds: number;
-  availability: number;
+  availability: number | null;
   currentlyOutOfService: number;
 }
 
@@ -392,7 +393,7 @@ export async function getStationReliability(
 ): Promise<StationReliability[]> {
   const limit = Math.min(Math.max(options.limit ?? 250, 1), 1000);
   const order = options.worstFirst
-    ? sql`availability ASC, totals.out_of_service_seconds DESC`
+    ? sql`availability ASC NULLS LAST, totals.out_of_service_seconds DESC`
     : sql`totals.name ASC`;
 
   const { rows } = await db.execute<{
@@ -403,15 +404,16 @@ export async function getStationReliability(
     latitude: number;
     longitude: number;
     connector_seconds: number;
+    unknown_seconds: number;
     out_of_service_seconds: number;
-    availability: number;
+    availability: number | null;
     currently_out_of_service: number;
   }>(sql`
     SELECT
       totals.*,
       CASE
-        WHEN totals.connector_seconds = 0 THEN 1
-        ELSE 1 - (totals.out_of_service_seconds / totals.connector_seconds)
+        WHEN totals.classified_seconds = 0 THEN NULL
+        ELSE 1 - (totals.out_of_service_seconds / totals.classified_seconds)
       END AS availability
     FROM (
       SELECT
@@ -422,6 +424,16 @@ export async function getStationReliability(
         st.latitude,
         st.longitude,
         COALESCE(SUM(cs.connector_count * ${overlapSeconds("cs", window)}), 0) AS connector_seconds,
+        COALESCE(
+          SUM(cs.connector_count * ${overlapSeconds("cs", window)})
+            FILTER (WHERE cs.health <> 'unknown'),
+          0
+        ) AS classified_seconds,
+        COALESCE(
+          SUM(cs.connector_count * ${overlapSeconds("cs", window)})
+            FILTER (WHERE cs.health = 'unknown'),
+          0
+        ) AS unknown_seconds,
         COALESCE(
           SUM(cs.connector_count * ${overlapSeconds("cs", window)})
             FILTER (WHERE cs.health IN ${OUT_OF_SERVICE}),
@@ -450,8 +462,9 @@ export async function getStationReliability(
     latitude: toNumber(row.latitude),
     longitude: toNumber(row.longitude),
     connectorSeconds: toNumber(row.connector_seconds),
+    unknownSeconds: toNumber(row.unknown_seconds),
     outOfServiceSeconds: toNumber(row.out_of_service_seconds),
-    availability: toNumber(row.availability),
+    availability: toNullableNumber(row.availability),
     currentlyOutOfService: toNumber(row.currently_out_of_service),
   }));
 }
@@ -831,6 +844,11 @@ function toNumber(value: unknown): number {
     return Number.isFinite(parsed) ? parsed : 0;
   }
   return 0;
+}
+
+function toNullableNumber(value: unknown): number | null {
+  if (value === null || value === undefined) return null;
+  return toNumber(value);
 }
 
 function toIsoString(value: Date | string | null | undefined): string | null {

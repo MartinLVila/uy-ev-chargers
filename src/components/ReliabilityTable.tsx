@@ -29,7 +29,8 @@ export function ReliabilityTable({ stations }: ReliabilityTableProps) {
         </thead>
         <tbody>
           {stations.map((station) => {
-            const critical = station.availability < 0.9;
+            const unclassified = station.availability === null;
+            const critical = station.availability !== null && station.availability < 0.9;
             return (
               <tr key={station.slug} style={{ borderTop: "1px solid var(--border)" }}>
                 <td style={{ padding: "10px 12px 10px 0" }}>
@@ -58,24 +59,33 @@ export function ReliabilityTable({ stations }: ReliabilityTableProps) {
                         flexShrink: 0,
                       }}
                     >
-                      <span
-                        style={{
-                          display: "block",
-                          width: `${Math.max(0, Math.min(1, station.availability)) * 100}%`,
-                          height: "100%",
-                          borderRadius: 3,
-                          background: critical ? "var(--status-critical)" : "var(--status-good)",
-                        }}
-                      />
+                      {station.availability !== null && (
+                        <span
+                          style={{
+                            display: "block",
+                            width: `${Math.max(0, Math.min(1, station.availability)) * 100}%`,
+                            height: "100%",
+                            borderRadius: 3,
+                            background: critical ? "var(--status-critical)" : "var(--status-good)",
+                          }}
+                        />
+                      )}
                     </span>
                     <span
+                      title={unclassified ? "Ningún estado reportado pudo clasificarse" : undefined}
                       style={{
                         fontVariantNumeric: "tabular-nums",
                         fontWeight: 600,
-                        color: critical ? "var(--status-critical)" : "var(--text-primary)",
+                        color: unclassified
+                          ? "var(--text-muted)"
+                          : critical
+                            ? "var(--status-critical)"
+                            : "var(--text-primary)",
                       }}
                     >
-                      {formatPercent(station.availability)}
+                      {station.availability === null
+                        ? "sin clasificar"
+                        : formatPercent(station.availability)}
                     </span>
                   </div>
                 </td>

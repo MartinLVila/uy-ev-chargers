@@ -105,6 +105,80 @@ describe("metrics", () => {
     expect(result.currentlyOutOfService).toBe(2);
   });
 
+  it("does not treat an unrecognised status as time the connector was available", async () => {
+    await runIngestion(db, {
+      observedAt: DAY_START,
+      feed: successFeed([
+        station({
+          name: "Mystery",
+          lat: -34.9,
+          lng: -56.1,
+          connectors: [{ count: 4, statusDetail: "Wubbleflorp", status: 99 }],
+        }),
+      ]),
+    });
+
+    const [result] = await getStationReliability(runner, { from: DAY_START, to: NEXT_DAY });
+
+    expect(result.unknownSeconds).toBe(4 * 24 * 3600);
+    expect(result.availability).toBeNull();
+  });
+
+  it("measures availability over the time it could classify", async () => {
+    await runIngestion(db, {
+      observedAt: DAY_START,
+      feed: successFeed([
+        station({
+          name: "Mixed",
+          lat: -34.9,
+          lng: -56.1,
+          connectors: [
+            { count: 1, statusDetail: "Faulted", status: 4 },
+            { count: 1, statusDetail: "Disponible" },
+            { count: 2, statusDetail: "Wubbleflorp", status: 99 },
+          ],
+        }),
+      ]),
+    });
+
+    const [result] = await getStationReliability(runner, { from: DAY_START, to: NEXT_DAY });
+
+    expect(result.connectorSeconds).toBe(4 * 24 * 3600);
+    expect(result.unknownSeconds).toBe(2 * 24 * 3600);
+    expect(result.outOfServiceSeconds).toBe(1 * 24 * 3600);
+    expect(result.availability).toBeCloseTo(0.5, 6);
+  });
+
+  it("ranks a station it cannot classify below one it can", async () => {
+    await runIngestion(db, {
+      observedAt: DAY_START,
+      feed: successFeed([
+        station({
+          name: "Down",
+          lat: -34.8,
+          lng: -56.2,
+          connectors: [{ count: 2, statusDetail: "Faulted", status: 4 }],
+        }),
+        station({
+          name: "Mystery",
+          lat: -34.9,
+          lng: -56.1,
+          connectors: [{ count: 2, statusDetail: "Wubbleflorp", status: 99 }],
+        }),
+      ]),
+    });
+
+    const ranked = await getStationReliability(
+      runner,
+      { from: DAY_START, to: NEXT_DAY },
+      { worstFirst: true },
+    );
+
+    expect(ranked.map((row) => row.name)).toEqual(["Down", "Mystery"]);
+    expect(ranked[0].availability).toBeCloseTo(0, 6);
+    expect(ranked[1].availability).toBeNull();
+  });
+
   it("clips intervals to the requested window", async () => {
     await runIngestion(db, {
       observedAt: DAY_START,
