@@ -16,7 +16,7 @@ export interface StationOverrides {
     status?: number | null;
     statusDetail?: string | null;
     hose?: boolean;
-  }>;
+  }> | null;
 }
 
 export function station(overrides: StationOverrides = {}): StationPayload {
@@ -31,14 +31,17 @@ export function station(overrides: StationOverrides = {}): StationPayload {
     department: overrides.department ?? "Montevideo",
     city: overrides.city ?? "Montevideo",
     status: "Cargando",
-    connectorStatusAcc: (overrides.connectors ?? [{ count: 2 }]).map((connector) => ({
-      count: connector.count,
-      type: connector.type ?? "CCS2",
-      power: connector.power ?? 60,
-      status: connector.status === undefined ? 1 : connector.status,
-      statusDetail: connector.statusDetail === undefined ? "Busy" : connector.statusDetail,
-      hose: connector.hose ?? true,
-    })),
+    connectorStatusAcc:
+      overrides.connectors === null
+        ? null
+        : (overrides.connectors ?? [{ count: 2 }]).map((connector) => ({
+            count: connector.count,
+            type: connector.type ?? "CCS2",
+            power: connector.power ?? 60,
+            status: connector.status === undefined ? 1 : connector.status,
+            statusDetail: connector.statusDetail === undefined ? "Busy" : connector.statusDetail,
+            hose: connector.hose ?? true,
+          })),
   };
 }
 

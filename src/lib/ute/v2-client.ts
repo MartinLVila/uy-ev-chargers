@@ -13,6 +13,9 @@ const CLIENT_ID = "cargaME";
 const DEFAULT_TIMEOUT_MS = 20_000;
 const DEFAULT_OVERALL_TIMEOUT_MS = 120_000;
 const DETAIL_CONCURRENCY = 8;
+const DETAIL_ATTEMPTS = 3;
+const DETAIL_RETRY_DELAY_MS = 500;
+const MIN_TELEMETRY_COVERAGE = 0.8;
 
 const opt = (id: number, text: string, internalCode = "", icon = "") => ({
   id,
@@ -95,10 +98,7 @@ const detailDataSchema = z.object({
 
 const detailEnvelopeSchema = z.object({ data: detailDataSchema.nullable().optional() });
 
-const SYNTHETIC_TYPE = "Estación";
-
-function stationLevelPayload(st: BulkStation): StationPayload {
-  const detail = st.statusDetails ?? null;
+function stationWithoutConnectorTelemetry(st: BulkStation): StationPayload {
   return {
     source: st.source ?? null,
     name: st.name,
@@ -107,17 +107,8 @@ function stationLevelPayload(st: BulkStation): StationPayload {
     lng: st.lng,
     department: null,
     city: null,
-    status: detail,
-    connectorStatusAcc: [
-      {
-        count: 1,
-        type: SYNTHETIC_TYPE,
-        power: 0,
-        status: st.status ?? null,
-        statusDetail: detail,
-        hose: false,
-      },
-    ],
+    status: st.statusDetails ?? null,
+    connectorStatusAcc: null,
   };
 }
 
@@ -192,11 +183,18 @@ async function fetchBulkStations(
   return { stations, rejected };
 }
 
+type DetailOutcome =
+  | { status: "ok"; payload: StationPayload }
+  | { status: "unauthorized" }
+  | { status: "unavailable" };
+
+const UNAVAILABLE: DetailOutcome = { status: "unavailable" };
+
 async function fetchStationDetail(
   token: string,
   station: BulkStation,
   signal: AbortSignal,
-): Promise<StationPayload | null> {
+): Promise<DetailOutcome> {
   const res = await fetch(STATUS_FILTERED_ID_URL, {
     method: "POST",
     signal,
@@ -216,10 +214,35 @@ async function fetchStationDetail(
       },
     }),
   });
-  if (!res.ok) return null;
+  if (res.status === 401 || res.status === 403) return { status: "unauthorized" };
+  if (!res.ok) return UNAVAILABLE;
+
   const parsed = detailEnvelopeSchema.safeParse(await res.json());
-  if (!parsed.success || !parsed.data.data) return null;
-  return detailPayload(parsed.data.data);
+  if (!parsed.success || !parsed.data.data) return UNAVAILABLE;
+
+  const payload = detailPayload(parsed.data.data);
+  if ((payload.connectorStatusAcc?.length ?? 0) === 0) return UNAVAILABLE;
+  return { status: "ok", payload };
+}
+
+async function fetchStationDetailWithRetries(
+  token: string,
+  station: BulkStation,
+  requestSignal: () => AbortSignal,
+): Promise<DetailOutcome> {
+  let outcome: DetailOutcome = UNAVAILABLE;
+
+  for (let attempt = 1; attempt <= DETAIL_ATTEMPTS; attempt += 1) {
+    outcome = await fetchStationDetail(token, station, requestSignal()).catch(() => UNAVAILABLE);
+    if (outcome.status !== "unavailable") return outcome;
+    if (attempt < DETAIL_ATTEMPTS) await delay(DETAIL_RETRY_DELAY_MS * attempt);
+  }
+
+  return outcome;
+}
+
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 async function mapPool<T, R>(
@@ -287,13 +310,25 @@ export async function fetchStationFeedV2(
     return err("parse_error", 200, "statusFiltered returned no stations");
   }
 
-  let fallbacks = 0;
+  let withoutTelemetry = 0;
+  let unauthorized = 0;
   const stations = await mapPool(bulk, DETAIL_CONCURRENCY, async (st) => {
-    const detail = await fetchStationDetail(token, st, reqSignal()).catch(() => null);
-    if (detail && (detail.connectorStatusAcc?.length ?? 0) > 0) return detail;
-    fallbacks += 1;
-    return stationLevelPayload(st);
+    const detail = await fetchStationDetailWithRetries(token, st, reqSignal);
+    if (detail.status === "ok") return detail.payload;
+    if (detail.status === "unauthorized") unauthorized += 1;
+    withoutTelemetry += 1;
+    return stationWithoutConnectorTelemetry(st);
   });
+
+  const covered = bulk.length - withoutTelemetry;
+  if (covered < bulk.length * MIN_TELEMETRY_COVERAGE) {
+    const cause = unauthorized > 0 ? ` (${unauthorized} rejected the token)` : "";
+    return err(
+      "fetch_error",
+      unauthorized > 0 ? 401 : null,
+      `connector telemetry missing for ${withoutTelemetry} of ${bulk.length} stations${cause}`,
+    );
+  }
 
   const digestSource = stations
     .map((s) => ({
@@ -308,7 +343,9 @@ export async function fetchStationFeedV2(
   const payloadDigest = createHash("sha256").update(JSON.stringify(digestSource)).digest("hex");
 
   const notes: string[] = [];
-  if (fallbacks > 0) notes.push(`${fallbacks} station(s) fell back to station-level status`);
+  if (withoutTelemetry > 0) {
+    notes.push(`${withoutTelemetry} station(s) reported no connector telemetry`);
+  }
   if (bulkRejected > 0) notes.push(`${bulkRejected} bulk record(s) rejected`);
 
   return {

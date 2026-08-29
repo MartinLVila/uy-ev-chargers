@@ -457,7 +457,14 @@ async function reconcileConnectorGroups(
   const desiredByIdentity = new Map<string, Map<string, DesiredConnectorState>>();
   const groupsToCreate = new Map<string, typeof connectorGroups.$inferInsert>();
 
+  const stationIdsWithoutConnectorTelemetry = new Set<number>();
+
   for (const [stationId, entry] of matched) {
+    if (entry.groups === null) {
+      stationIdsWithoutConnectorTelemetry.add(stationId);
+      continue;
+    }
+
     for (const group of entry.groups) {
       const identity = groupIdentity(stationId, group.type, group.power, group.hasCable);
       accumulateDesiredState(desiredByIdentity, identity, group);
@@ -506,7 +513,7 @@ async function reconcileConnectorGroups(
       .where(inArray(connectorGroups.id, seenGroupIds));
   }
 
-  markUnreportedGroupsAbsent(desiredByGroupId, stored);
+  markUnreportedGroupsAbsent(desiredByGroupId, stored, stationIdsWithoutConnectorTelemetry);
 
   return { desiredByGroupId, created: groupsToCreate.size };
 }
@@ -539,11 +546,13 @@ function accumulateDesiredState(
 function markUnreportedGroupsAbsent(
   desiredByGroupId: Map<number, Map<string, DesiredConnectorState>>,
   stored: StoredState,
+  stationIdsWithoutConnectorTelemetry: Set<number>,
 ): void {
   const openByGroupId = groupStatesByConnectorGroup(stored.openConnectorStates);
 
   for (const row of stored.connectorGroups) {
     if (desiredByGroupId.has(row.id)) continue;
+    if (stationIdsWithoutConnectorTelemetry.has(row.stationId)) continue;
 
     const vanishedCount = (openByGroupId.get(row.id) ?? []).reduce(
       (total, state) => total + state.connectorCount,
@@ -697,7 +706,7 @@ interface IncomingStation {
   longitude: number;
   source: string | null;
   presence: StationPresence;
-  groups: IncomingConnectorGroup[];
+  groups: IncomingConnectorGroup[] | null;
 }
 
 interface DesiredConnectorState {
@@ -727,16 +736,19 @@ function readIncomingStations(payload: StationPayload[]): IncomingFeed {
     }
     seenCoordKeys.add(coordKey);
 
-    const groups = (station.connectorStatusAcc ?? []).map((group) => ({
-      type: normalizeText(group.type) ?? group.type,
-      power: group.power,
-      hasCable: group.hose ?? false,
-      count: group.count,
-      statusCode: group.status ?? null,
-      statusDetail: normalizeText(group.statusDetail) ?? UNKNOWN_STATUS,
-    }));
+    const groups =
+      station.connectorStatusAcc === null || station.connectorStatusAcc === undefined
+        ? null
+        : station.connectorStatusAcc.map((group) => ({
+            type: normalizeText(group.type) ?? group.type,
+            power: group.power,
+            hasCable: group.hose ?? false,
+            count: group.count,
+            statusCode: group.status ?? null,
+            statusDetail: normalizeText(group.statusDetail) ?? UNKNOWN_STATUS,
+          }));
 
-    for (const group of groups) connectorCount += group.count;
+    for (const group of groups ?? []) connectorCount += group.count;
 
     entries.push({
       coordKey,
@@ -749,12 +761,17 @@ function readIncomingStations(payload: StationPayload[]): IncomingFeed {
       latitude: station.lat,
       longitude: station.lng,
       source: normalizeText(station.source),
-      presence: groups.length > 0 ? STATION_PRESENCE.listed : STATION_PRESENCE.silent,
+      presence: presenceOf(groups),
       groups,
     });
   }
 
   return { entries, duplicates, connectorCount };
+}
+
+function presenceOf(groups: IncomingConnectorGroup[] | null): StationPresence {
+  if (groups === null) return STATION_PRESENCE.listed;
+  return groups.length > 0 ? STATION_PRESENCE.listed : STATION_PRESENCE.silent;
 }
 
 function groupIdentity(stationId: number, type: string, power: number, hasCable: boolean): string {
