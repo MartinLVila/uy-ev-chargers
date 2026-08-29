@@ -17,18 +17,44 @@ function bulkStations(count: number): BulkRecord[] {
   }));
 }
 
-function detailBody(id: number) {
+const CCS2_FREE = {
+  count: 2,
+  type: "CCS2",
+  power: 60,
+  status: 1,
+  statusDetail: "Disponible",
+  hose: true,
+};
+const TYPE2_FREE = {
+  count: 1,
+  type: "Tipo 2",
+  power: 22,
+  status: 1,
+  statusDetail: "Disponible",
+  hose: false,
+};
+
+function detailBody(id: number, groups: Record<string, unknown>[] = [CCS2_FREE]) {
   return {
     data: {
       id,
       name: `Station ${id}`,
       lat: -34.9,
       lng: -56.1,
-      connectorStatusAcc: [
-        { count: 2, type: "CCS2", power: 60, status: 1, statusDetail: "Disponible", hose: true },
-      ],
+      connectorStatusAcc: groups,
     },
   };
+}
+
+async function digestOf(
+  stations: BulkRecord[],
+  groups: Record<string, unknown>[],
+): Promise<string | null> {
+  mockUte(stations, (id) => new Response(JSON.stringify(detailBody(id, groups)), { status: 200 }));
+  const feed = await fetchStationFeedV2(options);
+  vi.unstubAllGlobals();
+  expect(feed.outcome).toBe("success");
+  return feed.payloadDigest;
 }
 
 function mockUte(stations: BulkRecord[], respondToDetail: (id: number) => Response) {
@@ -117,5 +143,42 @@ describe("fetchStationFeedV2", () => {
     expect(feed.stations.find((entry) => entry.name === "Station 1")?.connectorStatusAcc)
       .toHaveLength(1);
     expect(feed.errorMessage).toBeNull();
+  });
+
+  it("calls an unreachable bulk listing a fetch failure, not a malformed payload", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (input: string | URL) => {
+        const url = input.toString();
+        if (url.endsWith("/token")) {
+          return new Response(JSON.stringify({ access_token: "token" }), { status: 200 });
+        }
+        return new Response("upstream exploded", { status: 502 });
+      }),
+    );
+
+    const feed = await fetchStationFeedV2(options);
+
+    expect(feed.outcome).toBe("fetch_error");
+    expect(feed.stations).toHaveLength(0);
+    expect(feed.payloadDigest).toBeNull();
+  });
+
+  it("gives the same digest when only the order of stations and groups changes", async () => {
+    const stations = bulkStations(3);
+
+    const inOrder = await digestOf(stations, [CCS2_FREE, TYPE2_FREE]);
+    const shuffled = await digestOf([...stations].reverse(), [TYPE2_FREE, CCS2_FREE]);
+
+    expect(shuffled).toBe(inOrder);
+  });
+
+  it("gives a different digest when a connector changes state", async () => {
+    const stations = bulkStations(3);
+
+    const free = await digestOf(stations, [CCS2_FREE]);
+    const charging = await digestOf(stations, [{ ...CCS2_FREE, statusDetail: "Cargando" }]);
+
+    expect(charging).not.toBe(free);
   });
 });
