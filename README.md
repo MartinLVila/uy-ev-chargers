@@ -85,6 +85,13 @@ would fabricate outages.
 
 ## API
 
+The dashboard is public. The JSON API is not: every endpoint below requires
+`Authorization: Bearer $API_READ_TOKEN`. The pages do not go through it — they query the database
+directly as server components — so closing the API changes nothing about what a visitor sees.
+
+If `API_READ_TOKEN` is unset the API answers `503` rather than serving openly. A missing
+configuration closes it; it cannot silently reopen.
+
 | Endpoint | Description |
 | --- | --- |
 | `GET /api/stations` | All stations with current health tallies |

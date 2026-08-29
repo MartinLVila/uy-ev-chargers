@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { desc, eq } from "drizzle-orm";
-import { authorizeCronRequest } from "@/lib/api/cron-auth";
+import { authorizeCronRequest } from "@/lib/api/authorization";
 import { rejectIfRateLimited } from "@/lib/api/rate-limit";
 import { createWriteDatabase, withIngestionLock } from "@/lib/db/write-client";
 import { pollRuns } from "@/lib/db/schema";
