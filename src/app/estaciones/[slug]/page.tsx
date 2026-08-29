@@ -89,7 +89,7 @@ export default async function StationPage({ params }: { params: Promise<{ slug: 
       >
         <ConnectorHistory
           timeline={station.timeline}
-          timelineTruncated={station.timelineTruncated}
+          timelineCoversFrom={station.timelineCoversFrom}
           firstSeenAt={station.firstSeenAt}
           windowStart={timeWindow.from.toISOString()}
           windowEnd={timeWindow.to.toISOString()}

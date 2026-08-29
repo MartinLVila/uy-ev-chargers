@@ -168,8 +168,7 @@ export interface TimelineRange {
 }
 
 export function resolveTimelineRange(
-  timeline: StationTimelineEntry[],
-  timelineTruncated: boolean,
+  timelineCoversFrom: string | null,
   firstSeenAt: string,
   windowStart: string,
   windowEnd: string,
@@ -181,21 +180,10 @@ export function resolveTimelineRange(
   const firstSeen = new Date(firstSeenAt).getTime();
   const observedStart = Number.isFinite(firstSeen) ? Math.max(windowFrom, firstSeen) : windowFrom;
 
-  const retainedStart = timelineTruncated ? oldestRetainedStart(timeline) : null;
-  if (retainedStart === null || retainedStart <= observedStart) {
+  const cutoff = timelineCoversFrom === null ? Number.NaN : new Date(timelineCoversFrom).getTime();
+  if (!Number.isFinite(cutoff) || cutoff <= observedStart) {
     return { start: observedStart, end, clampedByRowLimit: false };
   }
 
-  return { start: retainedStart, end, clampedByRowLimit: true };
-}
-
-function oldestRetainedStart(timeline: StationTimelineEntry[]): number | null {
-  let oldest = Number.POSITIVE_INFINITY;
-
-  for (const entry of timeline) {
-    const startedAt = new Date(entry.startedAt).getTime();
-    if (Number.isFinite(startedAt) && startedAt < oldest) oldest = startedAt;
-  }
-
-  return Number.isFinite(oldest) ? oldest : null;
+  return { start: cutoff, end, clampedByRowLimit: true };
 }

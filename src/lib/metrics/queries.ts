@@ -565,7 +565,7 @@ export async function getDailyHistory(
   });
 }
 
-const TIMELINE_LIMIT = 500;
+const TIMELINE_LIMIT_PER_GROUP = 150;
 
 export interface StationTimelineEntry {
   connectorType: string;
@@ -591,6 +591,7 @@ export interface StationDetail {
   presence: string;
   timeline: StationTimelineEntry[];
   timelineTruncated: boolean;
+  timelineCoversFrom: string | null;
 }
 
 export async function getStationDetail(
@@ -624,6 +625,7 @@ export async function getStationDetail(
   if (!station) return null;
 
   const { rows: timelineRows } = await db.execute<{
+    connector_group_id: number;
     connector_type: string;
     power_kw: number;
     has_cable: boolean;
@@ -632,17 +634,27 @@ export async function getStationDetail(
     connector_count: number;
     started_at: Date | string;
     ended_at: Date | string | null;
+    rank_in_group: number;
   }>(sql`
-    SELECT
-      cg.connector_type, cg.power_kw, cg.has_cable,
-      cs.status_detail, cs.health, cs.connector_count, cs.started_at, cs.ended_at
-    FROM connector_states cs
-    JOIN connector_groups cg ON cg.id = cs.connector_group_id
-    JOIN stations st ON st.id = cg.station_id
-    WHERE st.slug = ${slug} AND ${overlapsWindow("cs", window)}
-    ORDER BY cs.started_at DESC, cg.connector_type ASC
-    LIMIT ${TIMELINE_LIMIT + 1}
+    SELECT * FROM (
+      SELECT
+        cg.id AS connector_group_id,
+        cg.connector_type, cg.power_kw, cg.has_cable,
+        cs.status_detail, cs.health, cs.connector_count, cs.started_at, cs.ended_at,
+        ROW_NUMBER() OVER (PARTITION BY cg.id ORDER BY cs.started_at DESC) AS rank_in_group
+      FROM connector_states cs
+      JOIN connector_groups cg ON cg.id = cs.connector_group_id
+      JOIN stations st ON st.id = cg.station_id
+      WHERE st.slug = ${slug} AND ${overlapsWindow("cs", window)}
+    ) ranked
+    WHERE rank_in_group <= ${TIMELINE_LIMIT_PER_GROUP + 1}
+    ORDER BY started_at DESC, connector_type ASC
   `);
+
+  const retained = timelineRows.filter(
+    (row) => toNumber(row.rank_in_group) <= TIMELINE_LIMIT_PER_GROUP,
+  );
+  const coverage = timelineCoverage(timelineRows, retained);
 
   return {
     slug: station.slug,
@@ -655,8 +667,9 @@ export async function getStationDetail(
     firstSeenAt: toIsoString(station.first_seen_at) ?? "",
     lastSeenAt: toIsoString(station.last_seen_at) ?? "",
     presence: station.presence ?? "unknown",
-    timelineTruncated: timelineRows.length > TIMELINE_LIMIT,
-    timeline: timelineRows.slice(0, TIMELINE_LIMIT).map((row) => ({
+    timelineTruncated: coverage.truncated,
+    timelineCoversFrom: coverage.coversFrom,
+    timeline: retained.map((row) => ({
       connectorType: row.connector_type,
       powerKw: toNumber(row.power_kw),
       hasCable: Boolean(row.has_cable),
@@ -666,6 +679,41 @@ export async function getStationDetail(
       startedAt: toIsoString(row.started_at) ?? "",
       endedAt: toIsoString(row.ended_at),
     })),
+  };
+}
+
+interface TimelineCoverage {
+  truncated: boolean;
+  coversFrom: string | null;
+}
+
+function timelineCoverage(
+  allRows: { connector_group_id: number; rank_in_group: number }[],
+  retained: { connector_group_id: number; started_at: Date | string }[],
+): TimelineCoverage {
+  const truncatedGroups = new Set(
+    allRows
+      .filter((row) => toNumber(row.rank_in_group) > TIMELINE_LIMIT_PER_GROUP)
+      .map((row) => row.connector_group_id),
+  );
+
+  if (truncatedGroups.size === 0) return { truncated: false, coversFrom: null };
+
+  let latestCutoff = Number.NEGATIVE_INFINITY;
+  for (const groupId of truncatedGroups) {
+    const oldestKept = retained
+      .filter((row) => row.connector_group_id === groupId)
+      .reduce((oldest, row) => {
+        const startedAt = new Date(row.started_at).getTime();
+        return Number.isFinite(startedAt) && startedAt < oldest ? startedAt : oldest;
+      }, Number.POSITIVE_INFINITY);
+
+    if (Number.isFinite(oldestKept) && oldestKept > latestCutoff) latestCutoff = oldestKept;
+  }
+
+  return {
+    truncated: true,
+    coversFrom: Number.isFinite(latestCutoff) ? new Date(latestCutoff).toISOString() : null,
   };
 }
 
