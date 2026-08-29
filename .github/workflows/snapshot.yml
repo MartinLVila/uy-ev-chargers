@@ -45,4 +45,12 @@ jobs:
             exit 0
           fi
           git commit -m "${COMMIT_MESSAGE:-Record network state for $(date -u +%Y-%m-%d)}"
-          git push
+          for attempt in 1 2 3; do
+            if git push; then
+              exit 0
+            fi
+            echo "Push rejected on attempt ${attempt}; rebasing onto the current main."
+            git pull --rebase origin main
+          done
+          echo "Could not publish the snapshot after 3 attempts."
+          exit 1
