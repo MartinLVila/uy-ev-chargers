@@ -16,8 +16,15 @@ const contentSecurityPolicy = [
   "upgrade-insecure-requests",
 ].join("; ");
 
+const strictTransportSecurity = {
+  key: "Strict-Transport-Security",
+  value: "max-age=63072000; includeSubDomains; preload",
+};
+
 const securityHeaders = [
   { key: "X-Content-Type-Options", value: "nosniff" },
+  { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
+  { key: "Cross-Origin-Resource-Policy", value: "same-origin" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   { key: "X-Frame-Options", value: "DENY" },
   {
@@ -30,7 +37,11 @@ const nextConfig: NextConfig = {
   async headers() {
     const headers =
       process.env.NODE_ENV === "production"
-        ? [...securityHeaders, { key: "Content-Security-Policy", value: contentSecurityPolicy }]
+        ? [
+            ...securityHeaders,
+            strictTransportSecurity,
+            { key: "Content-Security-Policy", value: contentSecurityPolicy },
+          ]
         : securityHeaders;
 
     return [{ source: "/:path*", headers }];
