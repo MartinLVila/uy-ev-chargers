@@ -2,12 +2,13 @@ import { describe, expect, it } from "vitest";
 import type { IngestOptions } from "../src/lib/ingest/pipeline";
 import { successFeed } from "./helpers/feed";
 
-describe("IngestOptions", () => {
-  it("does not accept a call that leaves the feed source to the pipeline", () => {
-    // @ts-expect-error the caller has to say which feed it ingested
-    const withoutFeed: IngestOptions = { observedAt: new Date() };
+type FeedIsRequired = Record<string, never> extends Pick<IngestOptions, "feed"> ? false : true;
 
-    expect(withoutFeed).toBeDefined();
+describe("IngestOptions", () => {
+  it("does not let the caller leave the feed source to the pipeline", () => {
+    const feedIsRequired: FeedIsRequired = true;
+
+    expect(feedIsRequired).toBe(true);
   });
 
   it("accepts a call that names the feed", () => {
