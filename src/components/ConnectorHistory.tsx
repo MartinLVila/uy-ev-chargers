@@ -24,24 +24,18 @@ function sliceTitle(slice: TimelineSlice): string {
 
 export function ConnectorHistory({
   timeline,
-  timelineTruncated,
+  timelineCoversFrom,
   firstSeenAt,
   windowStart,
   windowEnd,
 }: {
   timeline: StationTimelineEntry[];
-  timelineTruncated: boolean;
+  timelineCoversFrom: string | null;
   firstSeenAt: string;
   windowStart: string;
   windowEnd: string;
 }) {
-  const range = resolveTimelineRange(
-    timeline,
-    timelineTruncated,
-    firstSeenAt,
-    windowStart,
-    windowEnd,
-  );
+  const range = resolveTimelineRange(timelineCoversFrom, firstSeenAt, windowStart, windowEnd);
 
   const groups = range ? buildConnectorTimelines(timeline, range.start, range.end) : [];
 
