@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import type { FeedResult } from "../../src/lib/ute/client";
+import type { FeedResult } from "../../src/lib/ute/types";
 import type { StationPayload } from "../../src/lib/ute/types";
 
 export interface StationOverrides {

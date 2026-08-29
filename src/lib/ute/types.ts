@@ -23,12 +23,16 @@ export const stationPayloadSchema = z.object({
   status: z.string().nullable().optional(),
 });
 
-export const stationFeedEnvelopeSchema = z.object({
-  data: z.array(z.unknown()),
-  success: z.boolean().optional(),
-  messages: z.array(z.unknown()).optional(),
-  errors: z.array(z.unknown()).optional(),
-  result: z.number().optional(),
-});
-
 export type StationPayload = z.infer<typeof stationPayloadSchema>;
+
+export type FeedOutcome = "success" | "fetch_error" | "parse_error";
+
+export interface FeedResult {
+  outcome: FeedOutcome;
+  httpStatus: number | null;
+  durationMs: number;
+  payloadDigest: string | null;
+  stations: StationPayload[];
+  rejectedStations: number;
+  errorMessage: string | null;
+}

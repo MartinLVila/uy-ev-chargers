@@ -1,7 +1,6 @@
 import { createHash } from "node:crypto";
 import { z } from "zod";
-import type { FeedResult } from "./client";
-import type { StationPayload } from "./types";
+import type { FeedResult, StationPayload } from "./types";
 
 const APP_TOKEN_URL = "https://movilidadelectrica.ute.com.uy/api/v2/token";
 const STATUS_FILTERED_URL =

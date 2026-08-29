@@ -1,7 +1,6 @@
 import { desc, eq, inArray, isNull } from "drizzle-orm";
 import type { WriteDatabase } from "../db/client";
 import { connectorGroups, connectorStates, pollRuns, stationStates, stations } from "../db/schema";
-import { fetchStationFeed, type FeedResult } from "../ute/client";
 import {
   UNKNOWN_DEPARTMENT,
   coordinateKey,
@@ -17,7 +16,7 @@ import {
   UNKNOWN_STATUS,
   type StationPresence,
 } from "../ute/status";
-import type { StationPayload } from "../ute/types";
+import type { FeedResult, StationPayload } from "../ute/types";
 
 type Transaction = Parameters<Parameters<WriteDatabase["transaction"]>[0]>[0];
 
@@ -51,8 +50,8 @@ export interface IngestResult {
 }
 
 export interface IngestOptions {
+  feed: FeedResult;
   observedAt?: Date;
-  feed?: FeedResult;
 }
 
 const NO_CHANGES = {
@@ -68,9 +67,9 @@ const NO_CHANGES = {
 
 export async function runIngestion(
   db: WriteDatabase,
-  options: IngestOptions = {},
+  options: IngestOptions,
 ): Promise<IngestResult> {
-  const feed = options.feed ?? (await fetchStationFeed());
+  const { feed } = options;
   const observedAt = options.observedAt ?? new Date();
 
   if (feed.outcome !== "success") {
