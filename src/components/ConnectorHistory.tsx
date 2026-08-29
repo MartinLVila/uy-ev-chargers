@@ -1,89 +1,24 @@
-import type { StationTimelineEntry } from "@/lib/metrics/queries";
 import { formatDateTime, formatNumber } from "@/lib/ui/format";
 import {
-  connectorUsageState,
-  USAGE_PRESENTATION,
-  type ConnectorUsage,
-} from "@/lib/ui/health";
+  buildConnectorTimelines,
+  type TimelineSlice,
+} from "@/lib/ui/connector-timeline";
+import { USAGE_PRESENTATION, type ConnectorUsage } from "@/lib/ui/health";
+import type { StationTimelineEntry } from "@/lib/metrics/queries";
 
 const LEGEND: ConnectorUsage[] = ["free", "inUse", "broken", "absent", "unknown"];
 
-interface Segment {
-  leftPct: number;
-  widthPct: number;
-  state: ConnectorUsage;
-  from: string;
-  to: string | null;
-}
-
-interface ConnectorGroup {
-  key: string;
-  connectorType: string;
-  powerKw: number;
-  hasCable: boolean;
-  connectorCount: number;
-  latestStartedAt: number;
-  segments: Segment[];
-  seconds: Record<ConnectorUsage, number>;
-}
-
-function emptySeconds(): Record<ConnectorUsage, number> {
-  return { free: 0, inUse: 0, broken: 0, absent: 0, unknown: 0 };
-}
-
-function buildGroups(
-  timeline: StationTimelineEntry[],
-  rangeStart: number,
-  rangeEnd: number,
-): ConnectorGroup[] {
-  const span = Math.max(rangeEnd - rangeStart, 1);
-  const groups = new Map<string, ConnectorGroup>();
-
-  for (const entry of timeline) {
-    const key = `${entry.connectorType}|${entry.powerKw}|${entry.hasCable}`;
-    let group = groups.get(key);
-    if (!group) {
-      group = {
-        key,
-        connectorType: entry.connectorType,
-        powerKw: entry.powerKw,
-        hasCable: entry.hasCable,
-        connectorCount: entry.connectorCount,
-        latestStartedAt: -Infinity,
-        segments: [],
-        seconds: emptySeconds(),
-      };
-      groups.set(key, group);
-    }
-
-    const startedAt = new Date(entry.startedAt).getTime();
-    const endedAt = entry.endedAt ? new Date(entry.endedAt).getTime() : rangeEnd;
-    const start = Math.max(startedAt, rangeStart);
-    const end = Math.min(endedAt, rangeEnd);
-    if (!(end > start)) continue;
-
-    const state = connectorUsageState(entry.health, entry.statusDetail);
-    group.seconds[state] += ((end - start) / 1000) * entry.connectorCount;
-    group.segments.push({
-      leftPct: ((start - rangeStart) / span) * 100,
-      widthPct: ((end - start) / span) * 100,
-      state,
-      from: entry.startedAt,
-      to: entry.endedAt,
-    });
-    if (startedAt > group.latestStartedAt) {
-      group.latestStartedAt = startedAt;
-      group.connectorCount = entry.connectorCount;
-    }
-  }
-
-  return [...groups.values()].sort(
-    (a, b) => a.connectorType.localeCompare(b.connectorType) || b.powerKw - a.powerKw,
-  );
-}
-
 function percentage(numerator: number, denominator: number): number {
   return denominator > 0 ? Math.round((numerator / denominator) * 100) : 0;
+}
+
+function sliceTitle(slice: TimelineSlice): string {
+  const mix = slice.bands
+    .map((band) => `${formatNumber(band.connectors)} ${USAGE_PRESENTATION[band.state].label}`)
+    .join(" · ");
+  return `${mix}\n${formatDateTime(new Date(slice.from).toISOString())} → ${formatDateTime(
+    new Date(slice.to).toISOString(),
+  )}`;
 }
 
 export function ConnectorHistory({
@@ -106,7 +41,7 @@ export function ConnectorHistory({
 
   const groups =
     Number.isFinite(rangeStart) && Number.isFinite(rangeEnd)
-      ? buildGroups(timeline, rangeStart, rangeEnd)
+      ? buildConnectorTimelines(timeline, rangeStart, rangeEnd)
       : [];
 
   if (groups.length === 0) {
@@ -156,8 +91,8 @@ export function ConnectorHistory({
                 {group.connectorType} · {group.powerKw} kW
                 <span style={{ color: "var(--text-muted)", fontWeight: 400 }}>
                   {group.hasCable ? " · con cable" : " · sin cable"} ·{" "}
-                  {formatNumber(group.connectorCount)}{" "}
-                  {group.connectorCount === 1 ? "conector" : "conectores"}
+                  {formatNumber(group.connectors)}{" "}
+                  {group.connectors === 1 ? "conector" : "conectores"}
                 </span>
               </div>
               <div
@@ -187,21 +122,30 @@ export function ConnectorHistory({
                 overflow: "hidden",
               }}
             >
-              {group.segments.map((segment, index) => (
+              {group.slices.map((slice, index) => (
                 <div
                   key={`${group.key}-${index}`}
-                  title={`${USAGE_PRESENTATION[segment.state].label} · ${formatDateTime(segment.from)} → ${
-                    segment.to ? formatDateTime(segment.to) : "en curso"
-                  }`}
+                  title={sliceTitle(slice)}
                   style={{
                     position: "absolute",
                     top: 0,
                     bottom: 0,
-                    left: `${segment.leftPct}%`,
-                    width: `max(2px, ${segment.widthPct}%)`,
-                    background: USAGE_PRESENTATION[segment.state].color,
+                    left: `${slice.leftPct}%`,
+                    width: `max(2px, ${slice.widthPct}%)`,
+                    display: "flex",
+                    flexDirection: "column",
                   }}
-                />
+                >
+                  {slice.bands.map((band) => (
+                    <div
+                      key={band.state}
+                      style={{
+                        height: `${band.sharePct}%`,
+                        background: USAGE_PRESENTATION[band.state].color,
+                      }}
+                    />
+                  ))}
+                </div>
               ))}
             </div>
           </div>
