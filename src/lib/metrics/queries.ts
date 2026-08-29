@@ -38,12 +38,6 @@ function dailyOverlapSeconds(alias: string): SQL {
   )`;
 }
 
-function bucketOverlap(alias: string): SQL {
-  const started = sql.raw(`${alias}.started_at`);
-  const ended = sql.raw(`${alias}.ended_at`);
-  return sql`${started} < b.to_at AND (${ended} IS NULL OR ${ended} > b.from_at)`;
-}
-
 function overlapsWindow(alias: string, window: TimeWindow): SQL {
   const started = sql.raw(`${alias}.started_at`);
   const ended = sql.raw(`${alias}.ended_at`);
@@ -765,49 +759,56 @@ export async function getHourlyUsage(
     broken_secs: number;
     span_secs: number;
   }>(sql`
-    WITH hours AS (
-      SELECT generate_series(
-        date_trunc('hour', ${window.from}::timestamptz AT TIME ZONE ${timeZone}),
-        date_trunc('hour', ${window.to}::timestamptz AT TIME ZONE ${timeZone}),
-        interval '1 hour'
-      ) AS local_hour
-    ),
-    buckets AS (
+    WITH clipped AS (
       SELECT
-        EXTRACT(HOUR FROM local_hour)::int AS hour,
-        GREATEST(local_hour AT TIME ZONE ${timeZone}, ${window.from}::timestamptz) AS from_at,
-        LEAST(
-          (local_hour + interval '1 hour') AT TIME ZONE ${timeZone},
-          ${window.to}::timestamptz
-        ) AS to_at
-      FROM hours
+        cs.connector_count,
+        cs.health,
+        cs.status_detail,
+        GREATEST(cs.started_at, ${window.from}::timestamptz) AS started_at,
+        LEAST(COALESCE(cs.ended_at, ${window.to}::timestamptz), ${window.to}::timestamptz)
+          AS ended_at
+      FROM connector_states cs
+      WHERE ${overlapsWindow("cs", window)} AND ${TELEMETRY}
     ),
-    framed AS (
-      SELECT hour, from_at, to_at, EXTRACT(EPOCH FROM (to_at - from_at)) AS span
-      FROM buckets
-      WHERE to_at > from_at
+    sliced AS (
+      SELECT
+        clipped.connector_count,
+        clipped.health,
+        clipped.status_detail,
+        slot.local_hour,
+        EXTRACT(EPOCH FROM (
+          LEAST(clipped.ended_at, (slot.local_hour + interval '1 hour') AT TIME ZONE ${timeZone})
+          - GREATEST(clipped.started_at, slot.local_hour AT TIME ZONE ${timeZone})
+        )) AS seconds
+      FROM clipped
+      CROSS JOIN LATERAL generate_series(
+        date_trunc('hour', clipped.started_at AT TIME ZONE ${timeZone}),
+        date_trunc('hour', clipped.ended_at AT TIME ZONE ${timeZone}),
+        interval '1 hour'
+      ) AS slot(local_hour)
     ),
     coverage AS (
-      SELECT b.hour, SUM(b.span) AS span_secs
-      FROM framed b
-      WHERE EXISTS (
-        SELECT 1 FROM connector_states cs
-        WHERE ${bucketOverlap("cs")} AND ${TELEMETRY}
-      )
-      GROUP BY b.hour
+      SELECT
+        EXTRACT(HOUR FROM local_hour)::int AS hour,
+        SUM(EXTRACT(EPOCH FROM (
+          LEAST((local_hour + interval '1 hour') AT TIME ZONE ${timeZone}, ${window.to}::timestamptz)
+          - GREATEST(local_hour AT TIME ZONE ${timeZone}, ${window.from}::timestamptz)
+        ))) AS span_secs
+      FROM (SELECT DISTINCT local_hour FROM sliced) covered
+      GROUP BY 1
     )
     SELECT
-      b.hour,
-      COALESCE(SUM(cs.connector_count * ${dailyOverlapSeconds("cs")}) FILTER (WHERE ${IN_USE}), 0) AS in_use_secs,
-      COALESCE(SUM(cs.connector_count * ${dailyOverlapSeconds("cs")}) FILTER (WHERE ${FREE_DETAIL}), 0) AS free_secs,
-      COALESCE(SUM(cs.connector_count * ${dailyOverlapSeconds("cs")}) FILTER (WHERE cs.health = 'faulted'), 0) AS broken_secs,
-      MAX(c.span_secs) AS span_secs
-    FROM framed b
-    JOIN connector_states cs
-      ON ${bucketOverlap("cs")} AND ${TELEMETRY}
-    JOIN coverage c ON c.hour = b.hour
-    GROUP BY b.hour
-    ORDER BY b.hour
+      EXTRACT(HOUR FROM cs.local_hour)::int AS hour,
+      COALESCE(SUM(cs.connector_count * cs.seconds) FILTER (WHERE ${IN_USE}), 0) AS in_use_secs,
+      COALESCE(SUM(cs.connector_count * cs.seconds) FILTER (WHERE ${FREE_DETAIL}), 0) AS free_secs,
+      COALESCE(SUM(cs.connector_count * cs.seconds) FILTER (WHERE cs.health = 'faulted'), 0)
+        AS broken_secs,
+      MAX(coverage.span_secs) AS span_secs
+    FROM sliced cs
+    JOIN coverage ON coverage.hour = EXTRACT(HOUR FROM cs.local_hour)::int
+    WHERE cs.seconds > 0
+    GROUP BY 1
+    ORDER BY 1
   `);
 
   return rows.map((row) => {
