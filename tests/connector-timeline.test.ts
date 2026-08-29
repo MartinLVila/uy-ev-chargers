@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { buildConnectorTimelines } from "../src/lib/ui/connector-timeline";
+import {
+  buildConnectorTimelines,
+  resolveTimelineRange,
+  type TimelineRange,
+} from "../src/lib/ui/connector-timeline";
 import type { StationTimelineEntry } from "../src/lib/metrics/queries";
 
 const RANGE_START = new Date("2026-03-01T00:00:00Z").getTime();
@@ -146,5 +150,67 @@ describe("buildConnectorTimelines", () => {
     );
 
     expect(groups.map((group) => group.connectorType)).toEqual(["CCS2", "Tipo 2"]);
+  });
+});
+
+const WINDOW_START = "2026-01-01T00:00:00Z";
+const WINDOW_END = "2026-04-01T00:00:00Z";
+const FIRST_SEEN = "2025-06-01T00:00:00Z";
+
+function resolvedRange(timeline: StationTimelineEntry[], truncated: boolean): TimelineRange {
+  const range = resolveTimelineRange(timeline, truncated, FIRST_SEEN, WINDOW_START, WINDOW_END);
+  if (range === null) throw new Error("expected the fixture window to resolve");
+  return range;
+}
+
+describe("resolveTimelineRange", () => {
+  it("spans the whole window when the history was not truncated", () => {
+    const range = resolvedRange([entry({ startedAt: "2026-03-01T00:00:00Z" })], false);
+
+    expect(range.start).toBe(new Date(WINDOW_START).getTime());
+    expect(range.end).toBe(new Date(WINDOW_END).getTime());
+    expect(range.clampedByRowLimit).toBe(false);
+  });
+
+  it("starts at the oldest retained change when the row limit cut the history short", () => {
+    const range = resolvedRange(
+      [
+        entry({ startedAt: "2026-03-01T00:00:00Z" }),
+        entry({ startedAt: "2026-02-15T00:00:00Z" }),
+        entry({ startedAt: "2026-03-20T00:00:00Z" }),
+      ],
+      true,
+    );
+
+    expect(range.start).toBe(new Date("2026-02-15T00:00:00Z").getTime());
+    expect(range.clampedByRowLimit).toBe(true);
+  });
+
+  it("leaves the window alone when the retained history already reaches back past it", () => {
+    const range = resolvedRange([entry({ startedAt: "2025-12-01T00:00:00Z" })], true);
+
+    expect(range.start).toBe(new Date(WINDOW_START).getTime());
+    expect(range.clampedByRowLimit).toBe(false);
+  });
+
+  it("starts when the station was first seen if that falls inside the window", () => {
+    const range = resolveTimelineRange([], false, "2026-02-01T00:00:00Z", WINDOW_START, WINDOW_END);
+
+    expect(range?.start).toBe(new Date("2026-02-01T00:00:00Z").getTime());
+  });
+
+  it("resolves nothing when the window bounds cannot be parsed", () => {
+    expect(resolveTimelineRange([], false, FIRST_SEEN, "no es una fecha", WINDOW_END)).toBeNull();
+  });
+
+  it("draws a truncated history across the full bar instead of leaving the older part blank", () => {
+    const timeline = [entry({ startedAt: "2026-02-15T00:00:00Z", endedAt: null })];
+    const range = resolvedRange(timeline, true);
+
+    const [group] = buildConnectorTimelines(timeline, range.start, range.end);
+
+    expect(group.slices).toHaveLength(1);
+    expect(group.slices[0].leftPct).toBeCloseTo(0, 6);
+    expect(group.slices[0].widthPct).toBeCloseTo(100, 6);
   });
 });
