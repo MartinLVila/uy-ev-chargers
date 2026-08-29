@@ -146,9 +146,14 @@ Authorization: Bearer $CRON_SECRET
 ```
 
 The endpoint fetches the UTE feed, runs the same ingestion pipeline the CLI uses, and returns
-the resulting `poll_run`. It answers `401` without the secret, `503` if `CRON_SECRET` is unset,
-and `429` if a poll ran within the last minute, so a scheduler retrying a request cannot
-double-ingest.
+the resulting `poll_run`. It answers `401` without the secret and `503` if `CRON_SECRET` is unset.
+
+Only one ingestion runs at a time. The lock lives in the database rather than in the process,
+because the fallback workflow ingests directly without going through the endpoint, and it
+expires after five minutes so a run that is killed mid-flight does not block the next one. A
+request arriving while another poll is in progress answers `409`; one arriving within a minute
+of a successful poll answers `429`. A failed poll does not arm that window, so a scheduler can
+retry a transient upstream failure immediately.
 
 `GET` is accepted with the same header because Vercel Cron issues `GET` and sends
 `Authorization: Bearer $CRON_SECRET` itself.

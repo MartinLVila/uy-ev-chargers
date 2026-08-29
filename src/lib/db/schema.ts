@@ -12,6 +12,11 @@ import {
   uniqueIndex,
 } from "drizzle-orm/pg-core";
 
+export const ingestionLocks = pgTable("ingestion_locks", {
+  name: text("name").primaryKey(),
+  heldUntil: timestamp("held_until", { withTimezone: true }).notNull(),
+});
+
 export const stations = pgTable(
   "stations",
   {
