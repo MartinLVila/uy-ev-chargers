@@ -2,12 +2,16 @@ import { getDb } from "@/lib/db/client";
 import { getStationDetail } from "@/lib/metrics/queries";
 import { parseWindowDays, windowFromDays } from "@/lib/metrics/window";
 import { errorResponse, jsonResponse, loggedErrorResponse } from "@/lib/api/response";
+import { rejectIfRateLimited, requestUnitsForWindow } from "@/lib/api/rate-limit";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(request: Request, context: { params: Promise<{ slug: string }> }) {
   const { slug } = await context.params;
   const days = parseWindowDays(new URL(request.url).searchParams.get("days"));
+
+  const limited = await rejectIfRateLimited(request, "read", requestUnitsForWindow(days));
+  if (limited) return limited;
 
   try {
     const station = await getStationDetail(getDb(), slug, windowFromDays(days));

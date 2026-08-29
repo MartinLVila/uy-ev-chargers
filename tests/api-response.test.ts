@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { loggedErrorResponse } from "../src/lib/api/response";
+import { jsonResponse, loggedErrorResponse } from "../src/lib/api/response";
 
 describe("loggedErrorResponse", () => {
   afterEach(() => {
@@ -33,5 +33,31 @@ describe("loggedErrorResponse", () => {
     const response = loggedErrorResponse("GET /api/health", new Error("down"), "Database unavailable");
 
     expect(response.headers.get("cache-control")).toBe("no-store");
+  });
+});
+
+describe("jsonResponse", () => {
+  it("lets the edge absorb repeat traffic instead of the database", () => {
+    const response = jsonResponse({ ok: true });
+
+    expect(response.headers.get("cdn-cache-control")).toContain("s-maxage=60");
+    expect(response.headers.get("vercel-cdn-cache-control")).toContain("s-maxage=60");
+  });
+
+  it("makes browsers revalidate rather than guess a freshness lifetime", () => {
+    const response = jsonResponse({ ok: true });
+
+    expect(response.headers.get("cache-control")).toBe("public, max-age=0, must-revalidate");
+  });
+});
+
+describe("errorResponse caching", () => {
+  it("keeps a failure out of the edge cache, not just the browser", () => {
+    vi.spyOn(console, "error").mockImplementation(() => {});
+
+    const response = loggedErrorResponse("GET /api/health", new Error("down"), "Database unavailable");
+
+    expect(response.headers.get("cdn-cache-control")).toBe("no-store");
+    expect(response.headers.get("vercel-cdn-cache-control")).toBe("no-store");
   });
 });

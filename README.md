@@ -177,6 +177,32 @@ dropped under load rather than queued. At `*/15` this repository saw 32, 20, 3, 
 five consecutive days, with gaps of up to twelve hours. The hourly schedule is a floor, not a
 guarantee, which is why the primary trigger is an external scheduler hitting the endpoint.
 
+### Rate limiting
+
+The read API is public and stays public, but it is not unmetered. Every route is limited per
+client address through Upstash Redis: 60 requests a minute for the read API, 20 an hour for
+`/api/poll`. A rejected request answers `429` with `Retry-After` and reveals nothing about which
+limit it hit.
+
+Requests that ask for a wider window cost more than one unit against that budget, one per 90 days
+requested. A 30-day dashboard load costs one; a two-year scan costs nine. This is what stops an
+unauthenticated caller from varying `?days=` to slip past the edge cache and run the heaviest
+aggregate repeatedly.
+
+`/api/poll` additionally checks Upstash's aggregated abuse list, which the read API does not: the
+poll endpoint is the only write path and carries almost no traffic, so the extra Redis commands buy
+more there than they cost.
+
+**The limiter fails open.** If Redis is unreachable or the credentials are missing, requests are
+allowed through and the failure is logged. A rate limiter that takes the API down when its own
+backing store is unavailable would be a worse outage than the one it prevents. The trade is
+deliberate: availability of a public read-only API beats strict enforcement, and the edge cache
+still absorbs repeat traffic underneath it.
+
+Responses carry `CDN-Cache-Control` and `Vercel-CDN-Cache-Control` alongside `Cache-Control`,
+because the edge directives were being dropped from the combined header and every request was
+reaching a function. Errors and `429`s are `no-store` on all three.
+
 ### Polling interval and the Neon free tier
 
 Neon's free tier allows 100 CU-hours per month and scales compute to zero after five minutes
