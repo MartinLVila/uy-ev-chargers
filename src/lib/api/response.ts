@@ -16,3 +16,13 @@ export function jsonResponse<T>(payload: T, init?: ResponseInit): NextResponse {
 export function errorResponse(message: string, status: number): NextResponse {
   return jsonResponse({ error: message }, { status, headers: { "cache-control": "no-store" } });
 }
+
+export function loggedErrorResponse(
+  scope: string,
+  error: unknown,
+  clientMessage: string,
+  status = 503,
+): NextResponse {
+  console.error(`${scope} failed`, error);
+  return errorResponse(clientMessage, status);
+}

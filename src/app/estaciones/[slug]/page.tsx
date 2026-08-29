@@ -20,7 +20,8 @@ export default async function StationPage({ params }: { params: Promise<{ slug: 
   let station: Awaited<ReturnType<typeof getStationDetail>>;
   try {
     station = await getStationDetail(getDb(), slug, timeWindow);
-  } catch {
+  } catch (error) {
+    console.error(`Station page ${slug} failed`, error);
     return (
       <div
         style={{

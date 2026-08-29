@@ -1,7 +1,7 @@
 import { getDb } from "@/lib/db/client";
 import { getStationDetail } from "@/lib/metrics/queries";
 import { parseWindowDays, windowFromDays } from "@/lib/metrics/window";
-import { jsonResponse, errorResponse } from "@/lib/api/response";
+import { errorResponse, jsonResponse, loggedErrorResponse } from "@/lib/api/response";
 
 export const dynamic = "force-dynamic";
 
@@ -13,7 +13,7 @@ export async function GET(request: Request, context: { params: Promise<{ slug: s
     const station = await getStationDetail(getDb(), slug, windowFromDays(days));
     if (!station) return errorResponse("Station not found", 404);
     return jsonResponse({ station });
-  } catch {
-    return errorResponse("Unable to read station detail", 503);
+  } catch (error) {
+    return loggedErrorResponse("GET /api/stations/[slug]", error, "Unable to read station detail");
   }
 }
