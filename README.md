@@ -71,6 +71,11 @@ connector telemetry) or `delisted` (gone from the feed).
 Per-station availability is weighted by connector count and outage duration, so a
 six-connector site down for a day outranks a single-connector site down for a day.
 
+It is measured over the time that could be classified: `unknown` seconds are excluded from
+the denominator rather than counted as working, and are reported separately as
+`unknownSeconds`. A station whose statuses were never recognised has no availability figure
+at all rather than a perfect one, and sorts below stations with a real measurement.
+
 Daily buckets follow `America/Montevideo`, passed explicitly to Postgres. Relying on the
 session default would silently shift every bucket depending on where the query ran.
 
