@@ -42,6 +42,7 @@ jobs:
           path: data
           retention-days: 1
           overwrite: true
+          include-hidden-files: true
 
   publish:
     needs: generate
