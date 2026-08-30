@@ -211,21 +211,49 @@ describe("station hourly usage", () => {
     const groups = await getStationHourlyUsage(runner, "pair", WINDOW, "UTC");
 
     expect(hourOf(groups, fastId, 9)?.utilization).toBe(0.75);
+    expect(hourOf(groups, fastId, 9)?.observedHours).toBe(1);
   });
 
-  it("measures observed time in wall clock, not multiplied by the connector count", async () => {
-    await record(
-      fastId,
-      new Date("2026-03-10T09:00:00Z"),
-      new Date("2026-03-10T10:00:00Z"),
-      "Charging",
-      "operational",
-      4,
-    );
+  it("counts an hour once however many concurrent states the group was in", async () => {
+    for (const detail of ["Charging", "Disponible", "Reserved"]) {
+      await record(fastId, new Date("2026-03-10T09:00:00Z"), new Date("2026-03-10T10:00:00Z"), detail);
+    }
 
     const groups = await getStationHourlyUsage(runner, "pair", WINDOW, "UTC");
 
     expect(hourOf(groups, fastId, 9)?.observedHours).toBe(1);
+  });
+
+  it("adds up the observed time of concurrent states that cover different parts of an hour", async () => {
+    await record(fastId, new Date("2026-03-10T09:00:00Z"), new Date("2026-03-10T09:30:00Z"));
+    await record(
+      fastId,
+      new Date("2026-03-10T09:15:00Z"),
+      new Date("2026-03-10T09:45:00Z"),
+      "Disponible",
+    );
+
+    const groups = await getStationHourlyUsage(runner, "pair", WINDOW, "UTC");
+
+    expect(hourOf(groups, fastId, 9)?.observedHours).toBe(0.75);
+  });
+
+  it("does not credit a gap in polling as time it observed", async () => {
+    await record(fastId, new Date("2026-03-10T09:00:00Z"), new Date("2026-03-10T09:15:00Z"));
+    await record(fastId, new Date("2026-03-10T09:45:00Z"), new Date("2026-03-10T10:00:00Z"));
+
+    const groups = await getStationHourlyUsage(runner, "pair", WINDOW, "UTC");
+
+    expect(hourOf(groups, fastId, 9)?.observedHours).toBe(0.5);
+  });
+
+  it("adds the same hour across the days it was observed on", async () => {
+    await record(fastId, new Date("2026-03-10T09:00:00Z"), new Date("2026-03-10T10:00:00Z"));
+    await record(fastId, new Date("2026-03-11T09:00:00Z"), new Date("2026-03-11T09:30:00Z"));
+
+    const groups = await getStationHourlyUsage(runner, "pair", TWO_DAY_WINDOW, "UTC");
+
+    expect(hourOf(groups, fastId, 9)?.observedHours).toBe(1.5);
   });
 
   it("does not count time it could not classify as time it observed", async () => {

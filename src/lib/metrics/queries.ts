@@ -15,6 +15,8 @@ const FREE_DETAIL = sql`lower(btrim(cs.status_detail)) IN (${sql.join(
 )})`;
 const IN_USE = sql`cs.health = 'operational' AND NOT (${FREE_DETAIL})`;
 
+const SLOT_SECONDS = sql`EXTRACT(EPOCH FROM (cs.slot_to - cs.slot_from))`;
+
 function overlapSeconds(alias: string, window: TimeWindow): SQL {
   const started = sql.raw(`${alias}.started_at`);
   const ended = sql.raw(`${alias}.ended_at`);
@@ -962,17 +964,33 @@ export async function getStationHourlyUsage(
         clipped.connector_count,
         clipped.health,
         clipped.status_detail,
+        slot.local_hour,
         EXTRACT(HOUR FROM slot.local_hour)::int AS hour,
-        EXTRACT(EPOCH FROM (
-          LEAST(clipped.ended_at, (slot.local_hour + interval '1 hour') AT TIME ZONE ${timeZone})
-          - GREATEST(clipped.started_at, slot.local_hour AT TIME ZONE ${timeZone})
-        )) AS seconds
+        GREATEST(clipped.started_at, slot.local_hour AT TIME ZONE ${timeZone}) AS slot_from,
+        LEAST(clipped.ended_at, (slot.local_hour + interval '1 hour') AT TIME ZONE ${timeZone})
+          AS slot_to
       FROM clipped
       CROSS JOIN LATERAL generate_series(
         date_trunc('hour', clipped.started_at AT TIME ZONE ${timeZone}),
         date_trunc('hour', clipped.ended_at AT TIME ZONE ${timeZone}),
         interval '1 hour'
       ) AS slot(local_hour)
+    ),
+    observed AS (
+      SELECT
+        connector_group_id,
+        EXTRACT(HOUR FROM local_hour)::int AS hour,
+        SUM(EXTRACT(EPOCH FROM (upper(covered) - lower(covered)))) AS observed_secs
+      FROM (
+        SELECT
+          connector_group_id,
+          local_hour,
+          unnest(range_agg(tstzrange(slot_from, slot_to))) AS covered
+        FROM sliced
+        WHERE slot_to > slot_from
+        GROUP BY connector_group_id, local_hour
+      ) merged
+      GROUP BY 1, 2
     )
     SELECT
       g.id AS connector_group_id,
@@ -980,15 +998,19 @@ export async function getStationHourlyUsage(
       g.power_kw,
       g.has_cable,
       cs.hour,
-      COALESCE(SUM(cs.connector_count * cs.seconds) FILTER (WHERE ${IN_USE}), 0) AS in_use_secs,
-      COALESCE(SUM(cs.connector_count * cs.seconds) FILTER (WHERE ${FREE_DETAIL}), 0) AS free_secs,
-      COALESCE(SUM(cs.connector_count * cs.seconds) FILTER (WHERE cs.health = 'faulted'), 0)
+      COALESCE(SUM(cs.connector_count * ${SLOT_SECONDS}) FILTER (WHERE ${IN_USE}), 0)
+        AS in_use_secs,
+      COALESCE(SUM(cs.connector_count * ${SLOT_SECONDS}) FILTER (WHERE ${FREE_DETAIL}), 0)
+        AS free_secs,
+      COALESCE(SUM(cs.connector_count * ${SLOT_SECONDS}) FILTER (WHERE cs.health = 'faulted'), 0)
         AS broken_secs,
-      SUM(cs.seconds) AS observed_secs
+      observed.observed_secs
     FROM sliced cs
     JOIN connector_groups g ON g.id = cs.connector_group_id
-    WHERE cs.seconds > 0
-    GROUP BY g.id, g.connector_type, g.power_kw, g.has_cable, cs.hour
+    JOIN observed
+      ON observed.connector_group_id = cs.connector_group_id AND observed.hour = cs.hour
+    WHERE cs.slot_to > cs.slot_from
+    GROUP BY g.id, g.connector_type, g.power_kw, g.has_cable, cs.hour, observed.observed_secs
     ORDER BY g.connector_type, g.power_kw, g.id, cs.hour
   `);
 
@@ -1017,7 +1039,7 @@ export async function getStationHourlyUsage(
       hour: toNumber(row.hour),
       utilization: usable > 0 ? round(inUse / usable, 4) : 0,
       brokenShare: usable + broken > 0 ? round(broken / (usable + broken), 4) : 0,
-      observedHours: round(toNumber(row.observed_secs) / 3600, 2),
+      observedHours: round(toNumber(row.observed_secs) / 3600, 4),
     });
   }
 
