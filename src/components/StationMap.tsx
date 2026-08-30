@@ -6,17 +6,17 @@ import { useMemo, useState } from "react";
 import { CircleMarker, MapContainer, Popup, TileLayer } from "react-leaflet";
 import type { StationStatus } from "@/lib/metrics/queries";
 import { formatElapsed, formatNumber } from "@/lib/ui/format";
-import { stationMarkerColor, stationPresence } from "@/lib/ui/health";
+import {
+  MARKER_PRESENTATION,
+  stationMarker,
+  stationPresence,
+  type MarkerPresentation,
+} from "@/lib/ui/health";
 
 const URUGUAY_CENTER: [number, number] = [-32.8, -55.9];
 const INITIAL_ZOOM = 7;
 
-const LEGEND = [
-  { color: "#0ca30c", label: "Todo en servicio" },
-  { color: "#fab219", label: "Parcial o sin telemetría" },
-  { color: "#d03b3b", label: "Sin servicio" },
-  { color: "#ec835a", label: "Fuera del feed" },
-];
+const LEGEND = Object.values(MARKER_PRESENTATION);
 
 type StatusFilter = "all" | "problem";
 
@@ -97,15 +97,18 @@ export function StationMap({ stations }: StationMapProps) {
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
           />
-          {visible.map((station) => (
+          {visible.map((station) => {
+            const marker = stationMarker(station);
+            return (
             <CircleMarker
               key={station.slug}
               center={[station.latitude, station.longitude]}
-              radius={7}
+              radius={marker.radius}
               pathOptions={{
                 color: "#ffffff",
-                weight: 2,
-                fillColor: stationMarkerColor(station),
+                weight: 2.5,
+                dashArray: marker.dashArray,
+                fillColor: marker.color,
                 fillOpacity: 1,
               }}
             >
@@ -113,7 +116,8 @@ export function StationMap({ stations }: StationMapProps) {
                 <StationPopup station={station} />
               </Popup>
             </CircleMarker>
-          ))}
+            );
+          })}
         </MapContainer>
       </div>
 
@@ -131,22 +135,40 @@ export function StationMap({ stations }: StationMapProps) {
       >
         {LEGEND.map((entry) => (
           <li key={entry.label} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <span
-              aria-hidden
-              style={{
-                width: 10,
-                height: 10,
-                borderRadius: "50%",
-                background: entry.color,
-                border: "1.5px solid var(--surface-1)",
-                boxShadow: "0 0 0 1px var(--border-strong)",
-              }}
-            />
+            <MarkerSwatch marker={entry} />
+            <span aria-hidden style={{ color: "var(--text-primary)", fontSize: 11 }}>
+              {entry.symbol}
+            </span>
             {entry.label}
           </li>
         ))}
       </ul>
     </div>
+  );
+}
+
+function MarkerSwatch({ marker }: { marker: MarkerPresentation }) {
+  const size = 22;
+  return (
+    <svg aria-hidden width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ flexShrink: 0 }}>
+      <circle
+        cx={size / 2}
+        cy={size / 2}
+        r={marker.radius}
+        fill={marker.color}
+        stroke="#ffffff"
+        strokeWidth={2.5}
+        strokeDasharray={marker.dashArray}
+      />
+      <circle
+        cx={size / 2}
+        cy={size / 2}
+        r={marker.radius + 1.5}
+        fill="none"
+        stroke="var(--border-strong)"
+        strokeWidth={1}
+      />
+    </svg>
   );
 }
 

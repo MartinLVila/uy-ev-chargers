@@ -45,7 +45,10 @@ export function DepartmentChart({ departments }: DepartmentChartProps) {
               {row.department}
             </span>
 
-            <div style={{ display: "flex", width: `${widthPercent}%`, gap: 2, height: 14, minWidth: 4 }}>
+            <div
+              aria-hidden
+              style={{ display: "flex", width: `${widthPercent}%`, gap: 2, height: 14, minWidth: 4 }}
+            >
               {inService > 0 && (
                 <div
                   title={`En servicio: ${formatNumber(inService)}`}
@@ -63,7 +66,9 @@ export function DepartmentChart({ departments }: DepartmentChartProps) {
                   style={{
                     flexGrow: row.outOfService,
                     flexBasis: 0,
-                    background: "var(--status-critical)",
+                    backgroundColor: "var(--status-critical)",
+                    backgroundImage:
+                      "repeating-linear-gradient(-45deg, transparent 0 2px, rgb(255 255 255 / 0.6) 2px 5px)",
                     borderRadius: inService > 0 ? "0 4px 4px 0" : 4,
                   }}
                 />
@@ -79,10 +84,14 @@ export function DepartmentChart({ departments }: DepartmentChartProps) {
               }}
             >
               {formatNumber(total)}
+              <span className="visually-hidden"> conectores</span>
               {row.outOfService > 0 && (
                 <span style={{ color: "var(--status-critical)", fontWeight: 600 }}>
                   {" "}
-                  −{formatNumber(row.outOfService)}
+                  <span aria-hidden>−{formatNumber(row.outOfService)}</span>
+                  <span className="visually-hidden">
+                    , {formatNumber(row.outOfService)} fuera de servicio
+                  </span>
                 </span>
               )}
             </span>

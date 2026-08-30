@@ -2,6 +2,7 @@ import { formatDateTime, formatNumber } from "@/lib/ui/format";
 import {
   buildConnectorTimelines,
   resolveTimelineRange,
+  type ConnectorGroupTimeline,
   type TimelineSlice,
 } from "@/lib/ui/connector-timeline";
 import { USAGE_PRESENTATION, type ConnectorUsage } from "@/lib/ui/health";
@@ -11,6 +12,26 @@ const LEGEND: ConnectorUsage[] = ["free", "inUse", "broken", "absent", "unknown"
 
 function percentage(numerator: number, denominator: number): number {
   return denominator > 0 ? Math.round((numerator / denominator) * 100) : 0;
+}
+
+function groupName(group: ConnectorGroupTimeline): string {
+  const cable = group.hasCable ? "con cable" : "sin cable";
+  return `${group.connectorType} de ${group.powerKw} kW ${cable}, ${formatNumber(
+    group.connectors,
+  )} ${group.connectors === 1 ? "conector" : "conectores"}`;
+}
+
+function barDescription(
+  group: ConnectorGroupTimeline,
+  utilization: number,
+  outOfService: number,
+): string {
+  const outageSeconds = group.seconds.broken + group.seconds.absent;
+  const outage =
+    outageSeconds === 0
+      ? ", sin interrupciones registradas"
+      : `, y fuera de servicio ${outOfService}% del tiempo con telemetría`;
+  return `Línea de tiempo de ${groupName(group)}: en uso ${utilization}% del tiempo que estuvo en servicio${outage}. El detalle intervalo por intervalo está en la tabla Historial de estados.`;
 }
 
 function sliceTitle(slice: TimelineSlice): string {
@@ -53,13 +74,18 @@ export function ConnectorHistory({
         {LEGEND.map((state) => (
           <span key={state} style={{ display: "flex", alignItems: "center", gap: 6 }}>
             <span
+              aria-hidden
               style={{
-                width: 10,
-                height: 10,
+                width: 12,
+                height: 12,
                 borderRadius: 2,
-                background: USAGE_PRESENTATION[state].color,
+                backgroundColor: USAGE_PRESENTATION[state].color,
+                backgroundImage: USAGE_PRESENTATION[state].pattern,
               }}
             />
+            <span aria-hidden style={{ color: USAGE_PRESENTATION[state].color, fontSize: 11 }}>
+              {USAGE_PRESENTATION[state].symbol}
+            </span>
             <span style={{ color: "var(--text-secondary)" }}>{USAGE_PRESENTATION[state].label}</span>
           </span>
         ))}
@@ -109,6 +135,8 @@ export function ConnectorHistory({
             </div>
 
             <div
+              role="img"
+              aria-label={barDescription(group, utilization, outOfService)}
               style={{
                 position: "relative",
                 height: 22,
@@ -119,6 +147,7 @@ export function ConnectorHistory({
             >
               {group.slices.map((slice, index) => (
                 <div
+                  aria-hidden
                   key={`${group.key}-${index}`}
                   title={sliceTitle(slice)}
                   style={{
@@ -136,7 +165,8 @@ export function ConnectorHistory({
                       key={band.state}
                       style={{
                         height: `${band.sharePct}%`,
-                        background: USAGE_PRESENTATION[band.state].color,
+                        backgroundColor: USAGE_PRESENTATION[band.state].color,
+                        backgroundImage: USAGE_PRESENTATION[band.state].pattern,
                       }}
                     />
                   ))}
