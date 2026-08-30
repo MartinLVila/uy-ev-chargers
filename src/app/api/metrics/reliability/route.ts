@@ -13,11 +13,11 @@ export async function GET(request: Request) {
   const window = windowFromDays(days);
   const limit = Number.parseInt(params.get("limit") ?? "", 10);
 
-  const unauthorized = rejectUnauthorizedRead(request);
-  if (unauthorized) return unauthorized;
-
   const limited = await rejectIfRateLimited(request, "read", requestUnitsForWindow(days));
   if (limited) return limited;
+
+  const unauthorized = rejectUnauthorizedRead(request);
+  if (unauthorized) return unauthorized;
 
   try {
     const stations = await getStationReliability(getDb(), window, {

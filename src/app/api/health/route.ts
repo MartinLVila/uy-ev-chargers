@@ -7,11 +7,11 @@ import { rejectUnauthorizedRead } from "@/lib/api/authorization";
 export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
-  const unauthorized = rejectUnauthorizedRead(request);
-  if (unauthorized) return unauthorized;
-
   const limited = await rejectIfRateLimited(request, "read");
   if (limited) return limited;
+
+  const unauthorized = rejectUnauthorizedRead(request);
+  if (unauthorized) return unauthorized;
 
   try {
     const snapshot = await getNetworkSnapshot(getDb());
