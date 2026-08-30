@@ -20,9 +20,19 @@ export function rejectUnauthorizedRead(request: Request): NextResponse | null {
     return errorResponse("The API is not available", 503);
   }
 
-  if (authorization === "unauthorized") return errorResponse("Unauthorized", 401);
+  if (authorization === "unauthorized") {
+    console.warn(`Rejected an unauthorized read: ${presentedCredential(request)}`);
+    return errorResponse("Unauthorized", 401);
+  }
 
   return null;
+}
+
+function presentedCredential(request: Request): string {
+  const header = request.headers.get("authorization");
+  if (!header) return "no authorization header was sent";
+  if (bearerToken(header) === null) return "the authorization header was not a bearer token";
+  return "a bearer token was sent and did not match";
 }
 
 function authorizeBearer(request: Request, expected: string | undefined): BearerAuthResult {

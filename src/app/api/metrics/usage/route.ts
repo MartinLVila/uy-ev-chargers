@@ -11,11 +11,11 @@ export async function GET(request: Request) {
   const days = parseWindowDays(new URL(request.url).searchParams.get("days"));
   const window = windowFromDays(days);
 
-  const unauthorized = rejectUnauthorizedRead(request);
-  if (unauthorized) return unauthorized;
-
   const limited = await rejectIfRateLimited(request, "read", requestUnitsForWindow(days));
   if (limited) return limited;
+
+  const unauthorized = rejectUnauthorizedRead(request);
+  if (unauthorized) return unauthorized;
 
   try {
     const db = getDb();
