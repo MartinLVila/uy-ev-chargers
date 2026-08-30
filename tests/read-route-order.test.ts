@@ -132,4 +132,28 @@ describe("read routes meter a request before they authorize it", () => {
     expect(logged).not.toContain("a-guess-that-should-never-be-logged");
     expect(logged).not.toContain("a-token-no-caller-here-knows");
   });
+
+  it("stays quiet for a caller that presented nothing, so only guesses leave a trace", async () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+    await (await import("@/app/api/stations/route")).GET(
+      new Request("https://example.test/api/stations"),
+    );
+
+    expect(warn).not.toHaveBeenCalled();
+  });
+
+  it("tells an empty bearer token apart from the wrong scheme", async () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+    for (const authorization of ["Bearer ", "Basic dXNlcjpwYXNz"]) {
+      await (await import("@/app/api/stations/route")).GET(
+        new Request("https://example.test/api/stations", { headers: { authorization } }),
+      );
+    }
+
+    const [empty, wrongScheme] = warn.mock.calls.map((call) => String(call[0]));
+    expect(empty).toContain("no value");
+    expect(wrongScheme).toContain("not a bearer token");
+  });
 });

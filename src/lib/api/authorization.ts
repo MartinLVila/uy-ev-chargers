@@ -21,18 +21,24 @@ export function rejectUnauthorizedRead(request: Request): NextResponse | null {
   }
 
   if (authorization === "unauthorized") {
-    console.warn(`Rejected an unauthorized read: ${presentedCredential(request)}`);
+    const attempt = rejectedCredential(request);
+    if (attempt) console.warn(`Rejected an unauthorized read: ${attempt}`);
     return errorResponse("Unauthorized", 401);
   }
 
   return null;
 }
 
-function presentedCredential(request: Request): string {
+function rejectedCredential(request: Request): string | null {
   const header = request.headers.get("authorization");
-  if (!header) return "no authorization header was sent";
-  if (bearerToken(header) === null) return "the authorization header was not a bearer token";
-  return "a bearer token was sent and did not match";
+  if (!header) return null;
+
+  const [scheme] = header.split(" ");
+  if (scheme.toLowerCase() !== "bearer") return "the authorization header was not a bearer token";
+
+  return bearerToken(header) === null
+    ? "a bearer token was sent with no value"
+    : "a bearer token was sent and did not match";
 }
 
 function authorizeBearer(request: Request, expected: string | undefined): BearerAuthResult {
