@@ -228,6 +228,28 @@ describe("station hourly usage", () => {
     expect(hourOf(groups, fastId, 9)?.observedHours).toBe(1);
   });
 
+  it("does not count time it could not classify as time it observed", async () => {
+    await record(
+      fastId,
+      new Date("2026-03-10T09:00:00Z"),
+      new Date("2026-03-10T10:00:00Z"),
+      "Unknown",
+      "unknown",
+    );
+    await record(
+      fastId,
+      new Date("2026-03-10T11:00:00Z"),
+      new Date("2026-03-10T12:00:00Z"),
+      "Absent",
+      "absent",
+    );
+    await record(fastId, new Date("2026-03-10T13:00:00Z"), new Date("2026-03-10T14:00:00Z"));
+
+    const groups = await getStationHourlyUsage(runner, "pair", WINDOW, "UTC");
+
+    expect(groups[0].hours.map((point) => point.hour)).toEqual([13]);
+  });
+
   it("ignores the connector groups of other stations", async () => {
     const groups = await db.query.connectorGroups.findMany();
     const elsewhere = groups.find((group) => group.id !== fastId && group.id !== slowId)!;
