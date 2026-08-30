@@ -909,3 +909,117 @@ function round(value: number, digits: number): number {
   const factor = 10 ** digits;
   return Math.round(value * factor) / factor;
 }
+
+export interface StationHourlyUsagePoint {
+  hour: number;
+  utilization: number;
+  brokenShare: number;
+  observedHours: number;
+}
+
+export interface ConnectorGroupHourlyUsage {
+  connectorGroupId: number;
+  connectorType: string;
+  powerKw: number;
+  hasCable: boolean;
+  hours: StationHourlyUsagePoint[];
+}
+
+export async function getStationHourlyUsage(
+  db: SqlRunner,
+  slug: string,
+  window: TimeWindow,
+  timeZone: string = REPORTING_TIME_ZONE,
+): Promise<ConnectorGroupHourlyUsage[]> {
+  const { rows } = await db.execute<{
+    connector_group_id: number;
+    connector_type: string;
+    power_kw: string | number;
+    has_cable: boolean;
+    hour: number;
+    in_use_secs: string | number;
+    free_secs: string | number;
+    broken_secs: string | number;
+    observed_secs: string | number;
+  }>(sql`
+    WITH clipped AS (
+      SELECT
+        cs.connector_group_id,
+        cs.connector_count,
+        cs.health,
+        cs.status_detail,
+        GREATEST(cs.started_at, ${window.from}::timestamptz) AS started_at,
+        LEAST(COALESCE(cs.ended_at, ${window.to}::timestamptz), ${window.to}::timestamptz)
+          AS ended_at
+      FROM connector_states cs
+      JOIN connector_groups g ON g.id = cs.connector_group_id
+      JOIN stations st ON st.id = g.station_id
+      WHERE st.slug = ${slug} AND ${overlapsWindow("cs", window)} AND ${TELEMETRY}
+    ),
+    sliced AS (
+      SELECT
+        clipped.connector_group_id,
+        clipped.connector_count,
+        clipped.health,
+        clipped.status_detail,
+        EXTRACT(HOUR FROM slot.local_hour)::int AS hour,
+        EXTRACT(EPOCH FROM (
+          LEAST(clipped.ended_at, (slot.local_hour + interval '1 hour') AT TIME ZONE ${timeZone})
+          - GREATEST(clipped.started_at, slot.local_hour AT TIME ZONE ${timeZone})
+        )) AS seconds
+      FROM clipped
+      CROSS JOIN LATERAL generate_series(
+        date_trunc('hour', clipped.started_at AT TIME ZONE ${timeZone}),
+        date_trunc('hour', clipped.ended_at AT TIME ZONE ${timeZone}),
+        interval '1 hour'
+      ) AS slot(local_hour)
+    )
+    SELECT
+      g.id AS connector_group_id,
+      g.connector_type,
+      g.power_kw,
+      g.has_cable,
+      cs.hour,
+      COALESCE(SUM(cs.connector_count * cs.seconds) FILTER (WHERE ${IN_USE}), 0) AS in_use_secs,
+      COALESCE(SUM(cs.connector_count * cs.seconds) FILTER (WHERE ${FREE_DETAIL}), 0) AS free_secs,
+      COALESCE(SUM(cs.connector_count * cs.seconds) FILTER (WHERE cs.health = 'faulted'), 0)
+        AS broken_secs,
+      SUM(cs.seconds) AS observed_secs
+    FROM sliced cs
+    JOIN connector_groups g ON g.id = cs.connector_group_id
+    WHERE cs.seconds > 0
+    GROUP BY g.id, g.connector_type, g.power_kw, g.has_cable, cs.hour
+    ORDER BY g.connector_type, g.power_kw, g.id, cs.hour
+  `);
+
+  const groups = new Map<number, ConnectorGroupHourlyUsage>();
+
+  for (const row of rows) {
+    const groupId = toNumber(row.connector_group_id);
+    let group = groups.get(groupId);
+    if (!group) {
+      group = {
+        connectorGroupId: groupId,
+        connectorType: row.connector_type,
+        powerKw: toNumber(row.power_kw),
+        hasCable: row.has_cable,
+        hours: [],
+      };
+      groups.set(groupId, group);
+    }
+
+    const inUse = toNumber(row.in_use_secs);
+    const free = toNumber(row.free_secs);
+    const broken = toNumber(row.broken_secs);
+    const usable = free + inUse;
+
+    group.hours.push({
+      hour: toNumber(row.hour),
+      utilization: usable > 0 ? round(inUse / usable, 4) : 0,
+      brokenShare: usable + broken > 0 ? round(broken / (usable + broken), 4) : 0,
+      observedHours: round(toNumber(row.observed_secs) / 3600, 2),
+    });
+  }
+
+  return [...groups.values()];
+}
