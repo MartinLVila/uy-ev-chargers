@@ -5,6 +5,9 @@ import {
   latitudeSchema,
   longitudeSchema,
   stationPayloadSchema,
+  unknownWhenOverlong,
+  MAX_CONNECTOR_GROUPS_PER_STATION,
+  MAX_FEED_TEXT,
   type FeedResult,
   type StationPayload,
 } from "./types";
@@ -22,6 +25,7 @@ const DETAIL_CONCURRENCY = 8;
 const DETAIL_ATTEMPTS = 3;
 const DETAIL_RETRY_DELAY_MS = 500;
 const MIN_TELEMETRY_COVERAGE = 0.8;
+const MAX_RESPONSE_BYTES = 4 * 1024 * 1024;
 
 const opt = (id: number, text: string, internalCode = "", icon = "") => ({
   id,
@@ -61,16 +65,50 @@ const tokenResponseSchema = z.object({
   token_type: z.string().optional(),
 });
 
+async function readJsonWithinBudget(res: Response): Promise<unknown> {
+  const declared = Number(res.headers.get("content-length"));
+  if (Number.isFinite(declared) && declared > MAX_RESPONSE_BYTES) {
+    throw new Error(`response declares ${declared} bytes, over the ${MAX_RESPONSE_BYTES} budget`);
+  }
+
+  if (!res.body) return res.json();
+
+  const reader = res.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let received = 0;
+
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+
+    received += value.byteLength;
+    if (received > MAX_RESPONSE_BYTES) {
+      await reader.cancel();
+      throw new Error(`response passed the ${MAX_RESPONSE_BYTES} byte budget`);
+    }
+    chunks.push(value);
+  }
+
+  const body = new Uint8Array(received);
+  let offset = 0;
+  for (const chunk of chunks) {
+    body.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+
+  return JSON.parse(new TextDecoder().decode(body));
+}
+
 const bulkStationSchema = z.object({
   id: z.number().int(),
-  name: z.string().min(1),
-  source: z.string().nullable().optional(),
+  name: z.string().min(1).max(MAX_FEED_TEXT.name),
+  source: unknownWhenOverlong(MAX_FEED_TEXT.source),
   status: z.number().int().nullable().optional(),
-  statusDetails: z.string().nullable().optional(),
+  statusDetails: unknownWhenOverlong(MAX_FEED_TEXT.status),
   lat: latitudeSchema,
   lng: longitudeSchema,
-  chargeNetworkName: z.string().nullable().optional(),
-  countryCode: z.string().nullable().optional(),
+  chargeNetworkName: unknownWhenOverlong(MAX_FEED_TEXT.source),
+  countryCode: unknownWhenOverlong(MAX_FEED_TEXT.code),
 });
 
 type BulkStation = z.infer<typeof bulkStationSchema>;
@@ -82,15 +120,19 @@ const bulkEnvelopeSchema = z.union([
 
 const detailDataSchema = z.object({
   id: z.number().int(),
-  name: z.string().min(1),
-  source: z.string().nullable().optional(),
-  address: z.string().nullable().optional(),
+  name: z.string().min(1).max(MAX_FEED_TEXT.name),
+  source: unknownWhenOverlong(MAX_FEED_TEXT.source),
+  address: unknownWhenOverlong(MAX_FEED_TEXT.address),
   lat: latitudeSchema,
   lng: longitudeSchema,
-  department: z.string().nullable().optional(),
-  city: z.string().nullable().optional(),
-  status: z.string().nullable().optional(),
-  connectorStatusAcc: z.array(connectorGroupPayloadSchema).nullable().optional(),
+  department: unknownWhenOverlong(MAX_FEED_TEXT.place),
+  city: unknownWhenOverlong(MAX_FEED_TEXT.place),
+  status: unknownWhenOverlong(MAX_FEED_TEXT.status),
+  connectorStatusAcc: z
+    .array(connectorGroupPayloadSchema)
+    .max(MAX_CONNECTOR_GROUPS_PER_STATION)
+    .nullable()
+    .optional(),
 });
 
 const detailEnvelopeSchema = z.object({ data: detailDataSchema.nullable().optional() });
@@ -153,7 +195,7 @@ export async function fetchAnonymousToken(
     body: JSON.stringify({ clientIdIDP: CLIENT_ID, identifier: "Anonymous" }),
   });
   if (!res.ok) throw new Error(`token endpoint ${res.status}`);
-  const parsed = tokenResponseSchema.parse(await res.json());
+  const parsed = tokenResponseSchema.parse(await readJsonWithinBudget(res));
   return parsed.access_token;
 }
 
@@ -173,7 +215,7 @@ async function fetchBulkStations(
     body: JSON.stringify(FILTER_OPTIONS_REQUEST),
   });
   if (!res.ok) throw new Error(`statusFiltered ${res.status}`);
-  const parsed = bulkEnvelopeSchema.parse(await res.json());
+  const parsed = bulkEnvelopeSchema.parse(await readJsonWithinBudget(res));
   const records = Array.isArray(parsed) ? parsed : parsed.data;
   const stations: BulkStation[] = [];
   let rejected = 0;
@@ -220,7 +262,14 @@ async function fetchStationDetail(
   if (res.status === 401 || res.status === 403) return { status: "unauthorized" };
   if (!res.ok) return UNAVAILABLE;
 
-  const parsed = detailEnvelopeSchema.safeParse(await res.json());
+  let body: unknown;
+  try {
+    body = await readJsonWithinBudget(res);
+  } catch {
+    return { status: "malformed" };
+  }
+
+  const parsed = detailEnvelopeSchema.safeParse(body);
   if (!parsed.success) return { status: "malformed" };
   if (!parsed.data.data) return UNAVAILABLE;
 
