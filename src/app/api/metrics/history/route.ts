@@ -1,7 +1,7 @@
 import { getDb } from "@/lib/db/client";
 import { getDailyHistory } from "@/lib/metrics/queries";
 import { parseWindowDays, windowFromDays } from "@/lib/metrics/window";
-import { jsonResponse, loggedErrorResponse } from "@/lib/api/response";
+import { tokenGatedJsonResponse, loggedErrorResponse } from "@/lib/api/response";
 import { rejectIfRateLimited, requestUnitsForWindow } from "@/lib/api/rate-limit";
 import { rejectUnauthorizedRead } from "@/lib/api/authorization";
 
@@ -19,7 +19,7 @@ export async function GET(request: Request) {
 
   try {
     const series = await getDailyHistory(getDb(), window);
-    return jsonResponse({ days, series });
+    return tokenGatedJsonResponse({ days, series });
   } catch (error) {
     return loggedErrorResponse("GET /api/metrics/history", error, "Unable to read history");
   }

@@ -1,7 +1,7 @@
 import { getDb } from "@/lib/db/client";
 import { getStationReliability } from "@/lib/metrics/queries";
 import { parseWindowDays, windowFromDays } from "@/lib/metrics/window";
-import { jsonResponse, loggedErrorResponse } from "@/lib/api/response";
+import { tokenGatedJsonResponse, loggedErrorResponse } from "@/lib/api/response";
 import { rejectIfRateLimited, requestUnitsForWindow } from "@/lib/api/rate-limit";
 import { rejectUnauthorizedRead } from "@/lib/api/authorization";
 
@@ -24,7 +24,7 @@ export async function GET(request: Request) {
       limit: Number.isFinite(limit) ? limit : undefined,
       worstFirst: params.get("sort") !== "name",
     });
-    return jsonResponse({ days, stations });
+    return tokenGatedJsonResponse({ days, stations });
   } catch (error) {
     return loggedErrorResponse("GET /api/metrics/reliability", error, "Unable to read reliability data");
   }

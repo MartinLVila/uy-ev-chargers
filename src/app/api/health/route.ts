@@ -1,6 +1,6 @@
 import { getDb } from "@/lib/db/client";
 import { getNetworkSnapshot } from "@/lib/metrics/queries";
-import { jsonResponse, loggedErrorResponse } from "@/lib/api/response";
+import { tokenGatedJsonResponse, loggedErrorResponse } from "@/lib/api/response";
 import { rejectIfRateLimited } from "@/lib/api/rate-limit";
 import { rejectUnauthorizedRead } from "@/lib/api/authorization";
 
@@ -15,7 +15,7 @@ export async function GET(request: Request) {
 
   try {
     const snapshot = await getNetworkSnapshot(getDb());
-    return jsonResponse({
+    return tokenGatedJsonResponse({
       status: "ok",
       lastSuccessfulPollAt: snapshot.lastSuccessfulPollAt,
       stations: snapshot.stations.total,

@@ -6,7 +6,7 @@ import {
   getNetworkSnapshot,
 } from "@/lib/metrics/queries";
 import { parseWindowDays, windowFromDays } from "@/lib/metrics/window";
-import { jsonResponse, loggedErrorResponse } from "@/lib/api/response";
+import { tokenGatedJsonResponse, loggedErrorResponse } from "@/lib/api/response";
 import { rejectIfRateLimited, requestUnitsForWindow } from "@/lib/api/rate-limit";
 import { rejectUnauthorizedRead } from "@/lib/api/authorization";
 
@@ -31,7 +31,7 @@ export async function GET(request: Request) {
       getConnectorTypeBreakdown(db),
     ]);
 
-    return jsonResponse({ snapshot, feed, departments, connectorTypes });
+    return tokenGatedJsonResponse({ snapshot, feed, departments, connectorTypes });
   } catch (error) {
     return loggedErrorResponse("GET /api/metrics/overview", error, "Unable to read metrics");
   }

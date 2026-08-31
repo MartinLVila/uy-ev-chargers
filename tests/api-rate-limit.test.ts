@@ -69,7 +69,7 @@ describe("rateLimitedResponse", () => {
   it("keeps the rejection out of every cache, including the edge", () => {
     const response = rateLimitedResponse(1);
 
-    expect(response.headers.get("cache-control")).toBe("no-store");
+    expect(response.headers.get("cache-control")).toBe("private, no-store");
     expect(response.headers.get("cdn-cache-control")).toBe("no-store");
     expect(response.headers.get("vercel-cdn-cache-control")).toBe("no-store");
   });

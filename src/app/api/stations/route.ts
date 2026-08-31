@@ -1,6 +1,6 @@
 import { getDb } from "@/lib/db/client";
 import { getStationStatuses } from "@/lib/metrics/queries";
-import { jsonResponse, loggedErrorResponse } from "@/lib/api/response";
+import { tokenGatedJsonResponse, loggedErrorResponse } from "@/lib/api/response";
 import { rejectIfRateLimited } from "@/lib/api/rate-limit";
 import { rejectUnauthorizedRead } from "@/lib/api/authorization";
 
@@ -15,7 +15,7 @@ export async function GET(request: Request) {
 
   try {
     const stations = await getStationStatuses(getDb());
-    return jsonResponse({ stations });
+    return tokenGatedJsonResponse({ stations });
   } catch (error) {
     return loggedErrorResponse("GET /api/stations", error, "Unable to read station data");
   }
