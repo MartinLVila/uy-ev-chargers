@@ -9,12 +9,15 @@ export const connectorGroupPayloadSchema = z.object({
   hose: z.boolean().nullable().optional(),
 });
 
+export const latitudeSchema = z.coerce.number().min(-90).max(90);
+export const longitudeSchema = z.coerce.number().min(-180).max(180);
+
 export const stationPayloadSchema = z.object({
   source: z.string().nullable().optional(),
   name: z.string().min(1),
   address: z.string().nullable().optional(),
-  lat: z.coerce.number().min(-90).max(90),
-  lng: z.coerce.number().min(-180).max(180),
+  lat: latitudeSchema,
+  lng: longitudeSchema,
   services: z.unknown().nullable().optional(),
   attendance: z.unknown().nullable().optional(),
   connectorStatusAcc: z.array(connectorGroupPayloadSchema).nullable().optional(),

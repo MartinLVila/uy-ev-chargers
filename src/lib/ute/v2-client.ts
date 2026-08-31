@@ -1,6 +1,13 @@
 import { createHash } from "node:crypto";
 import { z } from "zod";
-import type { FeedResult, StationPayload } from "./types";
+import {
+  connectorGroupPayloadSchema,
+  latitudeSchema,
+  longitudeSchema,
+  stationPayloadSchema,
+  type FeedResult,
+  type StationPayload,
+} from "./types";
 
 const APP_TOKEN_URL = "https://movilidadelectrica.ute.com.uy/api/v2/token";
 const STATUS_FILTERED_URL =
@@ -60,8 +67,8 @@ const bulkStationSchema = z.object({
   source: z.string().nullable().optional(),
   status: z.number().int().nullable().optional(),
   statusDetails: z.string().nullable().optional(),
-  lat: z.coerce.number(),
-  lng: z.coerce.number(),
+  lat: latitudeSchema,
+  lng: longitudeSchema,
   chargeNetworkName: z.string().nullable().optional(),
   countryCode: z.string().nullable().optional(),
 });
@@ -73,32 +80,28 @@ const bulkEnvelopeSchema = z.union([
   z.array(z.unknown()),
 ]);
 
-const connectorGroupSchema = z.object({
-  count: z.number().int().nonnegative(),
-  type: z.string().min(1),
-  power: z.coerce.number().nonnegative(),
-  status: z.number().int().nullable().optional(),
-  statusDetail: z.string().nullable().optional(),
-  hose: z.boolean().nullable().optional(),
-});
-
 const detailDataSchema = z.object({
   id: z.number().int(),
   name: z.string().min(1),
   source: z.string().nullable().optional(),
   address: z.string().nullable().optional(),
-  lat: z.coerce.number(),
-  lng: z.coerce.number(),
+  lat: latitudeSchema,
+  lng: longitudeSchema,
   department: z.string().nullable().optional(),
   city: z.string().nullable().optional(),
   status: z.string().nullable().optional(),
-  connectorStatusAcc: z.array(connectorGroupSchema).nullable().optional(),
+  connectorStatusAcc: z.array(connectorGroupPayloadSchema).nullable().optional(),
 });
 
 const detailEnvelopeSchema = z.object({ data: detailDataSchema.nullable().optional() });
 
-function stationWithoutConnectorTelemetry(st: BulkStation): StationPayload {
-  return {
+function asStationPayload(candidate: unknown): StationPayload | null {
+  const parsed = stationPayloadSchema.safeParse(candidate);
+  return parsed.success ? parsed.data : null;
+}
+
+function stationWithoutConnectorTelemetry(st: BulkStation): StationPayload | null {
+  return asStationPayload({
     source: st.source ?? null,
     name: st.name,
     address: null,
@@ -108,11 +111,11 @@ function stationWithoutConnectorTelemetry(st: BulkStation): StationPayload {
     city: null,
     status: st.statusDetails ?? null,
     connectorStatusAcc: null,
-  };
+  });
 }
 
-function detailPayload(data: z.infer<typeof detailDataSchema>): StationPayload {
-  return {
+function detailPayload(data: z.infer<typeof detailDataSchema>): StationPayload | null {
+  return asStationPayload({
     source: data.source ?? null,
     name: data.name,
     address: data.address ?? null,
@@ -129,7 +132,7 @@ function detailPayload(data: z.infer<typeof detailDataSchema>): StationPayload {
       statusDetail: g.statusDetail ?? null,
       hose: g.hose ?? null,
     })),
-  };
+  });
 }
 
 export interface FetchFeedV2Options {
@@ -185,6 +188,7 @@ async function fetchBulkStations(
 type DetailOutcome =
   | { status: "ok"; payload: StationPayload }
   | { status: "unauthorized" }
+  | { status: "malformed" }
   | { status: "unavailable" };
 
 const UNAVAILABLE: DetailOutcome = { status: "unavailable" };
@@ -217,9 +221,11 @@ async function fetchStationDetail(
   if (!res.ok) return UNAVAILABLE;
 
   const parsed = detailEnvelopeSchema.safeParse(await res.json());
-  if (!parsed.success || !parsed.data.data) return UNAVAILABLE;
+  if (!parsed.success) return { status: "malformed" };
+  if (!parsed.data.data) return UNAVAILABLE;
 
   const payload = detailPayload(parsed.data.data);
+  if (!payload) return { status: "malformed" };
   if ((payload.connectorStatusAcc?.length ?? 0) === 0) return UNAVAILABLE;
   return { status: "ok", payload };
 }
@@ -311,21 +317,39 @@ export async function fetchStationFeedV2(
 
   let withoutTelemetry = 0;
   let unauthorized = 0;
-  const stations = await mapPool(bulk, DETAIL_CONCURRENCY, async (st) => {
+  let malformedDetails = 0;
+  const polled = await mapPool(bulk, DETAIL_CONCURRENCY, async (st) => {
     const detail = await fetchStationDetailWithRetries(token, st, reqSignal);
     if (detail.status === "ok") return detail.payload;
     if (detail.status === "unauthorized") unauthorized += 1;
+    if (detail.status === "malformed") malformedDetails += 1;
     withoutTelemetry += 1;
     return stationWithoutConnectorTelemetry(st);
   });
 
+  const stations = polled.filter((payload): payload is StationPayload => payload !== null);
+  const malformedStations = polled.length - stations.length;
+
   const covered = bulk.length - withoutTelemetry;
   if (covered < bulk.length * MIN_TELEMETRY_COVERAGE) {
-    const cause = unauthorized > 0 ? ` (${unauthorized} rejected the token)` : "";
+    const causes: string[] = [];
+    if (unauthorized > 0) causes.push(`${unauthorized} rejected the token`);
+    if (malformedDetails > 0) causes.push(`${malformedDetails} failed the feed schema`);
+    const cause = causes.length > 0 ? ` (${causes.join(", ")})` : "";
     return err(
       "fetch_error",
       unauthorized > 0 ? 401 : null,
       `connector telemetry missing for ${withoutTelemetry} of ${bulk.length} stations${cause}`,
+    );
+  }
+
+  const dropped = bulkRejected + malformedStations;
+  if (dropped > 0) {
+    return err(
+      "parse_error",
+      200,
+      `${dropped} of ${bulk.length + bulkRejected} station(s) failed the feed schema; refusing to ` +
+        `report a feed that is missing them, since an absent station reads as one that left the network`,
     );
   }
 
@@ -342,10 +366,11 @@ export async function fetchStationFeedV2(
   const payloadDigest = createHash("sha256").update(JSON.stringify(digestSource)).digest("hex");
 
   const notes: string[] = [];
-  if (withoutTelemetry > 0) {
-    notes.push(`${withoutTelemetry} station(s) reported no connector telemetry`);
+  const silent = withoutTelemetry - malformedDetails;
+  if (silent > 0) notes.push(`${silent} station(s) reported no connector telemetry`);
+  if (malformedDetails > 0) {
+    notes.push(`${malformedDetails} station(s) reported telemetry that failed the feed schema`);
   }
-  if (bulkRejected > 0) notes.push(`${bulkRejected} bulk record(s) rejected`);
 
   return {
     outcome: "success",
@@ -353,7 +378,7 @@ export async function fetchStationFeedV2(
     durationMs: Date.now() - startedAt,
     payloadDigest,
     stations,
-    rejectedStations: bulkRejected,
+    rejectedStations: 0,
     errorMessage: notes.length > 0 ? notes.join("; ") : null,
   };
 }
