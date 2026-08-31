@@ -103,13 +103,13 @@
     "department": "Río Negro",
     "latitude": -32.913389,
     "longitude": -57.406569,
-    "presence": "delisted",
-    "connectors": 0,
-    "operational": 0,
+    "presence": "listed",
+    "connectors": 1,
+    "operational": 1,
     "faulted": 0,
     "unknown": 0,
-    "absent": 1,
-    "outOfService": 1
+    "absent": 0,
+    "outOfService": 0
   },
   {
     "slug": "ancap-bella-union",
@@ -647,13 +647,13 @@
     "department": "Canelones",
     "latitude": -34.694035,
     "longitude": -55.856194,
-    "presence": "listed",
-    "connectors": 1,
-    "operational": 1,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "ancap-rio-branco",
@@ -1351,13 +1351,13 @@
     "department": "Canelones",
     "latitude": -34.7691071,
     "longitude": -55.7644038,
-    "presence": "delisted",
-    "connectors": 0,
-    "operational": 0,
+    "presence": "listed",
+    "connectors": 1,
+    "operational": 1,
     "faulted": 0,
     "unknown": 0,
-    "absent": 1,
-    "outOfService": 1
+    "absent": 0,
+    "outOfService": 0
   },
   {
     "slug": "centro-de-eventos-latu",
@@ -2089,11 +2089,11 @@
     "longitude": -56.148899,
     "presence": "listed",
     "connectors": 4,
-    "operational": 3,
-    "faulted": 1,
+    "operational": 4,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "junta-local-centenario",
@@ -2311,13 +2311,13 @@
     "department": "Canelones",
     "latitude": -34.7319728,
     "longitude": -56.248159,
-    "presence": "delisted",
-    "connectors": 0,
-    "operational": 0,
+    "presence": "listed",
+    "connectors": 1,
+    "operational": 1,
     "faulted": 0,
     "unknown": 0,
-    "absent": 1,
-    "outOfService": 1
+    "absent": 0,
+    "outOfService": 0
   },
   {
     "slug": "macromercado-maldonado",
@@ -3191,13 +3191,13 @@
     "department": "Lavalleja",
     "latitude": -34.37563,
     "longitude": -55.242589,
-    "presence": "delisted",
-    "connectors": 0,
-    "operational": 0,
+    "presence": "listed",
+    "connectors": 2,
+    "operational": 2,
     "faulted": 0,
     "unknown": 0,
-    "absent": 2,
-    "outOfService": 2
+    "absent": 0,
+    "outOfService": 0
   },
   {
     "slug": "plaza-romay-nuevo-berlin",
@@ -3337,11 +3337,11 @@
     "longitude": -54.932418,
     "presence": "listed",
     "connectors": 4,
-    "operational": 2,
-    "faulted": 2,
+    "operational": 4,
+    "faulted": 0,
     "unknown": 0,
     "absent": 2,
-    "outOfService": 4
+    "outOfService": 2
   },
   {
     "slug": "punta-shopping",
@@ -3751,13 +3751,13 @@
     "department": "Montevideo",
     "latitude": -34.873204,
     "longitude": -56.249964,
-    "presence": "listed",
-    "connectors": 2,
-    "operational": 2,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 2,
+    "outOfService": 2
   },
   {
     "slug": "terminal-fray-bentos",
@@ -3831,13 +3831,13 @@
     "department": "Colonia",
     "latitude": -34.264543,
     "longitude": -57.610165,
-    "presence": "delisted",
-    "connectors": 0,
-    "operational": 0,
+    "presence": "listed",
+    "connectors": 1,
+    "operational": 1,
     "faulted": 0,
     "unknown": 0,
-    "absent": 1,
-    "outOfService": 1
+    "absent": 0,
+    "outOfService": 0
   },
   {
     "slug": "tienda-inglesa-central",
@@ -3897,11 +3897,11 @@
     "longitude": -56.615782,
     "presence": "listed",
     "connectors": 3,
-    "operational": 3,
-    "faulted": 0,
+    "operational": 1,
+    "faulted": 2,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 2
   },
   {
     "slug": "utec-durazno",
