@@ -296,6 +296,94 @@ describe("station hourly usage", () => {
     expect(group.hasCable).toBe(true);
   });
 
+  it("reports how many connectors the group held when it was last observed", async () => {
+    await record(
+      fastId,
+      new Date("2026-03-10T09:00:00Z"),
+      new Date("2026-03-10T10:00:00Z"),
+      "Charging",
+      "operational",
+      2,
+    );
+    await record(
+      fastId,
+      new Date("2026-03-10T10:00:00Z"),
+      new Date("2026-03-10T11:00:00Z"),
+      "Charging",
+      "operational",
+      3,
+    );
+
+    const [group] = await getStationHourlyUsage(runner, "pair", WINDOW, "UTC");
+
+    expect(group.connectorCount).toBe(3);
+  });
+
+  it("adds up the connectors of states that were open at the same time", async () => {
+    await record(
+      fastId,
+      new Date("2026-03-10T09:00:00Z"),
+      new Date("2026-03-10T10:00:00Z"),
+      "Charging",
+      "operational",
+      1,
+    );
+    await record(
+      fastId,
+      new Date("2026-03-10T09:00:00Z"),
+      new Date("2026-03-10T10:00:00Z"),
+      "Disponible",
+      "operational",
+      2,
+    );
+
+    const [group] = await getStationHourlyUsage(runner, "pair", WINDOW, "UTC");
+
+    expect(group.connectorCount).toBe(3);
+  });
+
+  it("counts connectors the feed stopped reporting, which usage itself leaves out", async () => {
+    await record(
+      fastId,
+      new Date("2026-03-10T09:00:00Z"),
+      new Date("2026-03-10T10:00:00Z"),
+      "Charging",
+      "operational",
+      1,
+    );
+    await record(
+      fastId,
+      new Date("2026-03-10T09:00:00Z"),
+      new Date("2026-03-10T10:00:00Z"),
+      "Sin reportar",
+      "absent",
+      2,
+    );
+
+    const found = await getStationHourlyUsage(runner, "pair", WINDOW, "UTC");
+
+    expect(found[0].connectorCount).toBe(3);
+    expect(hourOf(found, fastId, 9)?.utilization).toBe(1);
+  });
+
+  it("leaves the count unknown rather than reporting a group of no connectors", async () => {
+    await record(
+      fastId,
+      new Date("2026-03-10T09:00:00Z"),
+      new Date("2026-03-10T10:00:00Z"),
+      "Charging",
+      "operational",
+      2,
+    );
+    const instant = new Date("2026-03-10T11:00:00Z");
+    await record(fastId, instant, instant, "Charging", "operational", 2);
+
+    const [group] = await getStationHourlyUsage(runner, "pair", WINDOW, "UTC");
+
+    expect(group.connectorCount).toBeNull();
+    expect(hourOf([group], fastId, 9)?.utilization).toBe(1);
+  });
+
   it("counts only the part of an interval that falls inside the window", async () => {
     await record(
       fastId,

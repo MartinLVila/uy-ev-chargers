@@ -924,6 +924,7 @@ export interface ConnectorGroupHourlyUsage {
   connectorType: string;
   powerKw: number;
   hasCable: boolean;
+  connectorCount: number | null;
   hours: StationHourlyUsagePoint[];
 }
 
@@ -938,6 +939,7 @@ export async function getStationHourlyUsage(
     connector_type: string;
     power_kw: string | number;
     has_cable: boolean;
+    connector_count: string | number | null;
     hour: number;
     in_use_secs: string | number;
     free_secs: string | number;
@@ -976,6 +978,26 @@ export async function getStationHourlyUsage(
         interval '1 hour'
       ) AS slot(local_hour)
     ),
+    group_size AS (
+      SELECT
+        latest.connector_group_id,
+        SUM(cs.connector_count) AS connector_count
+      FROM (
+        SELECT
+          cs.connector_group_id,
+          MAX(LEAST(COALESCE(cs.ended_at, ${window.to}::timestamptz), ${window.to}::timestamptz))
+            AS observed_to
+        FROM connector_states cs
+        JOIN connector_groups g ON g.id = cs.connector_group_id
+        JOIN stations st ON st.id = g.station_id
+        WHERE st.slug = ${slug} AND ${overlapsWindow("cs", window)}
+        GROUP BY 1
+      ) latest
+      JOIN connector_states cs ON cs.connector_group_id = latest.connector_group_id
+      WHERE cs.started_at < latest.observed_to
+        AND COALESCE(cs.ended_at, ${window.to}::timestamptz) >= latest.observed_to
+      GROUP BY 1
+    ),
     observed AS (
       SELECT
         connector_group_id,
@@ -997,6 +1019,7 @@ export async function getStationHourlyUsage(
       g.connector_type,
       g.power_kw,
       g.has_cable,
+      group_size.connector_count,
       cs.hour,
       COALESCE(SUM(cs.connector_count * ${SLOT_SECONDS}) FILTER (WHERE ${IN_USE}), 0)
         AS in_use_secs,
@@ -1009,8 +1032,11 @@ export async function getStationHourlyUsage(
     JOIN connector_groups g ON g.id = cs.connector_group_id
     JOIN observed
       ON observed.connector_group_id = cs.connector_group_id AND observed.hour = cs.hour
+    LEFT JOIN group_size ON group_size.connector_group_id = cs.connector_group_id
     WHERE cs.slot_to > cs.slot_from
-    GROUP BY g.id, g.connector_type, g.power_kw, g.has_cable, cs.hour, observed.observed_secs
+    GROUP BY
+      g.id, g.connector_type, g.power_kw, g.has_cable,
+      group_size.connector_count, cs.hour, observed.observed_secs
     ORDER BY g.connector_type, g.power_kw, g.id, cs.hour
   `);
 
@@ -1025,6 +1051,7 @@ export async function getStationHourlyUsage(
         connectorType: row.connector_type,
         powerKw: toNumber(row.power_kw),
         hasCable: row.has_cable,
+        connectorCount: toNullableNumber(row.connector_count),
         hours: [],
       };
       groups.set(groupId, group);

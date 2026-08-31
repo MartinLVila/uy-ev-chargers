@@ -2,8 +2,14 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Card } from "@/components/Card";
 import { ConnectorHistory } from "@/components/ConnectorHistory";
+import { ConnectorUsageProfile } from "@/components/ConnectorUsageProfile";
 import { getDb } from "@/lib/db/client";
-import { getStationDetail, getStationStatuses } from "@/lib/metrics/queries";
+import {
+  getStationDetail,
+  getStationHourlyUsage,
+  getStationStatuses,
+  type ConnectorGroupHourlyUsage,
+} from "@/lib/metrics/queries";
 import { windowFromDays } from "@/lib/metrics/window";
 import { formatDateTime, formatNumber } from "@/lib/ui/format";
 import { connectorUsage, stationPresence } from "@/lib/ui/health";
@@ -28,8 +34,19 @@ export default async function StationPage({ params }: { params: Promise<{ slug: 
   const timeWindow = windowFromDays(WINDOW_DAYS);
 
   let station: Awaited<ReturnType<typeof getStationDetail>>;
+  let hourlyUsage: ConnectorGroupHourlyUsage[] = [];
   try {
-    station = await getStationDetail(getDb(), slug, timeWindow);
+    const db = getDb();
+    const [detail, usage] = await Promise.allSettled([
+      getStationDetail(db, slug, timeWindow),
+      getStationHourlyUsage(db, slug, timeWindow),
+    ]);
+
+    if (detail.status === "rejected") throw detail.reason;
+    station = detail.value;
+
+    if (usage.status === "fulfilled") hourlyUsage = usage.value;
+    else console.error(`Station page ${slug} could not read hourly usage`, usage.reason);
   } catch (error) {
     console.error(`Station page ${slug} failed`, error);
     return (
@@ -94,6 +111,13 @@ export default async function StationPage({ params }: { params: Promise<{ slug: 
           windowStart={timeWindow.from.toISOString()}
           windowEnd={timeWindow.to.toISOString()}
         />
+      </Card>
+
+      <Card
+        title={`Uso por hora (${WINDOW_DAYS} días)`}
+        description="Qué tan ocupado estuvo cada cargador en cada hora del día, medido sobre el tiempo en que estuvo en servicio."
+      >
+        <ConnectorUsageProfile groups={hourlyUsage} />
       </Card>
 
       <Card
