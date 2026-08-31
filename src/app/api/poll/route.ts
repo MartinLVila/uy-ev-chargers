@@ -1,18 +1,11 @@
 import { NextResponse } from "next/server";
-import { desc, eq } from "drizzle-orm";
 import { authorizeCronRequest } from "@/lib/api/authorization";
 import { rejectIfRateLimited } from "@/lib/api/rate-limit";
-import { createWriteDatabase, withIngestionLock } from "@/lib/db/write-client";
-import { pollRuns } from "@/lib/db/schema";
-import { runIngestion } from "@/lib/ingest/pipeline";
-import { fetchStationFeedV2 } from "@/lib/ute/v2-client";
+import { createWriteDatabase } from "@/lib/db/write-client";
+import { startIngestion, type IngestionAttempt } from "@/lib/ingest/entry-point";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
-
-const MIN_SECONDS_BETWEEN_SUCCESSFUL_POLLS = 60;
-
-import type { WriteDb } from "@/lib/db/write-client";
 
 function privateJson(payload: unknown, status: number): NextResponse {
   return NextResponse.json(payload, {
@@ -21,28 +14,22 @@ function privateJson(payload: unknown, status: number): NextResponse {
   });
 }
 
-async function secondsSinceLastSuccess(db: WriteDb): Promise<number> {
-  const [latest] = await db
-    .select({ startedAt: pollRuns.startedAt })
-    .from(pollRuns)
-    .where(eq(pollRuns.outcome, "success"))
-    .orderBy(desc(pollRuns.startedAt))
-    .limit(1);
+function reportAttempt(attempt: IngestionAttempt, scope: string): NextResponse {
+  if (attempt.status === "already-running") {
+    return privateJson({ skipped: "Another poll is already running" }, 409);
+  }
 
-  if (!latest) return Number.POSITIVE_INFINITY;
-  return (Date.now() - latest.startedAt.getTime()) / 1000;
-}
-
-async function ingest(db: WriteDb, scope: string): Promise<NextResponse> {
-  const elapsed = await secondsSinceLastSuccess(db);
-  if (elapsed < MIN_SECONDS_BETWEEN_SUCCESSFUL_POLLS) {
+  if (attempt.status === "polled-recently") {
     return privateJson(
-      { skipped: "A poll succeeded moments ago", secondsSinceLastSuccess: Math.round(elapsed) },
+      {
+        skipped: "A poll succeeded moments ago",
+        secondsSinceLastSuccess: attempt.secondsSinceLastSuccess,
+      },
       429,
     );
   }
 
-  const result = await runIngestion(db, { feed: await fetchStationFeedV2() });
+  const { result } = attempt;
   if (result.outcome !== "success") {
     console.error(`${scope} ingested nothing: ${result.errorMessage ?? result.outcome}`);
     return privateJson(result, 502);
@@ -70,11 +57,7 @@ async function handle(request: Request): Promise<NextResponse> {
 
   const { db, close } = createWriteDatabase();
   try {
-    return await withIngestionLock(
-      db,
-      () => ingest(db, scope),
-      () => privateJson({ skipped: "Another poll is already running" }, 409),
-    );
+    return reportAttempt(await startIngestion(db), scope);
   } catch (error) {
     console.error(`${scope} failed`, error);
     return privateJson({ error: "Poll failed" }, 500);
