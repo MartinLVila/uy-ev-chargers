@@ -24,7 +24,7 @@ export function HealthBar({ segments }: HealthBarProps) {
 
   return (
     <div>
-      <div style={{ display: "flex", gap: 2, height: 14, marginBottom: 14 }}>
+      <div aria-hidden style={{ display: "flex", gap: 2, height: 14, marginBottom: 14 }}>
         {present.map((segment, index) => {
           const presentation = connectorHealth(segment.health);
           const isFirst = index === 0;
@@ -36,7 +36,8 @@ export function HealthBar({ segments }: HealthBarProps) {
               style={{
                 flexGrow: segment.count,
                 flexBasis: 0,
-                background: presentation.color,
+                backgroundColor: presentation.color,
+                backgroundImage: presentation.pattern,
                 borderTopLeftRadius: isFirst ? 4 : 0,
                 borderBottomLeftRadius: isFirst ? 4 : 0,
                 borderTopRightRadius: isLast ? 4 : 0,
@@ -67,13 +68,17 @@ export function HealthBar({ segments }: HealthBarProps) {
               <span
                 aria-hidden
                 style={{
-                  width: 10,
-                  height: 10,
+                  width: 12,
+                  height: 12,
                   borderRadius: 3,
-                  background: presentation.color,
+                  backgroundColor: presentation.color,
+                  backgroundImage: presentation.pattern,
                   flexShrink: 0,
                 }}
               />
+              <span aria-hidden style={{ color: presentation.color, fontSize: 11 }}>
+                {presentation.symbol}
+              </span>
               <span style={{ color: "var(--text-secondary)" }}>{presentation.label}</span>
               <span style={{ fontVariantNumeric: "tabular-nums", fontWeight: 600 }}>
                 {formatNumber(segment.count)}
