@@ -14,6 +14,7 @@ charger's state is recorded and never overwritten, so the past stays answerable.
 
 - A map of every charging station and how each one is doing right now
 - Per-station history: how often a charger has been available, in use, or out of service
+- Which hours of the day each individual charger tends to be busy
 - How reliability differs between departments
 - How the network has changed over months rather than minutes
 
