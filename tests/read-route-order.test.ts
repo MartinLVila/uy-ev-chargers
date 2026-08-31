@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { READ_ROUTES } from "./helpers/read-routes";
 
 const limitCalls: Array<{ scope: string; units: number | undefined }> = [];
 let limitVerdict: Response | null = null;
@@ -16,56 +17,7 @@ vi.mock("@/lib/api/rate-limit", async () => {
   };
 });
 
-const ROUTES: Array<{ name: string; call: () => Promise<Response> }> = [
-  {
-    name: "GET /api/health",
-    call: async () =>
-      (await import("@/app/api/health/route")).GET(new Request("https://example.test/api/health")),
-  },
-  {
-    name: "GET /api/stations",
-    call: async () =>
-      (await import("@/app/api/stations/route")).GET(
-        new Request("https://example.test/api/stations"),
-      ),
-  },
-  {
-    name: "GET /api/stations/[slug]",
-    call: async () =>
-      (await import("@/app/api/stations/[slug]/route")).GET(
-        new Request("https://example.test/api/stations/x?days=730"),
-        { params: Promise.resolve({ slug: "x" }) },
-      ),
-  },
-  {
-    name: "GET /api/metrics/history",
-    call: async () =>
-      (await import("@/app/api/metrics/history/route")).GET(
-        new Request("https://example.test/api/metrics/history?days=730"),
-      ),
-  },
-  {
-    name: "GET /api/metrics/overview",
-    call: async () =>
-      (await import("@/app/api/metrics/overview/route")).GET(
-        new Request("https://example.test/api/metrics/overview?days=730"),
-      ),
-  },
-  {
-    name: "GET /api/metrics/reliability",
-    call: async () =>
-      (await import("@/app/api/metrics/reliability/route")).GET(
-        new Request("https://example.test/api/metrics/reliability?days=730"),
-      ),
-  },
-  {
-    name: "GET /api/metrics/usage",
-    call: async () =>
-      (await import("@/app/api/metrics/usage/route")).GET(
-        new Request("https://example.test/api/metrics/usage?days=730"),
-      ),
-  },
-];
+
 
 describe("read routes meter a request before they authorize it", () => {
   const original = process.env.API_READ_TOKEN;
@@ -83,9 +35,9 @@ describe("read routes meter a request before they authorize it", () => {
     vi.restoreAllMocks();
   });
 
-  for (const route of ROUTES) {
+  for (const route of READ_ROUTES) {
     it(`${route.name} charges an unauthenticated caller against the limiter`, async () => {
-      const response = await route.call();
+      const response = await route.invoke(new Request(route.url));
 
       expect(response.status).toBe(401);
       expect(limitCalls).toHaveLength(1);
@@ -95,7 +47,7 @@ describe("read routes meter a request before they authorize it", () => {
     it(`${route.name} answers 429 rather than 401 once the caller is over the limit`, async () => {
       limitVerdict = new Response(null, { status: 429 });
 
-      const response = await route.call();
+      const response = await route.invoke(new Request(route.url));
 
       expect(response.status).toBe(429);
     });
