@@ -1,6 +1,6 @@
 import { sql, type SQL } from "drizzle-orm";
 import type { TimeWindow } from "./window";
-import { FREE_STATUS_DETAILS } from "../ute/status";
+import { FREE_STATUS_KEYS } from "../ute/status";
 
 export interface SqlRunner {
   execute<T extends Record<string, unknown>>(query: SQL): Promise<{ rows: T[] }>;
@@ -9,8 +9,8 @@ export interface SqlRunner {
 const OUT_OF_SERVICE = sql`('faulted', 'absent')`;
 
 const TELEMETRY = sql`cs.health IN ('operational', 'faulted')`;
-const FREE_DETAIL = sql`lower(btrim(cs.status_detail)) IN (${sql.join(
-  FREE_STATUS_DETAILS.map((value) => sql`${value}`),
+const FREE_DETAIL = sql`cs.status_detail_key IN (${sql.join(
+  FREE_STATUS_KEYS.map((value) => sql`${value}`),
   sql`, `,
 )})`;
 const IN_USE = sql`cs.health = 'operational' AND NOT (${FREE_DETAIL})`;
@@ -826,7 +826,7 @@ export async function getHourlyUsage(
       SELECT
         cs.connector_count,
         cs.health,
-        cs.status_detail,
+        cs.status_detail_key,
         GREATEST(cs.started_at, ${window.from}::timestamptz) AS started_at,
         LEAST(COALESCE(cs.ended_at, ${window.to}::timestamptz), ${window.to}::timestamptz)
           AS ended_at
@@ -837,7 +837,7 @@ export async function getHourlyUsage(
       SELECT
         clipped.connector_count,
         clipped.health,
-        clipped.status_detail,
+        clipped.status_detail_key,
         slot.local_hour,
         EXTRACT(EPOCH FROM (
           LEAST(clipped.ended_at, (slot.local_hour + interval '1 hour') AT TIME ZONE ${timeZone})
@@ -949,7 +949,7 @@ export async function getStationHourlyUsage(
         cs.connector_group_id,
         cs.connector_count,
         cs.health,
-        cs.status_detail,
+        cs.status_detail_key,
         GREATEST(cs.started_at, ${window.from}::timestamptz) AS started_at,
         LEAST(COALESCE(cs.ended_at, ${window.to}::timestamptz), ${window.to}::timestamptz)
           AS ended_at
@@ -963,7 +963,7 @@ export async function getStationHourlyUsage(
         clipped.connector_group_id,
         clipped.connector_count,
         clipped.health,
-        clipped.status_detail,
+        clipped.status_detail_key,
         slot.local_hour,
         EXTRACT(HOUR FROM slot.local_hour)::int AS hour,
         GREATEST(clipped.started_at, slot.local_hour AT TIME ZONE ${timeZone}) AS slot_from,

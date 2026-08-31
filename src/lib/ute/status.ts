@@ -8,6 +8,16 @@ export const UNKNOWN_STATUS = "Unknown";
 
 export const FREE_STATUS_DETAILS = ["available", "disponible"] as const;
 
+export const FREE_STATUS_KEYS: readonly string[] = FREE_STATUS_DETAILS.map(fold);
+
+export function statusDetailKey(statusDetail: string): string {
+  return fold(statusDetail);
+}
+
+export function isFreeStatusDetail(statusDetail: string): boolean {
+  return FREE_STATUS_KEYS.includes(statusDetailKey(statusDetail));
+}
+
 const OPERATIONAL = [
   "available",
   "busy",
