@@ -1,26 +1,29 @@
 import "./env";
-import { createWriteDatabase, withIngestionLock } from "../src/lib/db/write-client";
-import { runIngestion } from "../src/lib/ingest/pipeline";
-import { fetchStationFeedV2 } from "../src/lib/ute/v2-client";
+import { createWriteDatabase } from "../src/lib/db/write-client";
+import { startIngestion, type IngestionAttempt } from "../src/lib/ingest/entry-point";
+
+function report(attempt: IngestionAttempt): boolean {
+  if (attempt.status === "already-running") {
+    process.stdout.write("Another poll is already running; skipping.\n");
+    return true;
+  }
+
+  if (attempt.status === "polled-recently") {
+    process.stdout.write(`A poll succeeded ${attempt.secondsSinceLastSuccess}s ago; skipping.\n`);
+    return true;
+  }
+
+  process.stdout.write(`${JSON.stringify(attempt.result)}\n`);
+  return attempt.result.outcome === "success";
+}
 
 async function main() {
   const { db, close } = createWriteDatabase();
   try {
-    const outcome = await withIngestionLock(
-      db,
-      async () => {
-        const result = await runIngestion(db, { feed: await fetchStationFeedV2() });
-        process.stdout.write(`${JSON.stringify(result)}\n`);
-        return result.outcome;
-      },
-      () => {
-        process.stdout.write("Another poll is already running; skipping.\n");
-        return "skipped" as const;
-      },
-    );
-
-    if (outcome !== "success" && outcome !== "skipped") {
-      process.stderr.write(`Feed unavailable: ${outcome}\n`);
+    const attempt = await startIngestion(db);
+    if (!report(attempt)) {
+      const reason = attempt.status === "ingested" ? attempt.result.outcome : attempt.status;
+      process.stderr.write(`Feed unavailable: ${reason}\n`);
       process.exitCode = 1;
     }
   } finally {
