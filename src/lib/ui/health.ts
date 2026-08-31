@@ -1,4 +1,4 @@
-import { FREE_STATUS_DETAILS } from "../ute/status";
+import { isFreeStatusDetail } from "../ute/status";
 
 export interface HealthPresentation {
   label: string;
@@ -7,8 +7,6 @@ export interface HealthPresentation {
 }
 
 export type ConnectorUsage = "free" | "inUse" | "broken" | "absent" | "unknown";
-
-const FREE_DETAIL = new Set<string>(FREE_STATUS_DETAILS);
 
 export const USAGE_PRESENTATION: Record<ConnectorUsage, HealthPresentation> = {
   free: { label: "Libre", color: "var(--status-good)", symbol: "●" },
@@ -22,7 +20,7 @@ export function connectorUsageState(health: string, statusDetail: string): Conne
   if (health === "faulted") return "broken";
   if (health === "absent") return "absent";
   if (health === "operational") {
-    return FREE_DETAIL.has(statusDetail.trim().toLowerCase()) ? "free" : "inUse";
+    return isFreeStatusDetail(statusDetail) ? "free" : "inUse";
   }
   return "unknown";
 }

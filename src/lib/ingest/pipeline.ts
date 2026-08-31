@@ -13,6 +13,7 @@ import {
   ABSENT_STATUS,
   classifyConnectorHealth,
   STATION_PRESENCE,
+  statusDetailKey,
   UNKNOWN_STATUS,
   type StationPresence,
 } from "../ute/status";
@@ -778,7 +779,7 @@ function groupIdentity(stationId: number, type: string, power: number, hasCable:
 }
 
 function stateKey(statusDetail: string, statusCode: number | null): string {
-  return `${fold(statusDetail)}|${statusCode ?? ""}`;
+  return `${statusDetailKey(statusDetail)}|${statusCode ?? ""}`;
 }
 
 function indexUniqueIds<T extends { id: number }>(

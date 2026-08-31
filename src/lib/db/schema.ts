@@ -95,6 +95,9 @@ export const connectorStates = pgTable(
       .references(() => connectorGroups.id, { onDelete: "cascade" }),
     statusCode: integer("status_code"),
     statusDetail: text("status_detail").notNull(),
+    statusDetailKey: text("status_detail_key")
+      .notNull()
+      .generatedAlwaysAs(sql`btrim(regexp_replace(lower(regexp_replace(normalize(status_detail, NFD), U&'[\0300-\036F]', '', 'g')), U&'[\0009-\000D\0020\00A0\1680\2000-\200A\2028\2029\202F\205F\3000\FEFF]+', ' ', 'g'))`),
     health: text("health").notNull(),
     connectorCount: integer("connector_count").notNull(),
     startedAt: timestamp("started_at", { withTimezone: true }).notNull(),

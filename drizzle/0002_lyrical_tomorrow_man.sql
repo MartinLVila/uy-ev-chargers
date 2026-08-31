@@ -1,0 +1,1 @@
+ALTER TABLE "connector_states" ADD COLUMN "status_detail_key" text GENERATED ALWAYS AS (btrim(regexp_replace(lower(regexp_replace(normalize("status_detail", NFD), U&'[\0300-\036F]', '', 'g')), U&'[\0009-\000D\0020\00A0\1680\2000-\200A\2028\2029\202F\205F\3000\FEFF]+', ' ', 'g'))) STORED NOT NULL;
