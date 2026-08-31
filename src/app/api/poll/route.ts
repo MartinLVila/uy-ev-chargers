@@ -1,5 +1,6 @@
-import { NextResponse } from "next/server";
+import type { NextResponse } from "next/server";
 import { authorizeCronRequest } from "@/lib/api/authorization";
+import { tokenGatedJsonResponse } from "@/lib/api/response";
 import { rejectIfRateLimited } from "@/lib/api/rate-limit";
 import { createWriteDatabase } from "@/lib/db/write-client";
 import { startIngestion, type IngestionAttempt } from "@/lib/ingest/entry-point";
@@ -8,10 +9,7 @@ export const dynamic = "force-dynamic";
 export const maxDuration = 300;
 
 function privateJson(payload: unknown, status: number): NextResponse {
-  return NextResponse.json(payload, {
-    status,
-    headers: { "cache-control": "no-store" },
-  });
+  return tokenGatedJsonResponse(payload, { status });
 }
 
 function reportAttempt(attempt: IngestionAttempt, scope: string): NextResponse {

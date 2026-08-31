@@ -1,7 +1,7 @@
 import { getDb } from "@/lib/db/client";
 import { getUsageBreakdown, getHourlyUsage } from "@/lib/metrics/queries";
 import { parseWindowDays, windowFromDays } from "@/lib/metrics/window";
-import { jsonResponse, loggedErrorResponse } from "@/lib/api/response";
+import { tokenGatedJsonResponse, loggedErrorResponse } from "@/lib/api/response";
 import { rejectIfRateLimited, requestUnitsForWindow } from "@/lib/api/rate-limit";
 import { rejectUnauthorizedRead } from "@/lib/api/authorization";
 
@@ -23,7 +23,7 @@ export async function GET(request: Request) {
       getUsageBreakdown(db, window),
       getHourlyUsage(db, window),
     ]);
-    return jsonResponse({ days, usage, hourly });
+    return tokenGatedJsonResponse({ days, usage, hourly });
   } catch (error) {
     return loggedErrorResponse("GET /api/metrics/usage", error, "Unable to read usage");
   }

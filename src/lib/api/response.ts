@@ -1,37 +1,26 @@
 import { NextResponse } from "next/server";
 
-const BROWSER_CACHE_CONTROL = "public, max-age=0, must-revalidate";
-const EDGE_CACHE_CONTROL = "public, s-maxage=60, stale-while-revalidate=600";
+const NOT_FOR_A_SHARED_CACHE = "private, no-store";
 const NEVER_STORED = "no-store";
-const PUBLIC_READ_ORIGIN = "*";
+const THE_CREDENTIAL_THAT_DECIDES_THE_BODY = "authorization";
 
-function cacheableHeaders(): Record<string, string> {
+function tokenGatedHeaders(): Record<string, string> {
   return {
-    "cache-control": BROWSER_CACHE_CONTROL,
-    "cdn-cache-control": EDGE_CACHE_CONTROL,
-    "vercel-cdn-cache-control": EDGE_CACHE_CONTROL,
-    "access-control-allow-origin": PUBLIC_READ_ORIGIN,
-  };
-}
-
-function uncacheableHeaders(): Record<string, string> {
-  return {
-    "cache-control": NEVER_STORED,
+    "cache-control": NOT_FOR_A_SHARED_CACHE,
     "cdn-cache-control": NEVER_STORED,
     "vercel-cdn-cache-control": NEVER_STORED,
-    "access-control-allow-origin": PUBLIC_READ_ORIGIN,
+    vary: THE_CREDENTIAL_THAT_DECIDES_THE_BODY,
   };
 }
 
-export function jsonResponse<T>(payload: T, init?: ResponseInit): NextResponse {
-  return NextResponse.json(payload, {
-    ...init,
-    headers: { ...cacheableHeaders(), ...init?.headers },
-  });
+export function tokenGatedJsonResponse<T>(payload: T, init?: ResponseInit): NextResponse {
+  const headers = new Headers(init?.headers);
+  for (const [name, value] of Object.entries(tokenGatedHeaders())) headers.set(name, value);
+  return NextResponse.json(payload, { ...init, headers });
 }
 
 export function errorResponse(message: string, status: number): NextResponse {
-  return NextResponse.json({ error: message }, { status, headers: uncacheableHeaders() });
+  return NextResponse.json({ error: message }, { status, headers: tokenGatedHeaders() });
 }
 
 export function rateLimitedResponse(retryAfterSeconds: number): NextResponse {
@@ -39,7 +28,7 @@ export function rateLimitedResponse(retryAfterSeconds: number): NextResponse {
     { error: "Too many requests" },
     {
       status: 429,
-      headers: { ...uncacheableHeaders(), "retry-after": String(retryAfterSeconds) },
+      headers: { ...tokenGatedHeaders(), "retry-after": String(retryAfterSeconds) },
     },
   );
 }
