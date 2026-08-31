@@ -25,8 +25,6 @@ export function station(overrides: StationOverrides = {}): StationPayload {
     address: overrides.address ?? "Some street 123",
     lat: overrides.lat ?? -34.9,
     lng: overrides.lng ?? -56.15,
-    services: null,
-    attendance: null,
     department: overrides.department ?? "Montevideo",
     city: overrides.city ?? "Montevideo",
     status: "Cargando",
