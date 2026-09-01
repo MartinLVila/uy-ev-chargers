@@ -50,24 +50,26 @@ export default async function StationPage({ params }: { params: Promise<{ slug: 
   } catch (error) {
     console.error(`Station page ${slug} failed`, error);
     return (
-      <div
-        style={{
-          background: "var(--surface-1)",
-          border: "1px solid var(--border)",
-          borderRadius: 12,
-          padding: 24,
-          maxWidth: 640,
-        }}
-      >
-        <h1 style={{ margin: "0 0 8px", fontSize: 18, fontWeight: 600 }}>
-          No se pudo cargar la estación
-        </h1>
-        <p style={{ margin: 0, fontSize: 14, color: "var(--text-secondary)", lineHeight: 1.6 }}>
-          La base de datos no respondió. Probá de nuevo en unos minutos.
-        </p>
-        <p style={{ margin: "12px 0 0", fontSize: 13.5 }}>
-          <Link href="/">← Volver al mapa</Link>
-        </p>
+      <div className="container" style={{ paddingTop: 28, paddingBottom: 64 }}>
+        <div
+          style={{
+            background: "var(--surface-1)",
+            border: "1px solid var(--border)",
+            borderRadius: 12,
+            padding: 24,
+            maxWidth: 640,
+          }}
+        >
+          <h1 style={{ margin: "0 0 8px", fontSize: 18, fontWeight: 600 }}>
+            No se pudo cargar la estación
+          </h1>
+          <p style={{ margin: 0, fontSize: 14, color: "var(--text-secondary)", lineHeight: 1.6 }}>
+            La base de datos no respondió. Probá de nuevo en unos minutos.
+          </p>
+          <p style={{ margin: "12px 0 0", fontSize: 13.5 }}>
+            <Link href="/">← Volver al mapa</Link>
+          </p>
+        </div>
       </div>
     );
   }
@@ -77,7 +79,10 @@ export default async function StationPage({ params }: { params: Promise<{ slug: 
   const presence = stationPresence(station.presence);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+    <div
+      className="container"
+      style={{ display: "flex", flexDirection: "column", gap: 20, paddingTop: 28, paddingBottom: 64 }}
+    >
       <div>
         <Link href="/" style={{ fontSize: 13, color: "var(--text-secondary)" }}>
           ← Volver al mapa

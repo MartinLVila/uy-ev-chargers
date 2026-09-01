@@ -19,17 +19,20 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script src="/theme.js" />
         <header
           style={{
+            position: "sticky",
+            top: 0,
+            zIndex: 20,
             borderBottom: "1px solid var(--border)",
-            background: "var(--surface-1)",
+            background: "var(--surface-page)",
           }}
         >
           <div
+            className="container"
             style={{
-              maxWidth: 1120,
-              margin: "0 auto",
-              padding: "14px 24px",
+              paddingTop: 14,
+              paddingBottom: 14,
               display: "flex",
-              alignItems: "baseline",
+              alignItems: "center",
               gap: 16,
               flexWrap: "wrap",
             }}
@@ -47,17 +50,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </div>
         </header>
 
-        <main style={{ maxWidth: 1120, margin: "0 auto", padding: "28px 24px 64px" }}>{children}</main>
+        <main>{children}</main>
 
         <footer
           style={{
             borderTop: "1px solid var(--border)",
-            padding: "20px 24px 40px",
+            padding: "20px 0 40px",
             fontSize: 12.5,
             color: "var(--text-muted)",
           }}
         >
-          <div style={{ maxWidth: 1120, margin: "0 auto" }}>
+          <div className="container">
             Datos de{" "}
             <a href="https://movilidad.ute.com.uy/mapa.html" rel="noreferrer noopener" target="_blank">
               movilidad.ute.com.uy
