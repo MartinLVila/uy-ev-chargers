@@ -21,7 +21,7 @@ export type ConnectorUsage = "free" | "inUse" | "broken" | "absent" | "unknown";
 
 export const USAGE_PRESENTATION: Record<ConnectorUsage, HealthPresentation> = {
   free: { label: "Libre", color: "var(--status-good)", symbol: "○", pattern: SOLID },
-  inUse: { label: "En uso", color: "var(--accent)", symbol: "●", pattern: RISING_STRIPES },
+  inUse: { label: "En uso", color: "var(--state-neutral)", symbol: "●", pattern: RISING_STRIPES },
   broken: {
     label: "Con falla",
     color: "var(--status-critical)",
