@@ -137,4 +137,13 @@ describe("state is never carried by colour alone", () => {
       ).toBeGreaterThanOrEqual(GRAPHIC_CONTRAST);
     }
   });
+
+  it("paints every marker in the status colour it names, so the two cannot drift", () => {
+    for (const [state, presentation] of Object.entries(MARKER_PRESENTATION)) {
+      expect(
+        presentation.color,
+        `the ${state} marker no longer matches --${presentation.statusToken}`,
+      ).toBe(tokenValue(light, presentation.statusToken));
+    }
+  });
 });

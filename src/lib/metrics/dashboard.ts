@@ -15,6 +15,8 @@ import {
 } from "./queries";
 import { windowFromDays } from "./window";
 
+const RELIABILITY_DAYS = 30;
+
 export interface DashboardData {
   snapshot: NetworkSnapshot;
   feed: FeedHealth;
@@ -23,6 +25,7 @@ export interface DashboardData {
   reliability: StationReliability[];
   history: DailyPoint[];
   historyDays: number;
+  reliabilityDays: number;
 }
 
 export async function loadDashboard(historyDays = 90): Promise<DashboardData | null> {
@@ -35,11 +38,23 @@ export async function loadDashboard(historyDays = 90): Promise<DashboardData | n
       getFeedHealth(db, window),
       getDepartmentBreakdown(db),
       getStationStatuses(db),
-      getStationReliability(db, windowFromDays(30), { limit: 15, worstFirst: true }),
+      getStationReliability(db, windowFromDays(RELIABILITY_DAYS), {
+        limit: 15,
+        worstFirst: true,
+      }),
       getDailyHistory(db, window),
     ]);
 
-    return { snapshot, feed, departments, stations, reliability, history, historyDays };
+    return {
+      snapshot,
+      feed,
+      departments,
+      stations,
+      reliability,
+      history,
+      historyDays,
+      reliabilityDays: RELIABILITY_DAYS,
+    };
   } catch (error) {
     console.error("Dashboard query failed", error);
     return null;

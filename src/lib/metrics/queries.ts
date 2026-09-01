@@ -1,5 +1,6 @@
 import { sql, type SQL } from "drizzle-orm";
 import type { TimeWindow } from "./window";
+import { REPORTING_TIME_ZONE } from "../reporting";
 import { FREE_STATUS_KEYS } from "../ute/status";
 
 export interface SqlRunner {
@@ -479,8 +480,6 @@ export interface DailyPoint {
   outOfServiceRatio: number;
   stationsDelisted: number;
 }
-
-export const REPORTING_TIME_ZONE = "America/Montevideo";
 
 export async function getDailyHistory(
   db: SqlRunner,
