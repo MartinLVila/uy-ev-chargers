@@ -19,7 +19,7 @@ export function DepartmentChart({ departments }: DepartmentChartProps) {
 
   return (
     <dl
-      className="hairline-list"
+      className="hairline-grid"
       style={{
         margin: 0,
         display: "grid",

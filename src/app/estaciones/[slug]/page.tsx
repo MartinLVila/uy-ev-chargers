@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Card } from "@/components/Card";
 import { ConnectorHistory } from "@/components/ConnectorHistory";
 import { ConnectorUsageProfile } from "@/components/ConnectorUsageProfile";
 import { getDb } from "@/lib/db/client";
@@ -9,10 +8,11 @@ import {
   getStationHourlyUsage,
   getStationStatuses,
   type ConnectorGroupHourlyUsage,
+  type StationTimelineEntry,
 } from "@/lib/metrics/queries";
 import { windowFromDays } from "@/lib/metrics/window";
 import { formatDateTime, formatNumber } from "@/lib/ui/format";
-import { connectorUsage, stationPresence } from "@/lib/ui/health";
+import { connectorUsage, connectorUsageState, stationPresence } from "@/lib/ui/health";
 
 export const revalidate = 60;
 
@@ -26,6 +26,32 @@ export async function generateStaticParams(): Promise<{ slug: string }[]> {
     console.error("Could not enumerate stations to prerender", error);
     return [];
   }
+}
+
+export interface ConnectorsNow {
+  total: number;
+  inService: number;
+  outOfService: number;
+  unknown: number;
+}
+
+export function connectorsNow(timeline: StationTimelineEntry[]): ConnectorsNow {
+  const open = timeline.filter((entry) => entry.endedAt === null);
+
+  return open.reduce<ConnectorsNow>(
+    (running, entry) => {
+      const state = connectorUsageState(entry.health, entry.statusDetail);
+      const inService = state === "free" || state === "inUse";
+      const outOfService = state === "broken" || state === "absent";
+      return {
+        total: running.total + entry.connectorCount,
+        inService: running.inService + (inService ? entry.connectorCount : 0),
+        outOfService: running.outOfService + (outOfService ? entry.connectorCount : 0),
+        unknown: running.unknown + (inService || outOfService ? 0 : entry.connectorCount),
+      };
+    },
+    { total: 0, inService: 0, outOfService: 0, unknown: 0 },
+  );
 }
 
 export default async function StationPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -50,26 +76,14 @@ export default async function StationPage({ params }: { params: Promise<{ slug: 
   } catch (error) {
     console.error(`Station page ${slug} failed`, error);
     return (
-      <div className="container" style={{ paddingTop: 28, paddingBottom: 64 }}>
-        <div
-          style={{
-            background: "var(--surface-1)",
-            border: "1px solid var(--border)",
-            borderRadius: 12,
-            padding: 24,
-            maxWidth: 640,
-          }}
-        >
-          <h1 style={{ margin: "0 0 8px", fontSize: 18, fontWeight: 600 }}>
-            No se pudo cargar la estación
-          </h1>
-          <p style={{ margin: 0, fontSize: 14, color: "var(--text-secondary)", lineHeight: 1.6 }}>
-            La base de datos no respondió. Probá de nuevo en unos minutos.
-          </p>
-          <p style={{ margin: "12px 0 0", fontSize: 13.5 }}>
-            <Link href="/">← Volver al mapa</Link>
-          </p>
-        </div>
+      <div className="container" style={{ paddingTop: 58, paddingBottom: 58 }}>
+        <h1 className="section-title">No se pudo cargar la estación</h1>
+        <p className="support-text" style={{ marginTop: 12, maxWidth: 640 }}>
+          La base de datos no respondió. Probá de nuevo en unos minutos.
+        </p>
+        <p style={{ margin: "16px 0 0", fontSize: 15 }}>
+          <Link href="/">← Volver al mapa</Link>
+        </p>
       </div>
     );
   }
@@ -77,147 +91,177 @@ export default async function StationPage({ params }: { params: Promise<{ slug: 
   if (!station) notFound();
 
   const presence = stationPresence(station.presence);
+  const now = connectorsNow(station.timeline);
+  const where = [station.address, station.city, station.department].filter(Boolean).join(", ");
 
   return (
-    <div
-      className="container"
-      style={{ display: "flex", flexDirection: "column", gap: 20, paddingTop: 28, paddingBottom: 64 }}
-    >
-      <div>
-        <Link href="/" style={{ fontSize: 13, color: "var(--text-secondary)" }}>
-          ← Volver al mapa
-        </Link>
-        <h1 style={{ margin: "10px 0 6px", fontSize: 26, fontWeight: 600, letterSpacing: "-0.02em" }}>
-          {station.name}
-        </h1>
-        <p style={{ margin: 0, color: "var(--text-secondary)", fontSize: 14 }}>
-          {[station.address, station.city, station.department].filter(Boolean).join(", ")}
-        </p>
-        <p style={{ margin: "10px 0 0", fontSize: 13.5 }}>
-          <span aria-hidden style={{ color: presence.color }}>
-            {presence.symbol}
-          </span>{" "}
-          {presence.label}
-          <span style={{ color: "var(--text-muted)" }}>
-            {" "}
-            · vista por primera vez el {formatDateTime(station.firstSeenAt)}
-          </span>
-        </p>
-      </div>
-
-      <Card
-        title={`Historial por cargador (${WINDOW_DAYS} días)`}
-        description="Cada barra muestra la evolución de un conector en el tiempo: libre, en uso o fuera de servicio."
-      >
-        <ConnectorHistory
-          timeline={station.timeline}
-          timelineCoversFrom={station.timelineCoversFrom}
-          firstSeenAt={station.firstSeenAt}
-          windowStart={timeWindow.from.toISOString()}
-          windowEnd={timeWindow.to.toISOString()}
-        />
-      </Card>
-
-      <Card
-        title={`Uso por hora (${WINDOW_DAYS} días)`}
-        description="Qué tan ocupado estuvo cada cargador en cada hora del día, medido sobre el tiempo en que estuvo en servicio."
-      >
-        <ConnectorUsageProfile groups={hourlyUsage} />
-      </Card>
-
-      <Card
-        title={`Historial de estados (${WINDOW_DAYS} días)`}
-        description="Cada fila es un intervalo durante el cual el grupo de conectores mantuvo el mismo estado."
-      >
-        {station.timeline.length === 0 ? (
-          <p style={{ margin: 0, fontSize: 13, color: "var(--text-muted)" }}>
-            No hay cambios de estado registrados en este período.
+    <>
+      <section className="band band-hero">
+        <div className="container">
+          <p style={{ margin: "0 0 18px", fontSize: 15 }}>
+            <Link href="/" style={{ color: "var(--text-secondary)" }}>
+              ← Volver al mapa
+            </Link>
           </p>
-        ) : (
-          <div>
-            {station.timelineTruncated && (
-              <p style={{ margin: "0 0 12px", fontSize: 13, color: "var(--text-muted)" }}>
-                Se muestran los {formatNumber(station.timeline.length)} cambios más recientes; hay
-                más registros en este período.
-              </p>
+          {where && <span className="label-caps">{where}</span>}
+          <h1 className="figure-name" style={{ marginTop: where ? 14 : 0 }}>
+            {station.name}
+          </h1>
+          <p className="support-text" style={{ marginTop: 16 }}>
+            <span aria-hidden style={{ color: presence.color }}>
+              {presence.symbol}
+            </span>{" "}
+            {presence.label} · vista por primera vez el {formatDateTime(station.firstSeenAt)}
+          </p>
+        </div>
+      </section>
+
+      <section className="band">
+        <div className="container">
+          <h2 className="visually-hidden">Los conectores de esta estación ahora mismo</h2>
+          <dl className="figure-row">
+            <StationFigure label="Conectores" value={formatNumber(now.total)} />
+            <StationFigure label="En servicio ahora" value={formatNumber(now.inService)} />
+            <StationFigure
+              label="Fuera de servicio ahora"
+              value={formatNumber(now.outOfService)}
+              color={now.outOfService > 0 ? "var(--status-critical)" : undefined}
+            />
+            {now.unknown > 0 && (
+              <StationFigure
+                label="Estado desconocido"
+                value={formatNumber(now.unknown)}
+                color="var(--chart-neutral)"
+              />
             )}
-            <div style={{ overflowX: "auto" }}>
-            <table
-              style={{ width: "100%", borderCollapse: "collapse", fontSize: 13.5, minWidth: 620 }}
-            >
-              <thead>
-                <tr>
-                  <Th>Conector</Th>
-                  <Th>Estado</Th>
-                  <Th align="right">Cantidad</Th>
-                  <Th>Desde</Th>
-                  <Th>Hasta</Th>
-                </tr>
-              </thead>
-              <tbody>
-                {station.timeline.map((entry, index) => {
-                  const usage = connectorUsage(entry.health, entry.statusDetail);
-                  return (
-                    <tr
-                      key={`${entry.startedAt}-${entry.connectorType}-${entry.powerKw}-${index}`}
-                      style={{ borderTop: "1px solid var(--border)" }}
-                    >
-                      <td style={{ padding: "10px 12px 10px 0" }}>
-                        {entry.connectorType} · {entry.powerKw} kW
-                        <span style={{ color: "var(--text-muted)" }}>
-                          {entry.hasCable ? " · con cable" : " · sin cable"}
-                        </span>
-                      </td>
-                      <td style={{ padding: "10px 12px 10px 0" }}>
-                        <span aria-hidden style={{ color: usage.color }}>
-                          {usage.symbol}
-                        </span>{" "}
-                        {usage.label}
-                        <span style={{ color: "var(--text-muted)" }}> ({entry.statusDetail})</span>
-                      </td>
-                      <td
-                        style={{
-                          padding: "10px 12px 10px 0",
-                          textAlign: "right",
-                          fontVariantNumeric: "tabular-nums",
-                        }}
-                      >
-                        {formatNumber(entry.connectorCount)}
-                      </td>
-                      <td style={{ padding: "10px 12px 10px 0", color: "var(--text-secondary)" }}>
-                        {formatDateTime(entry.startedAt)}
-                      </td>
-                      <td style={{ padding: "10px 0", color: "var(--text-secondary)" }}>
-                        {entry.endedAt ? formatDateTime(entry.endedAt) : "en curso"}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-            </div>
-          </div>
-        )}
-      </Card>
+          </dl>
+        </div>
+      </section>
+
+      <section className="band band-tinted">
+        <div className="container">
+          <h2 className="section-title">Cómo estuvo cada cargador</h2>
+          <p className="support-text" style={{ marginTop: 12, marginBottom: 32 }}>
+            Cada barra muestra la evolución de un conector en los últimos {WINDOW_DAYS} días: libre,
+            en uso o fuera de servicio.
+          </p>
+          <ConnectorHistory
+            timeline={station.timeline}
+            timelineCoversFrom={station.timelineCoversFrom}
+            firstSeenAt={station.firstSeenAt}
+            windowStart={timeWindow.from.toISOString()}
+            windowEnd={timeWindow.to.toISOString()}
+          />
+        </div>
+      </section>
+
+      <section className="band">
+        <div className="container">
+          <h2 className="section-title">A qué hora se ocupa</h2>
+          <p className="support-text" style={{ marginTop: 12, marginBottom: 32 }}>
+            Qué tan ocupado estuvo cada cargador en cada hora del día, medido sobre el tiempo en que
+            estuvo en servicio.
+          </p>
+          <ConnectorUsageProfile groups={hourlyUsage} />
+        </div>
+      </section>
+
+      <section className="band band-tinted">
+        <div className="container">
+          <h2 className="section-title">Cada cambio, desde el principio</h2>
+          <p className="support-text" style={{ marginTop: 12, marginBottom: 32 }}>
+            Cada fila es un intervalo durante el cual el grupo de conectores mantuvo el mismo estado.
+          </p>
+          <StateHistory
+            timeline={station.timeline}
+            truncated={station.timelineTruncated}
+          />
+        </div>
+      </section>
+    </>
+  );
+}
+
+function StationFigure({ label, value, color }: { label: string; value: string; color?: string }) {
+  return (
+    <div>
+      <dt className="label-caps">{label}</dt>
+      <dd className="figure-major" style={{ margin: "10px 0 0", color }}>
+        {value}
+      </dd>
     </div>
   );
 }
 
-function Th({ children, align = "left" }: { children: React.ReactNode; align?: "left" | "right" }) {
+function StateHistory({
+  timeline,
+  truncated,
+}: {
+  timeline: StationTimelineEntry[];
+  truncated: boolean;
+}) {
+  if (timeline.length === 0) {
+    return (
+      <p style={{ margin: 0, fontSize: 15, color: "var(--text-muted)" }}>
+        No hay cambios de estado registrados en este período.
+      </p>
+    );
+  }
+
   return (
-    <th
-      style={{
-        textAlign: align,
-        padding: "0 12px 8px 0",
-        fontSize: 11.5,
-        fontWeight: 500,
-        textTransform: "uppercase",
-        letterSpacing: "0.04em",
-        color: "var(--text-muted)",
-        whiteSpace: "nowrap",
-      }}
-    >
-      {children}
-    </th>
+    <div>
+      {truncated && (
+        <p style={{ margin: "0 0 16px", fontSize: 13.5, color: "var(--text-muted)" }}>
+          Se muestran los {formatNumber(timeline.length)} cambios más recientes; hay más registros
+          en este período.
+        </p>
+      )}
+      <ul className="hairline-list">
+        {timeline.map((entry, index) => {
+          const usage = connectorUsage(entry.health, entry.statusDetail);
+          return (
+            <li
+              key={`${entry.startedAt}-${entry.connectorType}-${entry.powerKw}-${index}`}
+              className="row-wash"
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                alignItems: "baseline",
+                justifyContent: "space-between",
+                gap: "6px 24px",
+                padding: "14px 0",
+                fontSize: 14.5,
+              }}
+            >
+              <span style={{ fontWeight: 600, minWidth: 0 }}>
+                {entry.connectorType} · {entry.powerKw} kW
+                <span style={{ color: "var(--text-muted)", fontWeight: 400 }}>
+                  {entry.hasCable ? " · con cable" : " · sin cable"} ·{" "}
+                  {formatNumber(entry.connectorCount)}{" "}
+                  {entry.connectorCount === 1 ? "conector" : "conectores"}
+                </span>
+              </span>
+              <span style={{ minWidth: 0 }}>
+                <span aria-hidden style={{ color: usage.color }}>
+                  {usage.symbol}
+                </span>{" "}
+                {usage.label}
+                <span style={{ color: "var(--text-muted)" }}> ({entry.statusDetail})</span>
+              </span>
+              <span
+                style={{
+                  color: "var(--text-secondary)",
+                  fontVariantNumeric: "tabular-nums",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {formatDateTime(entry.startedAt)} →{" "}
+                {entry.endedAt ? formatDateTime(entry.endedAt) : "en curso"}
+              </span>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
   );
 }

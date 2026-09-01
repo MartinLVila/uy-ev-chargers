@@ -41,8 +41,17 @@ export function ConnectorUsageProfile({ groups }: { groups: ConnectorGroupHourly
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
       <Legend />
-      {profiles.map((profile) => (
-        <GroupChart key={profile.connectorGroupId} profile={profile} />
+      {profiles.map((profile, index) => (
+        <div
+          key={profile.connectorGroupId}
+          style={
+            index === 0
+              ? undefined
+              : { borderTop: "1px solid var(--border)", paddingTop: 44, marginTop: 22 }
+          }
+        >
+          <GroupChart profile={profile} />
+        </div>
       ))}
       <p style={{ margin: 0, fontSize: 12, color: "var(--text-muted)" }}>
         Cada barra es la proporción del tiempo en que ese conector estuvo ocupado durante esa hora

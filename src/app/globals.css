@@ -114,6 +114,15 @@ a {
   font-variant-numeric: tabular-nums lining-nums;
 }
 
+.figure-name {
+  display: block;
+  margin: 0;
+  font-size: clamp(34px, 6.5vw, 66px);
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 1.04;
+}
+
 .figure-major {
   display: block;
   font-size: clamp(38px, 6vw, 56px);
@@ -145,6 +154,51 @@ a {
   font-size: 17px;
   line-height: 1.5;
   color: var(--text-secondary);
+}
+
+.figure-row {
+  margin: 0;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+}
+
+.figure-row > * {
+  min-width: 0;
+  padding: 0 0 0 36px;
+  border-left: 1px solid var(--border);
+}
+
+.figure-row > *:first-child {
+  padding-left: 0;
+  border-left: 0;
+}
+
+@media (max-width: 719px) {
+  .figure-row {
+    grid-auto-flow: row;
+    grid-auto-columns: auto;
+  }
+
+  .figure-row > * {
+    padding: 20px 0 0;
+    border-left: 0;
+    border-top: 1px solid var(--border);
+  }
+
+  .figure-row > *:first-child {
+    padding-top: 0;
+    border-top: 0;
+  }
+}
+
+.hairline-grid {
+  margin: 0;
+  border-top: 1px solid var(--border);
+}
+
+.hairline-grid > * {
+  border-bottom: 1px solid var(--border);
 }
 
 .hairline-list {

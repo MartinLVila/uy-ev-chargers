@@ -70,27 +70,6 @@ export function ConnectorHistory({
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
-      <div style={{ display: "flex", gap: 16, flexWrap: "wrap", fontSize: 12.5 }}>
-        {LEGEND.map((state) => (
-          <span key={state} style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <span
-              aria-hidden
-              style={{
-                width: 12,
-                height: 12,
-                borderRadius: 2,
-                backgroundColor: USAGE_PRESENTATION[state].color,
-                backgroundImage: USAGE_PRESENTATION[state].pattern,
-              }}
-            />
-            <span aria-hidden style={{ color: USAGE_PRESENTATION[state].color, fontSize: 11 }}>
-              {USAGE_PRESENTATION[state].symbol}
-            </span>
-            <span style={{ color: "var(--text-secondary)" }}>{USAGE_PRESENTATION[state].label}</span>
-          </span>
-        ))}
-      </div>
-
       {groups.map((group) => {
         const active = group.seconds.free + group.seconds.inUse;
         const tracked = active + group.seconds.broken + group.seconds.absent;
@@ -139,8 +118,8 @@ export function ConnectorHistory({
               aria-label={barDescription(group, utilization, outOfService)}
               style={{
                 position: "relative",
-                height: 22,
-                borderRadius: 6,
+                height: 12,
+                borderRadius: 999,
                 background: "var(--surface-2)",
                 overflow: "hidden",
               }}
@@ -176,6 +155,27 @@ export function ConnectorHistory({
           </div>
         );
       })}
+
+      <div style={{ display: "flex", gap: 16, flexWrap: "wrap", fontSize: 12.5 }}>
+        {LEGEND.map((state) => (
+          <span key={state} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <span
+              aria-hidden
+              style={{
+                width: 12,
+                height: 12,
+                borderRadius: 2,
+                backgroundColor: USAGE_PRESENTATION[state].color,
+                backgroundImage: USAGE_PRESENTATION[state].pattern,
+              }}
+            />
+            <span aria-hidden style={{ color: USAGE_PRESENTATION[state].color, fontSize: 11 }}>
+              {USAGE_PRESENTATION[state].symbol}
+            </span>
+            <span style={{ color: "var(--text-secondary)" }}>{USAGE_PRESENTATION[state].label}</span>
+          </span>
+        ))}
+      </div>
 
       <p style={{ margin: 0, fontSize: 12, color: "var(--text-muted)" }}>
         Ventana: {formatDateTime(new Date(range.start).toISOString())} →{" "}

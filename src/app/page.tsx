@@ -99,13 +99,7 @@ export default async function DashboardPage() {
 
       <section className="band">
         <div className="container">
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-              gap: 40,
-            }}
-          >
+          <div className="figure-row">
             <Figure
               label="Conectores reportados"
               value={formatNumber(snapshot.connectors.reported)}
@@ -171,7 +165,7 @@ export default async function DashboardPage() {
 
 function Figure({ label, value, note }: { label: string; value: string; note: string }) {
   return (
-    <div style={{ minWidth: 0 }}>
+    <div>
       <span className="label-caps">{label}</span>
       <span className="figure-major" style={{ marginTop: 10 }}>
         {value}
