@@ -93,6 +93,8 @@ export default async function StationPage({ params }: { params: Promise<{ slug: 
   const presence = stationPresence(station.presence);
   const now = connectorsNow(station.timeline);
   const where = [station.address, station.city, station.department].filter(Boolean).join(", ");
+  const showsWholeHistory =
+    !station.timelineTruncated && new Date(station.firstSeenAt) >= timeWindow.from;
 
   return (
     <>
@@ -159,8 +161,8 @@ export default async function StationPage({ params }: { params: Promise<{ slug: 
         <div className="container">
           <h2 className="section-title">A qué hora se ocupa</h2>
           <p className="support-text" style={{ marginTop: 12, marginBottom: 32 }}>
-            Qué tan ocupado estuvo cada cargador en cada hora del día, medido sobre el tiempo en que
-            estuvo en servicio.
+            Qué tan ocupado estuvo cada cargador en cada hora del día durante los últimos{" "}
+            {WINDOW_DAYS} días, medido sobre el tiempo en que estuvo en servicio.
           </p>
           <ConnectorUsageProfile groups={hourlyUsage} />
         </div>
@@ -168,9 +170,15 @@ export default async function StationPage({ params }: { params: Promise<{ slug: 
 
       <section className="band band-tinted">
         <div className="container">
-          <h2 className="section-title">Cada cambio, desde el principio</h2>
+          <h2 className="section-title">
+            {showsWholeHistory
+              ? "Cada cambio, desde el principio"
+              : `Cada cambio, últimos ${WINDOW_DAYS} días`}
+          </h2>
           <p className="support-text" style={{ marginTop: 12, marginBottom: 32 }}>
             Cada fila es un intervalo durante el cual el grupo de conectores mantuvo el mismo estado.
+            {!showsWholeHistory &&
+              " Los cambios anteriores a esa ventana no se muestran."}
           </p>
           <StateHistory
             timeline={station.timeline}

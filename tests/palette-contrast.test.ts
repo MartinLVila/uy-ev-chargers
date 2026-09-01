@@ -60,10 +60,22 @@ function tokenValue(tokens: Record<string, string>, name: string): string {
   return value;
 }
 
+function resolveColour(colour: string, tokens: Record<string, string>): string {
+  const named = colour.match(/^var\(--([\w-]+)\)$/);
+  return named ? tokenValue(tokens, named[1]).toLowerCase() : colour.toLowerCase();
+}
+
 const SURFACES = ["surface-1", "surface-page", "surface-2"];
 
 const CARRIES_TEXT = ["text-secondary", "text-muted", "status-critical", "accent"];
-const CARRIES_MEANING = ["status-good", "status-warning", "status-critical", "accent", "chart-neutral"];
+const CARRIES_MEANING = [
+  "status-good",
+  "status-warning",
+  "status-critical",
+  "accent",
+  "chart-neutral",
+  "state-neutral",
+];
 
 describe("the palette meets WCAG contrast on every surface it is painted on", () => {
   for (const [theme, tokens] of [
@@ -121,10 +133,19 @@ describe("state is never carried by colour alone", () => {
     ["connector health", CONNECTOR_HEALTH],
     ["station presence", STATION_PRESENCE],
   ] as const) {
-    it(`keeps every ${name} state on a colour no sibling state uses`, () => {
-      const colours = Object.values(states).map((presentation) => presentation.color);
-      expect(new Set(colours).size, `two ${name} states share a colour`).toBe(colours.length);
-    });
+    for (const [theme, tokens] of [
+      ["light", light],
+      ["dark", dark],
+    ] as const) {
+      it(`${theme}: paints every ${name} state a colour no sibling state resolves to`, () => {
+        const painted = Object.values(states).map((presentation) =>
+          resolveColour(presentation.color, tokens),
+        );
+        expect(new Set(painted).size, `two ${name} states resolve to one colour`).toBe(
+          painted.length,
+        );
+      });
+    }
 
     it(`keeps every ${name} state on a symbol no sibling state uses`, () => {
       const symbols = Object.values(states).map((presentation) => presentation.symbol);

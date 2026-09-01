@@ -31,7 +31,7 @@ function barDescription(
     outageSeconds === 0
       ? ", sin interrupciones registradas"
       : `, y fuera de servicio ${outOfService}% del tiempo con telemetría`;
-  return `Línea de tiempo de ${groupName(group)}: en uso ${utilization}% del tiempo que estuvo en servicio${outage}. El detalle intervalo por intervalo está en la tabla Historial de estados.`;
+  return `Línea de tiempo de ${groupName(group)}: en uso ${utilization}% del tiempo que estuvo en servicio${outage}. El detalle intervalo por intervalo está en la lista de cambios, al final de la página.`;
 }
 
 function sliceTitle(slice: TimelineSlice): string {

@@ -20,6 +20,7 @@
   --accent: #1f5fa9;
   --grid: #d2d2cc;
   --chart-neutral: #84848a;
+  --state-neutral: #4a4a50;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -43,6 +44,7 @@
     --accent: #6ba8f0;
     --grid: #35353a;
     --chart-neutral: #8f8f97;
+    --state-neutral: #c9c9d0;
   }
 }
 
@@ -66,6 +68,7 @@
   --accent: #6ba8f0;
   --grid: #35353a;
   --chart-neutral: #8f8f97;
+  --state-neutral: #c9c9d0;
 }
 
 * {
@@ -194,7 +197,6 @@ a {
 
 .hairline-grid {
   margin: 0;
-  border-top: 1px solid var(--border);
 }
 
 .hairline-grid > * {
