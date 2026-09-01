@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Instrument_Sans } from "next/font/google";
 import Link from "next/link";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import "./globals.css";
 
 const sans = Instrument_Sans({ subsets: ["latin"], display: "swap", variable: "--font-body" });
@@ -13,8 +14,9 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es" className={sans.variable}>
+    <html lang="es" className={sans.variable} suppressHydrationWarning>
       <body>
+        <script src="/theme.js" />
         <header
           style={{
             borderBottom: "1px solid var(--border)",
@@ -41,6 +43,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <span style={{ fontSize: 13, color: "var(--text-muted)" }}>
               Historial de la red pública de UTE
             </span>
+            <ThemeToggle />
           </div>
         </header>
 
