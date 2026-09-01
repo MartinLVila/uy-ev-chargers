@@ -11,8 +11,8 @@ import {
   type StationTimelineEntry,
 } from "@/lib/metrics/queries";
 import { windowFromDays } from "@/lib/metrics/window";
-import { formatDateTime, formatNumber } from "@/lib/ui/format";
-import { connectorUsage, connectorUsageState, stationPresence } from "@/lib/ui/health";
+import { formatDateTime, formatElapsed, formatNumber } from "@/lib/ui/format";
+import { connectorUsage, connectorsNow, stationPresence } from "@/lib/ui/health";
 
 export const revalidate = 60;
 
@@ -26,32 +26,6 @@ export async function generateStaticParams(): Promise<{ slug: string }[]> {
     console.error("Could not enumerate stations to prerender", error);
     return [];
   }
-}
-
-export interface ConnectorsNow {
-  total: number;
-  inService: number;
-  outOfService: number;
-  unknown: number;
-}
-
-export function connectorsNow(timeline: StationTimelineEntry[]): ConnectorsNow {
-  const open = timeline.filter((entry) => entry.endedAt === null);
-
-  return open.reduce<ConnectorsNow>(
-    (running, entry) => {
-      const state = connectorUsageState(entry.health, entry.statusDetail);
-      const inService = state === "free" || state === "inUse";
-      const outOfService = state === "broken" || state === "absent";
-      return {
-        total: running.total + entry.connectorCount,
-        inService: running.inService + (inService ? entry.connectorCount : 0),
-        outOfService: running.outOfService + (outOfService ? entry.connectorCount : 0),
-        unknown: running.unknown + (inService || outOfService ? 0 : entry.connectorCount),
-      };
-    },
-    { total: 0, inService: 0, outOfService: 0, unknown: 0 },
-  );
 }
 
 export default async function StationPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -137,6 +111,10 @@ export default async function StationPage({ params }: { params: Promise<{ slug: 
               />
             )}
           </dl>
+          <p style={{ margin: "24px 0 0", fontSize: 13.5, color: "var(--text-muted)" }}>
+            Según la última vez que UTE reportó esta estación, {formatElapsed(station.lastSeenAt)},
+            el {formatDateTime(station.lastSeenAt)}.
+          </p>
         </div>
       </section>
 
