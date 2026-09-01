@@ -18,15 +18,7 @@ export function DepartmentChart({ departments }: DepartmentChartProps) {
   }
 
   return (
-    <dl
-      className="hairline-grid"
-      style={{
-        margin: 0,
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
-        columnGap: 56,
-      }}
-    >
+    <dl className="hairline-grid">
       {rows.map((row) => (
         <div
           key={row.department}

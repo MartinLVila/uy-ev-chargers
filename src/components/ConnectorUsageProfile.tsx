@@ -273,17 +273,21 @@ function UsageBar({ entry }: { entry: UsageHour }) {
     >
       {known && (
         <div
-          style={{
-            position: "absolute",
-            left: 0,
-            right: 0,
-            bottom: 0,
-            height: `${(entry.utilization ?? 0) * 100}%`,
-            minHeight: (entry.utilization ?? 0) > 0 ? 2 : 0,
-            backgroundColor: IN_USE.color,
-            backgroundImage: IN_USE.pattern,
-            opacity: entry.coverage === "sparse" ? 0.5 : 1,
-          }}
+          className="usage-bar-fill"
+          style={
+            {
+              position: "absolute",
+              left: 0,
+              right: 0,
+              bottom: 0,
+              height: `${(entry.utilization ?? 0) * 100}%`,
+              minHeight: (entry.utilization ?? 0) > 0 ? 2 : 0,
+              backgroundColor: IN_USE.color,
+              backgroundImage: IN_USE.pattern,
+              opacity: entry.coverage === "sparse" ? 0.5 : 1,
+              "--hour": entry.hour,
+            } as React.CSSProperties
+          }
         />
       )}
       <div

@@ -47,6 +47,20 @@ describe("the hourly usage chart", () => {
     expect(cell).not.toContain(KNOWN_TRACK);
   });
 
+  it("gives an hour it never observed nothing that could animate in with the others", () => {
+    const markup = render([station()]);
+
+    expect(hourCell(markup, UNOBSERVED_HOUR)).not.toContain("usage-bar-fill");
+    expect(hourCell(markup, 12)).toContain("usage-bar-fill");
+  });
+
+  it("carries the hour on the bar it animates, so the stagger follows the clock", () => {
+    const markup = render([station()]);
+
+    expect(hourCell(markup, 12)).toContain("--hour:12");
+    expect(hourCell(markup, 23)).toContain("--hour:23");
+  });
+
   it("still draws the out-of-service track for an hour it did observe", () => {
     const markup = render([station()]);
 

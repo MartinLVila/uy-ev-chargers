@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { StationTimelineEntry } from "../src/lib/metrics/queries";
-import { connectorsNow } from "../src/app/estaciones/[slug]/page";
+import { connectorsNow } from "../src/lib/ui/health";
 
 function entry(overrides: Partial<StationTimelineEntry>): StationTimelineEntry {
   return {

@@ -1,3 +1,4 @@
+import type { StationTimelineEntry } from "../metrics/queries";
 import { isFreeStatusDetail } from "../ute/status";
 
 export interface HealthPresentation {
@@ -9,13 +10,13 @@ export interface HealthPresentation {
 
 const SOLID = "none";
 const RISING_STRIPES =
-  "repeating-linear-gradient(45deg, transparent 0 3px, rgb(255 255 255 / 0.55) 3px 6px)";
+  "repeating-linear-gradient(45deg, transparent 0 3px, var(--stripe) 3px 6px)";
 const FALLING_STRIPES =
-  "repeating-linear-gradient(-45deg, transparent 0 2px, rgb(255 255 255 / 0.6) 2px 5px)";
+  "repeating-linear-gradient(-45deg, transparent 0 2px, var(--stripe) 2px 5px)";
 const HORIZONTAL_STRIPES =
-  "repeating-linear-gradient(0deg, transparent 0 2px, rgb(255 255 255 / 0.55) 2px 4px)";
+  "repeating-linear-gradient(0deg, transparent 0 2px, var(--stripe) 2px 4px)";
 const VERTICAL_STRIPES =
-  "repeating-linear-gradient(90deg, transparent 0 2px, rgb(255 255 255 / 0.55) 2px 4px)";
+  "repeating-linear-gradient(90deg, transparent 0 2px, var(--stripe) 2px 4px)";
 
 export type ConnectorUsage = "free" | "inUse" | "broken" | "absent" | "unknown";
 
@@ -178,4 +179,30 @@ export function stationMarker(station: {
   absent: number;
 }): MarkerPresentation {
   return MARKER_PRESENTATION[stationMarkerState(station)];
+}
+
+export interface ConnectorsNow {
+  total: number;
+  inService: number;
+  outOfService: number;
+  unknown: number;
+}
+
+export function connectorsNow(timeline: StationTimelineEntry[]): ConnectorsNow {
+  const open = timeline.filter((entry) => entry.endedAt === null);
+
+  return open.reduce<ConnectorsNow>(
+    (running, entry) => {
+      const state = connectorUsageState(entry.health, entry.statusDetail);
+      const inService = state === "free" || state === "inUse";
+      const outOfService = state === "broken" || state === "absent";
+      return {
+        total: running.total + entry.connectorCount,
+        inService: running.inService + (inService ? entry.connectorCount : 0),
+        outOfService: running.outOfService + (outOfService ? entry.connectorCount : 0),
+        unknown: running.unknown + (inService || outOfService ? 0 : entry.connectorCount),
+      };
+    },
+    { total: 0, inService: 0, outOfService: 0, unknown: 0 },
+  );
 }

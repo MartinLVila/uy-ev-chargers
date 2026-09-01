@@ -117,6 +117,51 @@ describe("the palette meets WCAG contrast on every surface it is painted on", ()
   });
 });
 
+function stripeOver(fill: string, stripe: string, alpha: number): string {
+  const over = parseInt(stripe.slice(1), 16);
+  const under = parseInt(fill.slice(1), 16);
+  const channels = [16, 8, 0].map((shift) => {
+    const blended = alpha * ((over >> shift) & 255) + (1 - alpha) * ((under >> shift) & 255);
+    return Math.round(blended).toString(16).padStart(2, "0");
+  });
+  return `#${channels.join("")}`;
+}
+
+function stripePaint(tokens: Record<string, string>): { colour: string; alpha: number } {
+  const block = tokens === light ? ":root {" : ':root[data-theme="dark"] {';
+  const start = CSS.indexOf(block);
+  const declaration = CSS.slice(start, CSS.indexOf("}", start)).match(
+    /--stripe:\s*rgb\((\d+) (\d+) (\d+) \/ ([\d.]+)\)/,
+  );
+  if (!declaration) throw new Error(`--stripe is not declared in ${block}`);
+
+  const [, r, g, b, alpha] = declaration;
+  const hex = [r, g, b]
+    .map((channelValue) => Number(channelValue).toString(16).padStart(2, "0"))
+    .join("");
+  return { colour: `#${hex}`, alpha: Number(alpha) };
+}
+
+describe("the fill textures stay visible against the colour they are painted on", () => {
+  for (const [theme, tokens] of [
+    ["light", light],
+    ["dark", dark],
+  ] as const) {
+    const paint = stripePaint(tokens);
+
+    for (const [state, presentation] of Object.entries(USAGE_PRESENTATION)) {
+      if (presentation.pattern === "none") continue;
+
+      it(`${theme}: the ${state} stripes read against its own fill`, () => {
+        const fill = resolveColour(presentation.color, tokens);
+        const striped = stripeOver(fill, paint.colour, paint.alpha);
+
+        expect(contrast(striped, fill)).toBeGreaterThanOrEqual(GRAPHIC_CONTRAST);
+      });
+    }
+  }
+});
+
 describe("state is never carried by colour alone", () => {
   it("gives every connector usage state its own symbol", () => {
     const symbols = Object.values(USAGE_PRESENTATION).map((presentation) => presentation.symbol);
