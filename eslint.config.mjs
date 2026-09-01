@@ -36,6 +36,11 @@ const rawHtmlSinks = [
 
 const defaultIgnoresOfEslintConfigNext = [".next/**", "out/**", "build/**", "next-env.d.ts"];
 
+const themeScriptMustBlockUntilItHasRun = {
+  files: ["src/app/layout.tsx"],
+  rules: { "@next/next/no-sync-scripts": "off" },
+};
+
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
@@ -45,6 +50,7 @@ const eslintConfig = defineConfig([
       "no-restricted-syntax": ["error", ...rawHtmlSinks],
     },
   },
+  themeScriptMustBlockUntilItHasRun,
   globalIgnores(defaultIgnoresOfEslintConfigNext),
 ]);
 

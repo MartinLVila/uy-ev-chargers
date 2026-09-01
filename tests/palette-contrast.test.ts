@@ -1,6 +1,11 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { MARKER_PRESENTATION, USAGE_PRESENTATION } from "../src/lib/ui/health";
+import {
+  CONNECTOR_HEALTH,
+  MARKER_PRESENTATION,
+  STATION_PRESENCE,
+  USAGE_PRESENTATION,
+} from "../src/lib/ui/health";
 
 const OPENSTREETMAP_LAND = "#f2efe9";
 
@@ -58,14 +63,7 @@ function tokenValue(tokens: Record<string, string>, name: string): string {
 const SURFACES = ["surface-1", "surface-page", "surface-2"];
 
 const CARRIES_TEXT = ["text-secondary", "text-muted", "status-critical", "accent"];
-const CARRIES_MEANING = [
-  "status-good",
-  "status-warning",
-  "status-serious",
-  "status-critical",
-  "accent",
-  "chart-neutral",
-];
+const CARRIES_MEANING = ["status-good", "status-warning", "status-critical", "accent", "chart-neutral"];
 
 describe("the palette meets WCAG contrast on every surface it is painted on", () => {
   for (const [theme, tokens] of [
@@ -117,6 +115,22 @@ describe("state is never carried by colour alone", () => {
     const patterns = Object.values(USAGE_PRESENTATION).map((presentation) => presentation.pattern);
     expect(new Set(patterns).size).toBe(patterns.length);
   });
+
+  for (const [name, states] of [
+    ["connector usage", USAGE_PRESENTATION],
+    ["connector health", CONNECTOR_HEALTH],
+    ["station presence", STATION_PRESENCE],
+  ] as const) {
+    it(`keeps every ${name} state on a colour no sibling state uses`, () => {
+      const colours = Object.values(states).map((presentation) => presentation.color);
+      expect(new Set(colours).size, `two ${name} states share a colour`).toBe(colours.length);
+    });
+
+    it(`keeps every ${name} state on a symbol no sibling state uses`, () => {
+      const symbols = Object.values(states).map((presentation) => presentation.symbol);
+      expect(new Set(symbols).size, `two ${name} states share a symbol`).toBe(symbols.length);
+    });
+  }
 
   it("gives every map marker state its own symbol, outline and size", () => {
     const presentations = Object.values(MARKER_PRESENTATION);

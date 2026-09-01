@@ -30,7 +30,7 @@ export const USAGE_PRESENTATION: Record<ConnectorUsage, HealthPresentation> = {
   },
   absent: {
     label: "Sin reportar",
-    color: "var(--status-serious)",
+    color: "var(--status-warning)",
     symbol: "◍",
     pattern: HORIZONTAL_STRIPES,
   },
@@ -55,7 +55,7 @@ export function connectorUsage(health: string, statusDetail: string): HealthPres
   return USAGE_PRESENTATION[connectorUsageState(health, statusDetail)];
 }
 
-const CONNECTOR_HEALTH: Record<string, HealthPresentation> = {
+export const CONNECTOR_HEALTH: Record<string, HealthPresentation> = {
   operational: { label: "En servicio", color: "var(--status-good)", symbol: "●", pattern: SOLID },
   faulted: {
     label: "Con falla",
@@ -65,19 +65,19 @@ const CONNECTOR_HEALTH: Record<string, HealthPresentation> = {
   },
   absent: {
     label: "Sin reportar",
-    color: "var(--status-serious)",
+    color: "var(--status-warning)",
     symbol: "◍",
     pattern: HORIZONTAL_STRIPES,
   },
   unknown: {
     label: "Estado desconocido",
-    color: "var(--status-warning)",
+    color: "var(--chart-neutral)",
     symbol: "?",
     pattern: VERTICAL_STRIPES,
   },
 };
 
-const STATION_PRESENCE: Record<string, HealthPresentation> = {
+export const STATION_PRESENCE: Record<string, HealthPresentation> = {
   listed: { label: "En el feed", color: "var(--status-good)", symbol: "●", pattern: SOLID },
   silent: {
     label: "Sin telemetría",
@@ -87,7 +87,7 @@ const STATION_PRESENCE: Record<string, HealthPresentation> = {
   },
   delisted: {
     label: "Fuera del feed",
-    color: "var(--status-serious)",
+    color: "var(--chart-neutral)",
     symbol: "◍",
     pattern: HORIZONTAL_STRIPES,
   },
@@ -110,12 +110,12 @@ export function stationPresence(presence: string): HealthPresentation {
 
 export type StationMarkerState = "operational" | "degraded" | "outOfService" | "delisted";
 
-export type StatusToken = "status-good" | "status-warning" | "status-critical" | "status-serious";
+export type PaletteToken = "status-good" | "status-warning" | "status-critical" | "chart-neutral";
 
 export interface MarkerPresentation {
   label: string;
   color: string;
-  statusToken: StatusToken;
+  statusToken: PaletteToken;
   symbol: string;
   dashArray: string | undefined;
   radius: number;
@@ -124,7 +124,7 @@ export interface MarkerPresentation {
 export const MARKER_PRESENTATION: Record<StationMarkerState, MarkerPresentation> = {
   operational: {
     label: "Todo en servicio",
-    color: "#0b9a0b",
+    color: "#1d8a3f",
     statusToken: "status-good",
     symbol: "●",
     dashArray: undefined,
@@ -132,7 +132,7 @@ export const MARKER_PRESENTATION: Record<StationMarkerState, MarkerPresentation>
   },
   degraded: {
     label: "Parcial o sin telemetría",
-    color: "#b27a04",
+    color: "#b4680c",
     statusToken: "status-warning",
     symbol: "◐",
     dashArray: "6 4",
@@ -140,7 +140,7 @@ export const MARKER_PRESENTATION: Record<StationMarkerState, MarkerPresentation>
   },
   outOfService: {
     label: "Sin servicio",
-    color: "#c62f2f",
+    color: "#c8322a",
     statusToken: "status-critical",
     symbol: "✕",
     dashArray: "2 4",
@@ -148,8 +148,8 @@ export const MARKER_PRESENTATION: Record<StationMarkerState, MarkerPresentation>
   },
   delisted: {
     label: "Fuera del feed",
-    color: "#e5561f",
-    statusToken: "status-serious",
+    color: "#84848a",
+    statusToken: "chart-neutral",
     symbol: "◍",
     dashArray: "10 3 2 3",
     radius: 7,
