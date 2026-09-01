@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
+import { Instrument_Sans } from "next/font/google";
 import Link from "next/link";
 import "./globals.css";
+
+const sans = Instrument_Sans({ subsets: ["latin"], display: "swap", variable: "--font-body" });
 
 export const metadata: Metadata = {
   title: "Cargadores eléctricos de Uruguay",
@@ -10,7 +13,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es">
+    <html lang="es" className={sans.variable}>
       <body>
         <header
           style={{
