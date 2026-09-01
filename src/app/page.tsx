@@ -1,10 +1,8 @@
-import { Card } from "@/components/Card";
 import { DepartmentChart } from "@/components/DepartmentChart";
 import { HealthBar } from "@/components/HealthBar";
 import { HistoryChart } from "@/components/HistoryChart";
 import { ReliabilityTable } from "@/components/ReliabilityTable";
 import { StationMapPanel } from "@/components/StationMapPanel";
-import { StatTile } from "@/components/StatTile";
 import { loadDashboard } from "@/lib/metrics/dashboard";
 import { formatDateTime, formatElapsed, formatNumber, formatPercent } from "@/lib/ui/format";
 
@@ -38,88 +36,157 @@ export default async function DashboardPage() {
   const outOfServiceRatio = fleet > 0 ? snapshot.connectors.outOfService / fleet : 0;
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+    <>
       <FeedWarning feed={feed} />
 
-      <div
+      <section className="band band-hero">
+        <div className="container">
+          <h1 style={{ margin: 0 }}>
+            <span
+              className="figure-hero"
+              style={{
+                color:
+                  snapshot.connectors.outOfService > 0
+                    ? "var(--status-critical)"
+                    : "var(--status-good)",
+              }}
+            >
+              {formatNumber(snapshot.connectors.outOfService)}
+            </span>
+            <span
+              className="section-title"
+              style={{ display: "block", marginTop: 18, color: "var(--text-primary)" }}
+            >
+              conectores fuera de servicio
+            </span>
+          </h1>
+          <p className="support-text" style={{ marginTop: 12 }}>
+            {formatPercent(outOfServiceRatio)} de {formatNumber(fleet)} conectores de la red pública
+            de UTE.
+          </p>
+        </div>
+      </section>
+
+      <section className="band">
+        <div className="container">
+          <h2 className="visually-hidden">
+            Estado actual de los conectores, según lo último que publicó UTE
+          </h2>
+          <HealthBar
+            segments={[
+              { health: "operational", count: snapshot.connectors.operational },
+              { health: "faulted", count: snapshot.connectors.faulted },
+              { health: "unknown", count: snapshot.connectors.unknown },
+              { health: "absent", count: snapshot.connectors.absent },
+            ]}
+          />
+        </div>
+      </section>
+
+      <section className="band band-tinted">
+        <div className="container">
+          <h2 className="section-title">
+            {formatNumber(snapshot.stations.total)} estaciones en todo el país
+          </h2>
+          <p className="support-text" style={{ marginTop: 12, marginBottom: 32 }}>
+            {formatNumber(snapshot.stations.listed)} en el feed ·{" "}
+            {formatNumber(snapshot.stations.silent)} sin telemetría ·{" "}
+            {formatNumber(snapshot.stations.delisted)} fuera.
+          </p>
+          <StationMapPanel stations={stations} />
+        </div>
+      </section>
+
+      <section className="band">
+        <div className="container">
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+              gap: 40,
+            }}
+          >
+            <Figure
+              label="Conectores reportados"
+              value={formatNumber(snapshot.connectors.reported)}
+              note={`${formatNumber(snapshot.connectors.operational)} en servicio`}
+            />
+            <Figure
+              label="Estaciones"
+              value={formatNumber(snapshot.stations.total)}
+              note={`${formatNumber(snapshot.stations.listed)} en el feed`}
+            />
+            <Figure
+              label="Última lectura"
+              value={formatElapsed(snapshot.lastSuccessfulPollAt)}
+              note={formatDateTime(snapshot.lastSuccessfulPollAt)}
+            />
+          </div>
+        </div>
+      </section>
+
+      <section className="band band-tinted">
+        <div className="container">
+          <h2 className="section-title">Los últimos {historyDays} días</h2>
+          <p className="support-text" style={{ marginTop: 12, marginBottom: 32 }}>
+            Promedio diario de conectores fuera de servicio, ponderado por el tiempo que pasaron en
+            cada estado.
+          </p>
+          <HistoryChart series={history} />
+        </div>
+      </section>
+
+      <section className="band">
+        <div className="container">
+          <h2 className="section-title">Estaciones con peor disponibilidad</h2>
+          <p className="support-text" style={{ marginTop: 12, marginBottom: 32 }}>
+            Últimos {reliabilityDays} días, ponderado por cantidad de conectores y duración de la
+            caída.
+          </p>
+          <ReliabilityTable stations={reliability} />
+        </div>
+      </section>
+
+      <section className="band band-tinted">
+        <div className="container">
+          <h2 className="section-title">Capacidad por departamento</h2>
+          <div style={{ marginTop: 32 }}>
+            <DepartmentChart departments={departments} />
+          </div>
+        </div>
+      </section>
+
+      <section className="band">
+        <div className="container">
+          <h2 className="section-title">Fiabilidad del feed</h2>
+          <p className="support-text" style={{ marginTop: 12, marginBottom: 32 }}>
+            Salud de la fuente de datos, no de los cargadores.
+          </p>
+          <FeedStats feed={feed} />
+        </div>
+      </section>
+    </>
+  );
+}
+
+function Figure({ label, value, note }: { label: string; value: string; note: string }) {
+  return (
+    <div style={{ minWidth: 0 }}>
+      <span className="label-caps">{label}</span>
+      <span className="figure-major" style={{ marginTop: 10 }}>
+        {value}
+      </span>
+      <span
         style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(196px, 1fr))",
-          gap: 12,
+          display: "block",
+          marginTop: 10,
+          fontSize: 13.5,
+          color: "var(--text-muted)",
+          lineHeight: 1.45,
         }}
       >
-        <StatTile
-          label="Conectores fuera de servicio"
-          value={formatNumber(snapshot.connectors.outOfService)}
-          note={`${formatPercent(outOfServiceRatio)} de ${formatNumber(fleet)} conectores`}
-          accent={
-            snapshot.connectors.outOfService > 0 ? "var(--status-critical)" : "var(--status-good)"
-          }
-          emphasis
-        />
-        <StatTile
-          label="Estaciones"
-          value={formatNumber(snapshot.stations.total)}
-          note={`${formatNumber(snapshot.stations.listed)} en el feed · ${formatNumber(
-            snapshot.stations.silent,
-          )} sin telemetría · ${formatNumber(snapshot.stations.delisted)} fuera`}
-        />
-        <StatTile
-          label="Conectores reportados"
-          value={formatNumber(snapshot.connectors.reported)}
-          note={`${formatNumber(snapshot.connectors.operational)} en servicio`}
-        />
-        <StatTile
-          label="Última lectura"
-          value={formatElapsed(snapshot.lastSuccessfulPollAt)}
-          note={formatDateTime(snapshot.lastSuccessfulPollAt)}
-        />
-      </div>
-
-      <Card
-        title="Estado actual de los conectores"
-        description="Clasificación de cada conector según lo último que publicó UTE."
-      >
-        <HealthBar
-          segments={[
-            { health: "operational", count: snapshot.connectors.operational },
-            { health: "faulted", count: snapshot.connectors.faulted },
-            { health: "unknown", count: snapshot.connectors.unknown },
-            { health: "absent", count: snapshot.connectors.absent },
-          ]}
-        />
-      </Card>
-
-      <Card title="Mapa de la red">
-        <StationMapPanel stations={stations} />
-      </Card>
-
-      <Card
-        title={`Historial de los últimos ${historyDays} días`}
-        description="Promedio diario de conectores fuera de servicio, ponderado por el tiempo que pasaron en cada estado."
-      >
-        <HistoryChart series={history} />
-      </Card>
-
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))", gap: 20 }}>
-        <Card title="Capacidad por departamento">
-          <DepartmentChart departments={departments} />
-        </Card>
-
-        <Card
-          title="Fiabilidad del feed"
-          description="Salud de la fuente de datos, no de los cargadores."
-        >
-          <FeedStats feed={feed} />
-        </Card>
-      </div>
-
-      <Card
-        title="Estaciones con peor disponibilidad"
-        description={`Últimos ${reliabilityDays} días, ponderado por cantidad de conectores y duración de la caída.`}
-      >
-        <ReliabilityTable stations={reliability} />
-      </Card>
+        {note}
+      </span>
     </div>
   );
 }
@@ -130,21 +197,19 @@ function FeedWarning({ feed }: { feed: { identicalPayloadStreak: number; unchang
   return (
     <aside
       style={{
-        border: "1px solid var(--status-warning)",
+        borderBottom: "1px solid var(--status-warning)",
         background: "color-mix(in srgb, var(--status-warning) 10%, var(--surface-1))",
-        borderRadius: 12,
-        padding: "14px 18px",
-        fontSize: 13.5,
-        lineHeight: 1.55,
       }}
     >
-      <strong style={{ display: "block", marginBottom: 4 }}>
-        ⚠ UTE viene publicando exactamente los mismos datos
-      </strong>
-      Las últimas {formatNumber(feed.identicalPayloadStreak)} lecturas devolvieron una respuesta
-      byte a byte idéntica, desde el {formatDateTime(feed.unchangedSince)}. Mientras esto siga así,
-      los estados publicados no reflejan la situación real de los cargadores y las métricas de falla
-      de abajo van a subestimar el problema.
+      <div className="container" style={{ paddingTop: 16, paddingBottom: 16, fontSize: 13.5, lineHeight: 1.55 }}>
+        <strong style={{ display: "block", marginBottom: 4 }}>
+          ⚠ UTE viene publicando exactamente los mismos datos
+        </strong>
+        Las últimas {formatNumber(feed.identicalPayloadStreak)} lecturas devolvieron una respuesta
+        byte a byte idéntica, desde el {formatDateTime(feed.unchangedSince)}. Mientras esto siga
+        así, los estados publicados no reflejan la situación real de los cargadores y las métricas
+        de falla de abajo van a subestimar el problema.
+      </div>
     </aside>
   );
 }
@@ -176,17 +241,17 @@ function FeedStats({
   ];
 
   return (
-    <dl style={{ margin: 0, display: "flex", flexDirection: "column", gap: 10 }}>
+    <dl className="hairline-list" style={{ margin: 0 }}>
       {rows.map((row) => (
         <div
           key={row.label}
+          className="row-wash"
           style={{
             display: "flex",
             justifyContent: "space-between",
             gap: 16,
-            fontSize: 13.5,
-            borderBottom: "1px solid var(--border)",
-            paddingBottom: 8,
+            fontSize: 14.5,
+            padding: "14px 0",
           }}
         >
           <dt style={{ color: "var(--text-secondary)" }}>{row.label}</dt>
@@ -208,17 +273,9 @@ function FeedStats({
 
 function Notice({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div
-      style={{
-        background: "var(--surface-1)",
-        border: "1px solid var(--border)",
-        borderRadius: 12,
-        padding: 24,
-        maxWidth: 640,
-      }}
-    >
-      <h1 style={{ margin: "0 0 8px", fontSize: 18, fontWeight: 600 }}>{title}</h1>
-      <p style={{ margin: 0, fontSize: 14, color: "var(--text-secondary)", lineHeight: 1.6 }}>
+    <div className="container" style={{ paddingTop: 58, paddingBottom: 58 }}>
+      <h1 className="section-title">{title}</h1>
+      <p className="support-text" style={{ marginTop: 12, maxWidth: 640 }}>
         {children}
       </p>
     </div>

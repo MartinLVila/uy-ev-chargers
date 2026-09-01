@@ -85,6 +85,7 @@ export function StationMap({ stations }: StationMapProps) {
           borderRadius: 10,
           overflow: "hidden",
           border: "1px solid var(--border)",
+          isolation: "isolate",
         }}
       >
         <MapContainer

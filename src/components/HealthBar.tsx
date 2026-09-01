@@ -16,7 +16,7 @@ export function HealthBar({ segments }: HealthBarProps) {
 
   if (total === 0) {
     return (
-      <p style={{ margin: 0, fontSize: 13, color: "var(--text-muted)" }}>
+      <p style={{ margin: 0, fontSize: 15, color: "var(--text-muted)" }}>
         Todavía no hay conectores registrados.
       </p>
     );
@@ -24,11 +24,9 @@ export function HealthBar({ segments }: HealthBarProps) {
 
   return (
     <div>
-      <div aria-hidden style={{ display: "flex", gap: 2, height: 14, marginBottom: 14 }}>
-        {present.map((segment, index) => {
+      <div aria-hidden style={{ display: "flex", gap: 2, height: 6 }}>
+        {present.map((segment) => {
           const presentation = connectorHealth(segment.health);
-          const isFirst = index === 0;
-          const isLast = index === present.length - 1;
           return (
             <div
               key={segment.health}
@@ -38,10 +36,6 @@ export function HealthBar({ segments }: HealthBarProps) {
                 flexBasis: 0,
                 backgroundColor: presentation.color,
                 backgroundImage: presentation.pattern,
-                borderTopLeftRadius: isFirst ? 4 : 0,
-                borderBottomLeftRadius: isFirst ? 4 : 0,
-                borderTopRightRadius: isLast ? 4 : 0,
-                borderBottomRightRadius: isLast ? 4 : 0,
               }}
             />
           );
@@ -51,39 +45,38 @@ export function HealthBar({ segments }: HealthBarProps) {
       <ul
         style={{
           listStyle: "none",
-          margin: 0,
+          margin: "36px 0 0",
           padding: 0,
-          display: "flex",
-          flexWrap: "wrap",
-          gap: "8px 20px",
+          display: "grid",
+          gridTemplateColumns: `repeat(auto-fit, minmax(200px, 1fr))`,
+          gap: 32,
         }}
       >
         {present.map((segment) => {
           const presentation = connectorHealth(segment.health);
           return (
-            <li
-              key={segment.health}
-              style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13 }}
-            >
+            <li key={segment.health} style={{ minWidth: 0 }}>
               <span
-                aria-hidden
-                style={{
-                  width: 12,
-                  height: 12,
-                  borderRadius: 3,
-                  backgroundColor: presentation.color,
-                  backgroundImage: presentation.pattern,
-                  flexShrink: 0,
-                }}
-              />
-              <span aria-hidden style={{ color: presentation.color, fontSize: 11 }}>
-                {presentation.symbol}
+                className="label-caps"
+                style={{ display: "flex", alignItems: "center", gap: 8 }}
+              >
+                <span aria-hidden style={{ color: presentation.color, fontSize: 13 }}>
+                  {presentation.symbol}
+                </span>
+                {presentation.label}
               </span>
-              <span style={{ color: "var(--text-secondary)" }}>{presentation.label}</span>
-              <span style={{ fontVariantNumeric: "tabular-nums", fontWeight: 600 }}>
+              <span className="figure-major" style={{ marginTop: 10 }}>
                 {formatNumber(segment.count)}
               </span>
-              <span style={{ color: "var(--text-muted)", fontVariantNumeric: "tabular-nums" }}>
+              <span
+                style={{
+                  display: "block",
+                  marginTop: 8,
+                  fontSize: 13.5,
+                  color: "var(--text-muted)",
+                  fontVariantNumeric: "tabular-nums",
+                }}
+              >
                 {formatPercent(segment.count / total)}
               </span>
             </li>

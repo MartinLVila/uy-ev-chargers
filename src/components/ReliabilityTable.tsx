@@ -9,7 +9,7 @@ interface ReliabilityTableProps {
 export function ReliabilityTable({ stations }: ReliabilityTableProps) {
   if (stations.length === 0) {
     return (
-      <p style={{ margin: 0, fontSize: 13, color: "var(--text-muted)" }}>
+      <p style={{ margin: 0, fontSize: 15, color: "var(--text-muted)" }}>
         Todavía no hay suficiente historial para calcular disponibilidad.
       </p>
     );
@@ -17,7 +17,7 @@ export function ReliabilityTable({ stations }: ReliabilityTableProps) {
 
   return (
     <div style={{ overflowX: "auto" }}>
-      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13.5, minWidth: 560 }}>
+      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14.5, minWidth: 560 }}>
         <thead>
           <tr>
             <Th align="left">Estación</Th>
@@ -32,7 +32,11 @@ export function ReliabilityTable({ stations }: ReliabilityTableProps) {
             const unclassified = station.availability === null;
             const critical = station.availability !== null && station.availability < 0.9;
             return (
-              <tr key={station.slug} style={{ borderTop: "1px solid var(--border)" }}>
+              <tr
+                key={station.slug}
+                className="row-wash"
+                style={{ borderTop: "1px solid var(--border)" }}
+              >
                 <td style={{ padding: "10px 12px 10px 0" }}>
                   <Link
                     href={`/estaciones/${station.slug}`}
@@ -130,10 +134,10 @@ function Th({ children, align }: { children: React.ReactNode; align: "left" | "r
       style={{
         textAlign: align,
         padding: "0 12px 8px 0",
-        fontSize: 11.5,
-        fontWeight: 500,
+        fontSize: 12,
+        fontWeight: 600,
         textTransform: "uppercase",
-        letterSpacing: "0.04em",
+        letterSpacing: "0.08em",
         color: "var(--text-muted)",
         whiteSpace: "nowrap",
       }}

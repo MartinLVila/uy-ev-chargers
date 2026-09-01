@@ -11,93 +11,58 @@ export function DepartmentChart({ departments }: DepartmentChartProps) {
 
   if (rows.length === 0) {
     return (
-      <p style={{ margin: 0, fontSize: 13, color: "var(--text-muted)" }}>
+      <p style={{ margin: 0, fontSize: 15, color: "var(--text-muted)" }}>
         Todavía no hay datos por departamento.
       </p>
     );
   }
 
-  const max = Math.max(...rows.map(fleetOf));
-
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-      {rows.map((row) => {
-        const total = fleetOf(row);
-        const inService = row.operational;
-        const widthPercent = (total / max) * 100;
-        const brokenShare = total > 0 ? row.outOfService / total : 0;
-
-        return (
-          <div
-            key={row.department}
-            style={{ display: "grid", gridTemplateColumns: "132px 1fr auto", gap: 12, alignItems: "center" }}
+    <dl
+      className="hairline-list"
+      style={{
+        margin: 0,
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+        columnGap: 56,
+      }}
+    >
+      {rows.map((row) => (
+        <div
+          key={row.department}
+          className="row-wash"
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "baseline",
+            gap: 16,
+            padding: "14px 0",
+            fontSize: 14.5,
+          }}
+        >
+          <dt style={{ color: "var(--text-secondary)", minWidth: 0 }}>{row.department}</dt>
+          <dd
+            style={{
+              margin: 0,
+              fontVariantNumeric: "tabular-nums",
+              whiteSpace: "nowrap",
+              fontWeight: 600,
+            }}
           >
-            <span
-              style={{
-                fontSize: 13,
-                color: "var(--text-secondary)",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-              }}
-              title={row.department}
-            >
-              {row.department}
-            </span>
-
-            <div
-              aria-hidden
-              style={{ display: "flex", width: `${widthPercent}%`, gap: 2, height: 14, minWidth: 4 }}
-            >
-              {inService > 0 && (
-                <div
-                  title={`En servicio: ${formatNumber(inService)}`}
-                  style={{
-                    flexGrow: inService,
-                    flexBasis: 0,
-                    background: "var(--accent)",
-                    borderRadius: brokenShare > 0 ? "4px 0 0 4px" : 4,
-                  }}
-                />
-              )}
-              {row.outOfService > 0 && (
-                <div
-                  title={`Fuera de servicio: ${formatNumber(row.outOfService)}`}
-                  style={{
-                    flexGrow: row.outOfService,
-                    flexBasis: 0,
-                    backgroundColor: "var(--status-critical)",
-                    backgroundImage:
-                      "repeating-linear-gradient(-45deg, transparent 0 2px, rgb(255 255 255 / 0.6) 2px 5px)",
-                    borderRadius: inService > 0 ? "0 4px 4px 0" : 4,
-                  }}
-                />
-              )}
-            </div>
-
-            <span
-              style={{
-                fontSize: 13,
-                fontVariantNumeric: "tabular-nums",
-                color: "var(--text-secondary)",
-                whiteSpace: "nowrap",
-              }}
-            >
-              {formatNumber(total)}
-              <span className="visually-hidden"> conectores</span>
-              {row.outOfService > 0 && (
-                <span style={{ color: "var(--status-critical)", fontWeight: 600 }}>
-                  {" "}
-                  <span aria-hidden>−{formatNumber(row.outOfService)}</span>
-                  <span className="visually-hidden">
-                    , {formatNumber(row.outOfService)} fuera de servicio
-                  </span>
+            {formatNumber(fleetOf(row))}
+            <span className="visually-hidden"> conectores</span>
+            {row.outOfService > 0 && (
+              <span style={{ color: "var(--status-critical)" }}>
+                {" "}
+                <span aria-hidden>−{formatNumber(row.outOfService)}</span>
+                <span className="visually-hidden">
+                  , {formatNumber(row.outOfService)} fuera de servicio
                 </span>
-              )}
-            </span>
-          </div>
-        );
-      })}
-    </div>
+              </span>
+            )}
+          </dd>
+        </div>
+      ))}
+    </dl>
   );
 }
