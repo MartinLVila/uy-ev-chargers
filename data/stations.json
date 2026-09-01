@@ -473,11 +473,11 @@
     "longitude": -54.527432,
     "presence": "listed",
     "connectors": 1,
-    "operational": 0,
-    "faulted": 1,
+    "operational": 1,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "ancap-la-paz",
@@ -647,13 +647,13 @@
     "department": "Canelones",
     "latitude": -34.694035,
     "longitude": -55.856194,
-    "presence": "delisted",
-    "connectors": 0,
-    "operational": 0,
+    "presence": "listed",
+    "connectors": 1,
+    "operational": 1,
     "faulted": 0,
     "unknown": 0,
-    "absent": 1,
-    "outOfService": 1
+    "absent": 0,
+    "outOfService": 0
   },
   {
     "slug": "ancap-rio-branco",
@@ -809,11 +809,11 @@
     "longitude": -56.726218,
     "presence": "listed",
     "connectors": 4,
-    "operational": 2,
-    "faulted": 2,
+    "operational": 4,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 2
+    "outOfService": 0
   },
   {
     "slug": "ancap-san-luis",
@@ -1401,11 +1401,11 @@
     "longitude": -53.448956,
     "presence": "listed",
     "connectors": 4,
-    "operational": 4,
-    "faulted": 0,
+    "operational": 2,
+    "faulted": 2,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 2
   },
   {
     "slug": "ciudad-rodriguez",
@@ -1815,13 +1815,13 @@
     "department": "Montevideo",
     "latitude": -34.8917115,
     "longitude": -56.1543685,
-    "presence": "listed",
-    "connectors": 2,
-    "operational": 1,
-    "faulted": 1,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
+    "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 1
+    "absent": 2,
+    "outOfService": 2
   },
   {
     "slug": "estadio-martinez-monegal",
@@ -2441,11 +2441,11 @@
     "longitude": -54.9400916,
     "presence": "listed",
     "connectors": 3,
-    "operational": 2,
-    "faulted": 1,
+    "operational": 1,
+    "faulted": 2,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 2
   },
   {
     "slug": "municipio-vergara",
@@ -3063,12 +3063,12 @@
     "department": "Colonia",
     "latitude": -34.437433,
     "longitude": -57.8650452,
-    "presence": "delisted",
-    "connectors": 0,
+    "presence": "listed",
+    "connectors": 2,
     "operational": 0,
-    "faulted": 0,
+    "faulted": 2,
     "unknown": 0,
-    "absent": 2,
+    "absent": 0,
     "outOfService": 2
   },
   {
@@ -3433,11 +3433,11 @@
     "longitude": -55.958338,
     "presence": "listed",
     "connectors": 2,
-    "operational": 2,
-    "faulted": 0,
+    "operational": 1,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "shopping-las-piedras",
@@ -3751,13 +3751,13 @@
     "department": "Montevideo",
     "latitude": -34.873204,
     "longitude": -56.249964,
-    "presence": "delisted",
-    "connectors": 0,
-    "operational": 0,
+    "presence": "listed",
+    "connectors": 2,
+    "operational": 2,
     "faulted": 0,
     "unknown": 0,
-    "absent": 2,
-    "outOfService": 2
+    "absent": 0,
+    "outOfService": 0
   },
   {
     "slug": "terminal-fray-bentos",
