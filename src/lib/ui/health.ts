@@ -110,9 +110,12 @@ export function stationPresence(presence: string): HealthPresentation {
 
 export type StationMarkerState = "operational" | "degraded" | "outOfService" | "delisted";
 
+export type StatusToken = "status-good" | "status-warning" | "status-critical" | "status-serious";
+
 export interface MarkerPresentation {
   label: string;
   color: string;
+  statusToken: StatusToken;
   symbol: string;
   dashArray: string | undefined;
   radius: number;
@@ -122,6 +125,7 @@ export const MARKER_PRESENTATION: Record<StationMarkerState, MarkerPresentation>
   operational: {
     label: "Todo en servicio",
     color: "#0b9a0b",
+    statusToken: "status-good",
     symbol: "●",
     dashArray: undefined,
     radius: 6,
@@ -129,6 +133,7 @@ export const MARKER_PRESENTATION: Record<StationMarkerState, MarkerPresentation>
   degraded: {
     label: "Parcial o sin telemetría",
     color: "#b27a04",
+    statusToken: "status-warning",
     symbol: "◐",
     dashArray: "6 4",
     radius: 8,
@@ -136,6 +141,7 @@ export const MARKER_PRESENTATION: Record<StationMarkerState, MarkerPresentation>
   outOfService: {
     label: "Sin servicio",
     color: "#c62f2f",
+    statusToken: "status-critical",
     symbol: "✕",
     dashArray: "2 4",
     radius: 8,
@@ -143,6 +149,7 @@ export const MARKER_PRESENTATION: Record<StationMarkerState, MarkerPresentation>
   delisted: {
     label: "Fuera del feed",
     color: "#e5561f",
+    statusToken: "status-serious",
     symbol: "◍",
     dashArray: "10 3 2 3",
     radius: 7,

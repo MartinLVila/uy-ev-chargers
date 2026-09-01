@@ -1,3 +1,5 @@
+import { REPORTING_TIME_ZONE } from "../reporting";
+
 const NUMBER = new Intl.NumberFormat("es-UY");
 const PERCENT = new Intl.NumberFormat("es-UY", {
   style: "percent",
@@ -7,12 +9,12 @@ const PERCENT = new Intl.NumberFormat("es-UY", {
 const DATE_TIME = new Intl.DateTimeFormat("es-UY", {
   dateStyle: "medium",
   timeStyle: "short",
-  timeZone: "America/Montevideo",
+  timeZone: REPORTING_TIME_ZONE,
 });
 const DATE = new Intl.DateTimeFormat("es-UY", {
   day: "2-digit",
   month: "short",
-  timeZone: "America/Montevideo",
+  timeZone: REPORTING_TIME_ZONE,
 });
 
 export function formatNumber(value: number): string {

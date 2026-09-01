@@ -22,7 +22,8 @@ export default async function DashboardPage() {
     );
   }
 
-  const { snapshot, feed, departments, stations, reliability, history, historyDays } = data;
+  const { snapshot, feed, departments, stations, reliability, history, historyDays, reliabilityDays } =
+    data;
 
   if (snapshot.stations.total === 0) {
     return (
@@ -115,7 +116,7 @@ export default async function DashboardPage() {
 
       <Card
         title="Estaciones con peor disponibilidad"
-        description="Últimos 30 días, ponderado por cantidad de conectores y duración de la caída."
+        description={`Últimos ${reliabilityDays} días, ponderado por cantidad de conectores y duración de la caída.`}
       >
         <ReliabilityTable stations={reliability} />
       </Card>
