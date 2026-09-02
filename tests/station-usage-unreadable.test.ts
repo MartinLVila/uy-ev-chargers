@@ -1,6 +1,6 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { StationDetail } from "../src/lib/metrics/queries";
+import type { ConnectorGroupHourlyUsage, StationDetail } from "../src/lib/metrics/queries";
 
 const detail = vi.hoisted(() => vi.fn());
 const hourlyUsage = vi.hoisted(() => vi.fn());
@@ -36,6 +36,22 @@ function station(): StationDetail {
     timeline: [],
     timelineTruncated: false,
     timelineCoversFrom: null,
+  };
+}
+
+function usageGroup(): ConnectorGroupHourlyUsage {
+  return {
+    connectorGroupId: 1,
+    connectorType: "CCS",
+    powerKw: 50,
+    hasCable: true,
+    connectorCount: 1,
+    hours: Array.from({ length: 24 }, (_, hour) => ({
+      hour,
+      utilization: 0.5,
+      brokenShare: 0,
+      observedHours: 30,
+    })),
   };
 }
 
@@ -87,5 +103,27 @@ describe("a station page that could not read its hourly usage says so", () => {
 
     expect(markup).toContain("Una Estación");
     expect(markup).toContain("A qué hora se ocupa");
+  });
+
+  it("gives up only after a second read, so one bad moment does not bake in", async () => {
+    detail.mockResolvedValue(station());
+    hourlyUsage.mockRejectedValue(new Error("Failed query"));
+
+    await renderStation();
+
+    expect(hourlyUsage).toHaveBeenCalledTimes(2);
+  });
+
+  it("draws the profile when the read fails once and the retry succeeds", async () => {
+    detail.mockResolvedValue(station());
+    hourlyUsage
+      .mockRejectedValueOnce(new Error("Failed query"))
+      .mockResolvedValueOnce([usageGroup()]);
+
+    const markup = await renderStation();
+
+    expect(markup).toContain("CCS · 50 kW");
+    expect(markup).not.toContain(COULD_NOT_READ);
+    expect(markup).not.toContain(NO_OBSERVATIONS);
   });
 });
