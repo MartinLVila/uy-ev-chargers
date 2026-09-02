@@ -5,15 +5,20 @@ import { classifyConnectorHealth } from "../src/lib/ute/status";
 async function main() {
   const started = Date.now();
   const feed = await fetchStationFeedV2();
-  process.stdout.write(
-    `outcome=${feed.outcome} http=${feed.httpStatus} stations=${feed.stations.length} ` +
-      `took=${((Date.now() - started) / 1000).toFixed(1)}s digest=${feed.payloadDigest?.slice(0, 12)}...\n`,
-  );
-  if (feed.errorMessage) process.stdout.write(`note: ${feed.errorMessage}\n`);
+  const took = `${((Date.now() - started) / 1000).toFixed(1)}s`;
+
   if (feed.outcome !== "success") {
+    process.stdout.write(`outcome=${feed.outcome} http=${feed.httpStatus} took=${took}\n`);
+    if (feed.errorMessage) process.stdout.write(`note: ${feed.errorMessage}\n`);
     process.exitCode = 1;
     return;
   }
+
+  process.stdout.write(
+    `outcome=${feed.outcome} http=${feed.httpStatus} stations=${feed.stations.length} ` +
+      `took=${took} digest=${feed.payloadDigest.slice(0, 12)}...\n`,
+  );
+  if (feed.errorMessage) process.stdout.write(`note: ${feed.errorMessage}\n`);
 
   const health = new Map<string, number>();
   const types = new Map<string, number>();

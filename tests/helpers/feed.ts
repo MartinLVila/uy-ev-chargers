@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import type { FeedResult, StationPayload } from "../../src/lib/ute/types";
+import type { FeedResult, StationPayload, UnusableFeed, UsableFeed } from "../../src/lib/ute/types";
 
 export interface StationOverrides {
   name?: string;
@@ -42,7 +42,7 @@ export function station(overrides: StationOverrides = {}): StationPayload {
   };
 }
 
-export function successFeed(stations: StationPayload[]): FeedResult {
+export function successFeed(stations: StationPayload[]): UsableFeed {
   return {
     outcome: "success",
     httpStatus: 200,
@@ -54,14 +54,18 @@ export function successFeed(stations: StationPayload[]): FeedResult {
   };
 }
 
-export function failedFeed(message = "connection refused"): FeedResult {
+export function failedFeed(message = "connection refused"): UnusableFeed {
   return {
     outcome: "fetch_error",
     httpStatus: null,
     durationMs: 50,
-    payloadDigest: null,
-    stations: [],
-    rejectedStations: 0,
     errorMessage: message,
   };
+}
+
+export function usable(feed: FeedResult): UsableFeed {
+  if (feed.outcome !== "success") {
+    throw new Error(`expected a usable feed, got ${feed.outcome}: ${feed.errorMessage}`);
+  }
+  return feed;
 }

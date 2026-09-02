@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { fetchStationFeedV2 } from "../src/lib/ute/v2-client";
+import { usable } from "./helpers/feed";
 import {
   MAX_CONNECTOR_GROUPS_PER_STATION,
   MAX_FEED_TEXT,
@@ -88,7 +89,6 @@ describe("no string the feed sends reaches storage unbounded", () => {
     const feed = await fetchStationFeedV2(OPTIONS);
 
     expect(feed.outcome).toBe("parse_error");
-    expect(feed.stations).toHaveLength(0);
     expect(feed.errorMessage).toContain("failed the feed schema");
   });
 
@@ -100,7 +100,7 @@ describe("no string the feed sends reaches storage unbounded", () => {
       ),
     );
 
-    const feed = await fetchStationFeedV2(OPTIONS);
+    const feed = usable(await fetchStationFeedV2(OPTIONS));
 
     const station = feed.stations.find((candidate) => candidate.name === "Station 4");
     expect(station?.address).toBeNull();
@@ -124,7 +124,7 @@ describe("no string the feed sends reaches storage unbounded", () => {
       ),
     );
 
-    const feed = await fetchStationFeedV2(OPTIONS);
+    const feed = usable(await fetchStationFeedV2(OPTIONS));
 
     const station = feed.stations.find((candidate) => candidate.name === "Station 6");
     expect(station?.connectorStatusAcc).toBeNull();
@@ -139,7 +139,7 @@ describe("no string the feed sends reaches storage unbounded", () => {
       }),
     );
 
-    const feed = await fetchStationFeedV2(OPTIONS);
+    const feed = usable(await fetchStationFeedV2(OPTIONS));
 
     const station = feed.stations.find((candidate) => candidate.name === "Station 2");
     expect(station?.connectorStatusAcc).toBeNull();
@@ -166,7 +166,7 @@ describe("no string the feed sends reaches storage unbounded", () => {
       ),
     );
 
-    const feed = await fetchStationFeedV2(OPTIONS);
+    const feed = usable(await fetchStationFeedV2(OPTIONS));
 
     expect(feed.outcome).toBe("success");
     expect(feed.stations).toHaveLength(10);
@@ -288,7 +288,7 @@ describe("no response is buffered without a ceiling", () => {
       }),
     );
 
-    const feed = await fetchStationFeedV2(OPTIONS);
+    const feed = usable(await fetchStationFeedV2(OPTIONS));
 
     expect(feed.errorMessage).toContain("failed the feed schema");
     const station = feed.stations.find((candidate) => candidate.name === "Station 5");

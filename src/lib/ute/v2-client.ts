@@ -10,6 +10,8 @@ import {
   MAX_FEED_TEXT,
   type FeedResult,
   type StationPayload,
+  type UnusableFeed,
+  type UnusableFeedOutcome,
 } from "./types";
 
 const APP_TOKEN_URL = "https://movilidadelectrica.ute.com.uy/api/v2/token";
@@ -325,16 +327,13 @@ export async function fetchStationFeedV2(
   const timeoutMs = options.timeoutMs ?? DEFAULT_TIMEOUT_MS;
   const startedAt = Date.now();
   const err = (
-    outcome: FeedResult["outcome"],
+    outcome: UnusableFeedOutcome,
     httpStatus: number | null,
     message: string,
-  ): FeedResult => ({
+  ): UnusableFeed => ({
     outcome,
     httpStatus,
     durationMs: Date.now() - startedAt,
-    payloadDigest: null,
-    stations: [],
-    rejectedStations: 0,
     errorMessage: message,
   });
 
