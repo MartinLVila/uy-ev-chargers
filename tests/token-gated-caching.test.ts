@@ -17,9 +17,24 @@ const A_STATION = {
   rank_in_group: 1,
 };
 
-vi.mock("@/lib/db/client", () => ({
-  getDb: () => ({ execute: () => Promise.resolve({ rows: [A_STATION] }) }),
-}));
+vi.mock("@/lib/db/client", async () => {
+  const { columnsTheCodeExpects } = await import("../src/lib/db/schema-check");
+  const schemaRows = columnsTheCodeExpects().map(({ table, column }) => ({
+    table_name: table,
+    column_name: column,
+  }));
+
+  return {
+    getDb: () => ({
+      execute: (query: { queryChunks?: unknown[] }) =>
+        Promise.resolve(
+          JSON.stringify(query.queryChunks ?? "").includes("information_schema")
+            ? { rows: schemaRows }
+            : { rows: [A_STATION] },
+        ),
+    }),
+  };
+});
 
 function authorized(url: string): Request {
   return new Request(url, { headers: { authorization: `Bearer ${TOKEN}` } });
