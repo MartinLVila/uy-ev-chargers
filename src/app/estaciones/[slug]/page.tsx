@@ -28,13 +28,27 @@ export async function generateStaticParams(): Promise<{ slug: string }[]> {
   }
 }
 
+type HourlyUsageRead =
+  | { read: true; groups: ConnectorGroupHourlyUsage[] }
+  | { read: false };
+
+function readHourlyUsage(
+  slug: string,
+  settled: PromiseSettledResult<ConnectorGroupHourlyUsage[]>,
+): HourlyUsageRead {
+  if (settled.status === "fulfilled") return { read: true, groups: settled.value };
+
+  console.error(`Station page ${slug} could not read hourly usage`, settled.reason);
+  return { read: false };
+}
+
 export default async function StationPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
 
   const timeWindow = windowFromDays(WINDOW_DAYS);
 
   let station: Awaited<ReturnType<typeof getStationDetail>>;
-  let hourlyUsage: ConnectorGroupHourlyUsage[] = [];
+  let hourlyUsage: HourlyUsageRead;
   try {
     const db = getDb();
     const [detail, usage] = await Promise.allSettled([
@@ -44,9 +58,7 @@ export default async function StationPage({ params }: { params: Promise<{ slug: 
 
     if (detail.status === "rejected") throw detail.reason;
     station = detail.value;
-
-    if (usage.status === "fulfilled") hourlyUsage = usage.value;
-    else console.error(`Station page ${slug} could not read hourly usage`, usage.reason);
+    hourlyUsage = readHourlyUsage(slug, usage);
   } catch (error) {
     console.error(`Station page ${slug} failed`, error);
     return (
@@ -142,7 +154,11 @@ export default async function StationPage({ params }: { params: Promise<{ slug: 
             Qué tan ocupado estuvo cada cargador en cada hora del día durante los últimos{" "}
             {WINDOW_DAYS} días, medido sobre el tiempo en que estuvo en servicio.
           </p>
-          <ConnectorUsageProfile groups={hourlyUsage} />
+          {hourlyUsage.read ? (
+            <ConnectorUsageProfile groups={hourlyUsage.groups} />
+          ) : (
+            <UsageCouldNotBeRead />
+          )}
         </div>
       </section>
 
@@ -165,6 +181,15 @@ export default async function StationPage({ params }: { params: Promise<{ slug: 
         </div>
       </section>
     </>
+  );
+}
+
+function UsageCouldNotBeRead() {
+  return (
+    <p style={{ margin: 0, fontSize: 15, color: "var(--text-muted)" }}>
+      No pudimos leer el uso por hora al generar esta página. No quiere decir que no haya datos: la
+      página se regenera sola, así que volvé a intentar en unos minutos.
+    </p>
   );
 }
 
