@@ -36,7 +36,15 @@ const securityHeaders = [
   },
 ];
 
+const STATION_PAGES_PER_WORKER = 64;
+const PAGES_RENDERED_AT_ONCE_PER_WORKER = 4;
+
 const nextConfig: NextConfig = {
+  experimental: {
+    staticGenerationMinPagesPerWorker: STATION_PAGES_PER_WORKER,
+    staticGenerationMaxConcurrency: PAGES_RENDERED_AT_ONCE_PER_WORKER,
+  },
+
   async headers() {
     const headers =
       process.env.NODE_ENV === "production"
