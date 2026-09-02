@@ -1,8 +1,9 @@
 import { formatPercent } from "./format";
 import { HOURS_IN_DAY, hourLabel, type ConnectorGroupUsageProfile, type UsageHour } from "./hourly-usage";
 
-const ENOUGH_OBSERVED_HOURS = 12;
-const MOSTLY_OUT_OF_SERVICE = 0.5;
+const ENOUGH_OBSERVED_HOURS = 20;
+const ENOUGH_OBSERVED_DAYS = 7;
+const HOUR_TOO_BROKEN_TO_JUDGE = 0.25;
 const TOO_FLAT_TO_CALL = 0.15;
 const WINDOW_REACHES = 0.25;
 const MOST_OF_THE_DAY = 12;
@@ -13,6 +14,10 @@ export interface UsageWindow {
   utilization: number;
 }
 
+interface RunWindow extends UsageWindow {
+  hours: number;
+}
+
 export type UsagePattern =
   | { kind: "out-of-service"; brokenShare: number }
   | { kind: "not-enough-observation"; observedHours: number }
@@ -20,16 +25,18 @@ export type UsagePattern =
   | { kind: "clear"; busy: UsageWindow; free: UsageWindow };
 
 export function usagePattern(profile: ConnectorGroupUsageProfile): UsagePattern {
-  const reliable = profile.hours.filter((entry) => entry.coverage === "observed");
+  const observed = profile.hours.filter((entry) => entry.coverage === "observed");
 
-  if (reliable.length < ENOUGH_OBSERVED_HOURS) {
-    return { kind: "not-enough-observation", observedHours: reliable.length };
+  if (observed.length < ENOUGH_OBSERVED_HOURS || profile.observedDays < ENOUGH_OBSERVED_DAYS) {
+    return { kind: "not-enough-observation", observedHours: observed.length };
   }
 
-  const brokenShare = mean(reliable.map((entry) => entry.brokenShare ?? 0));
-  if (brokenShare >= MOSTLY_OUT_OF_SERVICE) return { kind: "out-of-service", brokenShare };
+  const usable = observed.filter((entry) => brokenShareOf(entry) < HOUR_TOO_BROKEN_TO_JUDGE);
+  if (usable.length * 2 <= observed.length) {
+    return { kind: "out-of-service", brokenShare: mean(observed.map(brokenShareOf)) };
+  }
 
-  const utilizations = reliable.map(utilizationOf);
+  const utilizations = usable.map(utilizationOf);
   const peak = Math.max(...utilizations);
   const trough = Math.min(...utilizations);
 
@@ -38,12 +45,11 @@ export function usagePattern(profile: ConnectorGroupUsageProfile): UsagePattern 
   }
 
   const reach = (peak - trough) * WINDOW_REACHES;
-  const observed = new Map(reliable.map((entry) => [entry.hour, utilizationOf(entry)]));
 
   return {
     kind: "clear",
-    busy: windowAround(observed, peakHour(reliable, (a, b) => a > b), (value) => value >= peak - reach),
-    free: windowAround(observed, peakHour(reliable, (a, b) => a < b), (value) => value <= trough + reach),
+    busy: longestRun(usable, (value) => value >= peak - reach, (a, b) => a > b),
+    free: longestRun(usable, (value) => value <= trough + reach, (a, b) => a < b),
   };
 }
 
@@ -51,59 +57,83 @@ function utilizationOf(entry: UsageHour): number {
   return entry.utilization ?? 0;
 }
 
+function brokenShareOf(entry: UsageHour): number {
+  return entry.brokenShare ?? 0;
+}
+
 function mean(values: number[]): number {
   if (values.length === 0) return 0;
   return values.reduce((total, value) => total + value, 0) / values.length;
 }
 
-function peakHour(hours: UsageHour[], beats: (candidate: number, incumbent: number) => boolean): number {
-  let chosen = hours[0];
-  for (const entry of hours) {
-    if (beats(utilizationOf(entry), utilizationOf(chosen))) chosen = entry;
+function longestRun(
+  usable: UsageHour[],
+  belongs: (utilization: number) => boolean,
+  beats: (candidate: number, incumbent: number) => boolean,
+): UsageWindow {
+  const qualifying = new Map(
+    usable
+      .filter((entry) => belongs(utilizationOf(entry)))
+      .map((entry) => [entry.hour, utilizationOf(entry)] as const),
+  );
+
+  let best: RunWindow | null = null;
+  for (const run of runsIn(qualifying)) {
+    if (!best || run.hours > best.hours) best = run;
+    else if (run.hours === best.hours && beats(run.utilization, best.utilization)) best = run;
   }
-  return chosen.hour;
+
+  return best ?? { fromHour: 0, untilHour: HOURS_IN_DAY - 1, utilization: 0 };
 }
 
-function windowAround(
-  observed: Map<number, number>,
-  centre: number,
-  belongs: (utilization: number) => boolean,
-): UsageWindow {
-  let fromHour = centre;
-  let untilHour = centre;
-  let span = 1;
+function runsIn(qualifying: Map<number, number>): RunWindow[] {
+  const runs: RunWindow[] = [];
+  let current: number[] = [];
 
-  while (span < HOURS_IN_DAY) {
-    const before = (fromHour - 1 + HOURS_IN_DAY) % HOURS_IN_DAY;
-    const previous = observed.get(before);
-    if (previous === undefined || !belongs(previous)) break;
-    fromHour = before;
-    span += 1;
+  const close = () => {
+    if (current.length === 0) return;
+    runs.push(runOf(current, qualifying));
+    current = [];
+  };
+
+  for (let hour = 0; hour < HOURS_IN_DAY; hour += 1) {
+    if (qualifying.has(hour)) current.push(hour);
+    else close();
   }
+  close();
 
-  while (span < HOURS_IN_DAY) {
-    const after = (untilHour + 1) % HOURS_IN_DAY;
-    const next = observed.get(after);
-    if (next === undefined || !belongs(next)) break;
-    untilHour = after;
-    span += 1;
-  }
+  return joinAcrossMidnight(runs, qualifying);
+}
 
+function runOf(hours: number[], qualifying: Map<number, number>): RunWindow {
   return {
-    fromHour,
-    untilHour,
-    utilization: mean(hoursBetween(observed, fromHour, untilHour)),
+    fromHour: hours[0],
+    untilHour: hours[hours.length - 1],
+    hours: hours.length,
+    utilization: mean(hours.map((hour) => qualifying.get(hour) ?? 0)),
   };
 }
 
-function hoursBetween(observed: Map<number, number>, fromHour: number, untilHour: number): number[] {
-  const values: number[] = [];
+function joinAcrossMidnight(runs: RunWindow[], qualifying: Map<number, number>): RunWindow[] {
+  const first = runs[0];
+  const last = runs[runs.length - 1];
+  if (runs.length < 2 || first.fromHour !== 0 || last.untilHour !== HOURS_IN_DAY - 1) return runs;
+
+  const joined = runOf(
+    [...hoursOf(last.fromHour, last.untilHour), ...hoursOf(first.fromHour, first.untilHour)],
+    qualifying,
+  );
+
+  return [{ ...joined, fromHour: last.fromHour, untilHour: first.untilHour }, ...runs.slice(1, -1)];
+}
+
+function hoursOf(fromHour: number, untilHour: number): number[] {
+  const hours: number[] = [];
   for (let hour = fromHour; ; hour = (hour + 1) % HOURS_IN_DAY) {
-    const value = observed.get(hour);
-    if (value !== undefined) values.push(value);
+    hours.push(hour);
     if (hour === untilHour) break;
   }
-  return values;
+  return hours;
 }
 
 export function usageWindowLabel(window: UsageWindow): string {
@@ -114,10 +144,14 @@ export function usageWindowSpan(window: UsageWindow): number {
   return ((window.untilHour - window.fromHour + HOURS_IN_DAY) % HOURS_IN_DAY) + 1;
 }
 
+export function makesAClaimAboutUsage(pattern: UsagePattern): boolean {
+  return pattern.kind !== "not-enough-observation";
+}
+
 export function describeUsagePattern(pattern: UsagePattern): string {
   switch (pattern.kind) {
     case "out-of-service":
-      return "Estuvo fuera de servicio la mayor parte del período, así que no tiene sentido hablar de horarios.";
+      return "Estuvo fuera de servicio buena parte del período, así que no tiene sentido hablar de horarios.";
     case "not-enough-observation":
       return "Todavía no se observó lo suficiente como para decir a qué hora conviene venir.";
     case "no-clear-pattern":

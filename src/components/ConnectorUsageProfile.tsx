@@ -12,7 +12,7 @@ import {
   type ConnectorGroupUsageProfile,
   type UsageHour,
 } from "@/lib/ui/hourly-usage";
-import { describeUsagePattern, usagePattern } from "@/lib/ui/usage-windows";
+import { describeUsagePattern, makesAClaimAboutUsage, usagePattern } from "@/lib/ui/usage-windows";
 
 const BAR_HEIGHT = 72;
 const OUT_OF_SERVICE_HEIGHT = 9;
@@ -125,7 +125,7 @@ function WhenToCome({ profile }: { profile: ConnectorGroupUsageProfile }) {
   return (
     <p style={{ margin: 0, fontSize: 14.5, color: "var(--text-secondary)" }}>
       {describeUsagePattern(pattern)}
-      {pattern.kind === "clear" && (
+      {makesAClaimAboutUsage(pattern) && (
         <span style={{ color: "var(--text-muted)" }}> Es lo observado hasta ahora, no una lectura en vivo.</span>
       )}
     </p>

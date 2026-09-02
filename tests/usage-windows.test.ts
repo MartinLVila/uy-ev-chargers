@@ -121,6 +121,52 @@ describe("the charger stays quiet when the evidence does not support a claim", (
     expect(describeUsagePattern(flat)).toContain("No hay una hora mejor que otra");
   });
 
+  it("never offers a broken window as the best time to come", () => {
+    const brokenOvernight = patternOf(
+      hours((hour) => (hour <= 5 ? { utilization: 0, brokenShare: 1 } : { utilization: 0.6 })),
+    );
+    const sentence = describeUsagePattern(brokenOvernight);
+
+    expect(sentence, "the faulted hours were advertised as free").not.toContain("00:00");
+    expect(sentence).not.toContain("06:00");
+  });
+
+  it("does not build a habit out of a single day of history", () => {
+    const oneDay = patternOf(
+      hours((hour) => ({ utilization: hour >= 18 && hour <= 21 ? 0.9 : 0.05, observedHours: 1 })),
+    );
+
+    expect(oneDay.kind).toBe("not-enough-observation");
+  });
+
+  it("will not draw a superlative about the day from half a clock", () => {
+    const halfAClock = patternOf(
+      hours((hour) =>
+        hour < 12
+          ? { utilization: 0, observedHours: 0 }
+          : { utilization: hour >= 18 && hour <= 21 ? 0.9 : 0.05 },
+      ),
+    );
+
+    expect(halfAClock.kind).toBe("not-enough-observation");
+  });
+
+  it("picks the longer of two equally busy stretches rather than the first", () => {
+    const twoPeaks = patternOf(
+      hours((hour) => {
+        if (hour >= 7 && hour <= 9) return { utilization: 0.9 };
+        if (hour >= 14 && hour <= 20) return { utilization: 0.9 };
+        return { utilization: 0.05 };
+      }),
+    );
+
+    expect(twoPeaks.kind).toBe("clear");
+    if (twoPeaks.kind !== "clear") return;
+
+    expect(twoPeaks.busy.fromHour).toBe(14);
+    expect(twoPeaks.busy.untilHour).toBe(20);
+  });
+
   it("talks about being broken rather than about timing when it was out of service", () => {
     const broken = patternOf(hours((hour) => ({ utilization: hour >= 18 ? 0.9 : 0.05, brokenShare: 0.8 })));
 
