@@ -60,7 +60,6 @@ export interface UsableFeed extends FeedAttempt {
   outcome: "success";
   payloadDigest: string;
   stations: StationPayload[];
-  rejectedStations: number;
 }
 
 export interface UnusableFeed extends FeedAttempt {

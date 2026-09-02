@@ -42,7 +42,6 @@ export interface IngestResult {
   stationsInFeed: number;
   connectorsInFeed: number;
   duplicateStations: number;
-  rejectedStations: number;
   stationsCreated: number;
   connectorGroupsCreated: number;
   stationStateChanges: number;
@@ -105,7 +104,6 @@ async function recordUnusableFeed(
     outcome: feed.outcome,
     observedAt,
     durationMs: feed.durationMs,
-    rejectedStations: 0,
     errorMessage: feed.errorMessage,
   };
 }
@@ -164,7 +162,6 @@ async function applyFeed(
     stationsInFeed: incoming.entries.length,
     connectorsInFeed: incoming.connectorCount,
     duplicateStations: incoming.duplicates,
-    rejectedStations: feed.rejectedStations,
     stationsCreated: reconciledStations.created,
     connectorGroupsCreated: reconciledConnectors.created,
     stationStateChanges: presencePlan.openings.length,
@@ -212,7 +209,6 @@ async function rejectImplausibleFeed(
     stationsInFeed: incoming.entries.length,
     connectorsInFeed: incoming.connectorCount,
     duplicateStations: incoming.duplicates,
-    rejectedStations: feed.rejectedStations,
     errorMessage,
   };
 }

@@ -137,7 +137,6 @@ describe("the schema that declares the feed is the schema that validates it", ()
     const feed = usable(await fetchStationFeedV2(OPTIONS));
 
     expect(feed.stations).toHaveLength(10);
-    expect(feed.rejectedStations).toBe(0);
     expect(feed.errorMessage).toBeNull();
   });
 

@@ -6,7 +6,6 @@ describe("a feed that failed cannot carry stations", () => {
   it("gives the failure arms nothing that could be mistaken for observation", () => {
     expectTypeOf<UnusableFeed>().not.toHaveProperty("stations");
     expectTypeOf<UnusableFeed>().not.toHaveProperty("payloadDigest");
-    expectTypeOf<UnusableFeed>().not.toHaveProperty("rejectedStations");
   });
 
   it("keeps the notes channel on both arms, since a success reports on itself too", () => {

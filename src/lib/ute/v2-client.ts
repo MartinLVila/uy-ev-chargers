@@ -426,7 +426,6 @@ export async function fetchStationFeedV2(
     durationMs: Date.now() - startedAt,
     payloadDigest,
     stations,
-    rejectedStations: 0,
     errorMessage: notes.length > 0 ? notes.join("; ") : null,
   };
 }

@@ -49,7 +49,6 @@ export function successFeed(stations: StationPayload[]): UsableFeed {
     durationMs: 120,
     payloadDigest: createHash("sha256").update(JSON.stringify(stations)).digest("hex"),
     stations,
-    rejectedStations: 0,
     errorMessage: null,
   };
 }
