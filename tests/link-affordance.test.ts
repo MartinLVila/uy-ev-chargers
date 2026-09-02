@@ -7,14 +7,22 @@ import type { StationReliability } from "../src/lib/metrics/queries";
 
 const CSS = readFileSync(new URL("../src/app/globals.css", import.meta.url), "utf8");
 
-function blockFor(selector: string): string {
-  const pattern = new RegExp(`(^|\\})\\s*${selector.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&")}\\s*\\{`, "m");
-  const match = CSS.match(pattern);
-  if (!match) throw new Error(`no rule for ${selector}`);
+const REMOVES_THE_UNDERLINE = /text-decoration(-line)?:\s*[^;]*none/;
 
-  const open = CSS.indexOf("{", match.index! + match[0].length - 1);
-  const close = CSS.indexOf("}", open);
-  return CSS.slice(open + 1, close);
+function blockFor(selector: string): string {
+  const start = CSS.indexOf(`\n${selector} {`);
+  if (start === -1) throw new Error(`no rule for ${selector} at the top level of the stylesheet`);
+
+  const open = CSS.indexOf("{", start);
+  let depth = 0;
+  for (let index = open; index < CSS.length; index += 1) {
+    if (CSS[index] === "{") depth += 1;
+    if (CSS[index] === "}") {
+      depth -= 1;
+      if (depth === 0) return CSS.slice(open + 1, index);
+    }
+  }
+  throw new Error(`unbalanced braces after ${selector}`);
 }
 
 function station(): StationReliability {
@@ -38,7 +46,7 @@ describe("a link is marked as a link without relying on colour", () => {
     const rule = blockFor("a");
 
     expect(rule).toMatch(/text-decoration-line:\s*underline/);
-    expect(rule, "colour alone would fail WCAG 1.4.1").not.toMatch(/text-decoration-line:\s*none/);
+    expect(rule, "colour alone would fail WCAG 1.4.1").not.toMatch(REMOVES_THE_UNDERLINE);
   });
 
   it("paints links with the accent the palette already proves readable", () => {
@@ -59,14 +67,17 @@ describe("a link is marked as a link without relying on colour", () => {
 
     expect(anchor, "no anchor rendered").toContain("/estaciones/una-estacion");
     expect(anchor, "the underline is removed, leaving nothing to mark the link").not.toMatch(
-      /text-decoration:\s*none/,
+      REMOVES_THE_UNDERLINE,
     );
   });
 
-  it("keeps the one link that opts out saying so by name", () => {
-    const optOut = [...CSS.matchAll(/text-decoration-line:\s*none/g)];
+  it("keeps every link that opts out saying so by name", () => {
+    const optOuts = [...CSS.matchAll(new RegExp(REMOVES_THE_UNDERLINE, "g"))];
 
-    expect(optOut).toHaveLength(1);
-    expect(blockFor(".link-unadorned")).toMatch(/text-decoration-line:\s*none/);
+    expect(
+      optOuts.map((match) => match[0]),
+      "a rule strips the underline somewhere other than .link-unadorned",
+    ).toHaveLength(1);
+    expect(blockFor(".link-unadorned")).toMatch(REMOVES_THE_UNDERLINE);
   });
 });
