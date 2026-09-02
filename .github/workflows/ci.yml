@@ -28,4 +28,5 @@ jobs:
         run: npm audit --omit=dev --audit-level=moderate
 
       - name: Audit everything that runs beside a credential
+        if: always()
         run: npm audit --audit-level=high
