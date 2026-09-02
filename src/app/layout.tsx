@@ -39,7 +39,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           >
             <Link
               href="/"
-              style={{ fontWeight: 600, fontSize: 15, textDecoration: "none", letterSpacing: "-0.01em" }}
+              className="link-unadorned"
+              style={{ fontWeight: 600, fontSize: 15, letterSpacing: "-0.01em" }}
             >
               Cargadores eléctricos · Uruguay
             </Link>

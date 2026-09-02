@@ -38,10 +38,7 @@ export function ReliabilityTable({ stations }: ReliabilityTableProps) {
                 style={{ borderTop: "1px solid var(--border)" }}
               >
                 <td style={{ padding: "10px 12px 10px 0" }}>
-                  <Link
-                    href={`/estaciones/${station.slug}`}
-                    style={{ fontWeight: 500, textDecoration: "none" }}
-                  >
+                  <Link href={`/estaciones/${station.slug}`} style={{ fontWeight: 500 }}>
                     {station.name}
                   </Link>
                   {station.city && (

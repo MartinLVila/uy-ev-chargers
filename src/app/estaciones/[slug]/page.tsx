@@ -75,9 +75,7 @@ export default async function StationPage({ params }: { params: Promise<{ slug: 
       <section className="band band-hero">
         <div className="container">
           <p style={{ margin: "0 0 18px", fontSize: 15 }}>
-            <Link href="/" style={{ color: "var(--text-secondary)" }}>
-              ← Volver al mapa
-            </Link>
+            <Link href="/">← Volver al mapa</Link>
           </p>
           {where && <span className="label-caps">{where}</span>}
           <h1 className="figure-name" style={{ marginTop: where ? 14 : 0 }}>
