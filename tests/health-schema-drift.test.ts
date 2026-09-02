@@ -1,33 +1,32 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { columnsTheCodeExpects } from "../src/lib/db/schema-check";
+import type { SchemaCheck, SchemaFault } from "../src/lib/db/schema-check";
 
 const TOKEN = "a-token-only-the-caller-and-the-server-know";
 
-const columnRows = vi.hoisted(() => ({ rows: [] as { table_name: string; column_name: string }[] }));
+const check = vi.hoisted(() => ({ result: { matches: true, faults: [] } as SchemaCheck }));
 
 vi.mock("@/lib/db/client", () => ({
-  getDb: () => ({
-    execute: (query: { queryChunks?: unknown[] }) =>
-      Promise.resolve(
-        JSON.stringify(query.queryChunks ?? "").includes("information_schema")
-          ? columnRows
-          : { rows: [] },
-      ),
-  }),
+  getDb: () => ({ execute: () => Promise.resolve({ rows: [] }) }),
 }));
 
-function everyColumnPresent(): { table_name: string; column_name: string }[] {
-  return columnsTheCodeExpects().map(({ table, column }) => ({
-    table_name: table,
-    column_name: column,
-  }));
+vi.mock("@/lib/db/schema-check", async () => {
+  const actual = await vi.importActual<typeof import("../src/lib/db/schema-check")>(
+    "../src/lib/db/schema-check",
+  );
+  return { ...actual, checkSchema: () => Promise.resolve(check.result) };
+});
+
+function behind(...faults: SchemaFault[]): SchemaCheck {
+  return { matches: false, faults };
 }
 
 async function callHealth(): Promise<Response> {
   const { GET } = await import("../src/app/api/health/route");
-  return GET(new Request("https://example.test/api/health", {
-    headers: { authorization: `Bearer ${TOKEN}` },
-  }));
+  return GET(
+    new Request("https://example.test/api/health", {
+      headers: { authorization: `Bearer ${TOKEN}` },
+    }),
+  );
 }
 
 describe("a deploy that outran its migration fails loudly", () => {
@@ -35,6 +34,7 @@ describe("a deploy that outran its migration fails loudly", () => {
 
   beforeEach(() => {
     process.env.API_READ_TOKEN = TOKEN;
+    check.result = { matches: true, faults: [] };
     vi.resetModules();
     vi.spyOn(console, "error").mockImplementation(() => {});
   });
@@ -46,45 +46,71 @@ describe("a deploy that outran its migration fails loudly", () => {
   });
 
   it("answers 503 and names the column the database is missing", async () => {
-    columnRows.rows = everyColumnPresent().filter(
-      (row) => !(row.table_name === "connector_states" && row.column_name === "status_detail_key"),
-    );
+    check.result = behind({
+      table: "connector_states",
+      column: "status_detail_key",
+      problem: "absent",
+    });
 
     const response = await callHealth();
 
     expect(response.status).toBe(503);
     expect(await response.json()).toMatchObject({
       status: "schema_behind",
-      missing: [{ table: "connector_states", column: "status_detail_key" }],
+      faults: [{ table: "connector_states", column: "status_detail_key", problem: "absent" }],
     });
   });
 
-  it("leaves a trace naming what is missing rather than a bare failure", async () => {
+  it("says so when a column is there but the database will never fill it", async () => {
+    check.result = behind({
+      table: "connector_states",
+      column: "status_detail_key",
+      problem: "not generated",
+    });
+
+    const response = await callHealth();
+
+    expect(response.status).toBe(503);
+    expect(await response.text()).toContain("not generated");
+  });
+
+  it("leaves a trace naming what is wrong rather than a bare failure", async () => {
     const logged = vi.spyOn(console, "error").mockImplementation(() => {});
-    columnRows.rows = everyColumnPresent().filter(
-      (row) => !(row.table_name === "stations" && row.column_name === "slug"),
-    );
+    check.result = behind({ table: "stations", column: "slug", problem: "absent" });
 
     await callHealth();
 
-    expect(logged.mock.calls.flat().join(" ")).toContain("stations.slug");
+    expect(logged.mock.calls.flat().join(" ")).toContain("stations.slug (absent)");
   });
 
   it("still answers ok when the database has everything the code reads", async () => {
-    columnRows.rows = everyColumnPresent();
-
     const response = await callHealth();
 
     expect(response.status).toBe(200);
     expect(await response.json()).toMatchObject({ status: "ok" });
   });
 
-  it("does not answer ok while the schema is behind", async () => {
-    columnRows.rows = everyColumnPresent().slice(0, 3);
+  it("asks the database about its schema once rather than on every request", async () => {
+    const asked = vi.fn(() => Promise.resolve({ matches: true, faults: [] } as SchemaCheck));
+    vi.doMock("@/lib/db/schema-check", async () => {
+      const actual = await vi.importActual<typeof import("../src/lib/db/schema-check")>(
+        "../src/lib/db/schema-check",
+      );
+      return { ...actual, checkSchema: asked };
+    });
 
-    const response = await callHealth();
+    const { GET } = await import("../src/app/api/health/route");
+    const call = () =>
+      GET(
+        new Request("https://example.test/api/health", {
+          headers: { authorization: `Bearer ${TOKEN}` },
+        }),
+      );
 
-    expect(response.status).not.toBe(200);
-    expect(await response.text()).not.toContain('"status":"ok"');
+    await call();
+    await call();
+    await call();
+
+    expect(asked).toHaveBeenCalledTimes(1);
   });
 });

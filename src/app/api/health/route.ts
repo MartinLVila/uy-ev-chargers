@@ -1,11 +1,13 @@
 import { getDb } from "@/lib/db/client";
-import { checkSchema, describeMissing } from "@/lib/db/schema-check";
+import { checkSchema, describeFaults } from "@/lib/db/schema-check";
 import { getNetworkSnapshot } from "@/lib/metrics/queries";
 import { tokenGatedJsonResponse, loggedErrorResponse } from "@/lib/api/response";
 import { rejectIfRateLimited } from "@/lib/api/rate-limit";
 import { rejectUnauthorizedRead } from "@/lib/api/authorization";
 
 export const dynamic = "force-dynamic";
+
+let schemaAlreadyConfirmed = false;
 
 export async function GET(request: Request) {
   const limited = await rejectIfRateLimited(request, "read");
@@ -16,15 +18,21 @@ export async function GET(request: Request) {
 
   try {
     const db = getDb();
-    const schema = await checkSchema(db);
 
-    if (!schema.matches) {
-      const missing = describeMissing(schema.missing);
-      console.error(`GET /api/health found the schema behind the code, missing ${missing}`);
-      return tokenGatedJsonResponse(
-        { status: "schema_behind", missing: schema.missing },
-        { status: 503 },
-      );
+    if (!schemaAlreadyConfirmed) {
+      const schema = await checkSchema(db);
+
+      if (!schema.matches) {
+        console.error(
+          `GET /api/health found the schema behind the code: ${describeFaults(schema.faults)}`,
+        );
+        return tokenGatedJsonResponse(
+          { status: "schema_behind", faults: schema.faults },
+          { status: 503 },
+        );
+      }
+
+      schemaAlreadyConfirmed = true;
     }
 
     const snapshot = await getNetworkSnapshot(db);
