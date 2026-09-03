@@ -21,6 +21,11 @@ vi.mock("@/lib/db/client", () => ({
   getDb: () => ({ execute: () => Promise.resolve({ rows: [A_STATION] }) }),
 }));
 
+vi.mock("@/lib/db/schema-check", () => ({
+  checkSchema: () => Promise.resolve({ matches: true, faults: [] }),
+  describeFaults: () => "",
+}));
+
 function authorized(url: string): Request {
   return new Request(url, { headers: { authorization: `Bearer ${TOKEN}` } });
 }
