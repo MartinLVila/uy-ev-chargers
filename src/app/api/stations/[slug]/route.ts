@@ -1,27 +1,14 @@
-import { getDb } from "@/lib/db/client";
 import { getStationDetail } from "@/lib/metrics/queries";
-import { parseWindowDays, windowFromDays } from "@/lib/metrics/window";
-import { errorResponse, tokenGatedJsonResponse, loggedErrorResponse } from "@/lib/api/response";
-import { rejectIfRateLimited, requestUnitsForWindow } from "@/lib/api/rate-limit";
-import { rejectUnauthorizedRead } from "@/lib/api/authorization";
+import { windowedReadRoute } from "@/lib/api/read-route";
+import { errorResponse, tokenGatedJsonResponse } from "@/lib/api/response";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(request: Request, context: { params: Promise<{ slug: string }> }) {
-  const { slug } = await context.params;
-  const days = parseWindowDays(new URL(request.url).searchParams.get("days"));
-
-  const limited = await rejectIfRateLimited(request, "read", requestUnitsForWindow(days));
-  if (limited) return limited;
-
-  const unauthorized = rejectUnauthorizedRead(request);
-  if (unauthorized) return unauthorized;
-
-  try {
-    const station = await getStationDetail(getDb(), slug, windowFromDays(days));
+export const GET = windowedReadRoute<{ slug: string }>(
+  "Unable to read station detail",
+  async ({ db, window, params }) => {
+    const station = await getStationDetail(db, params.slug, window);
     if (!station) return errorResponse("Station not found", 404);
     return tokenGatedJsonResponse({ station });
-  } catch (error) {
-    return loggedErrorResponse("GET /api/stations/[slug]", error, "Unable to read station detail");
-  }
-}
+  },
+);

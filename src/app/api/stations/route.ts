@@ -1,22 +1,10 @@
-import { getDb } from "@/lib/db/client";
 import { getStationStatuses } from "@/lib/metrics/queries";
-import { tokenGatedJsonResponse, loggedErrorResponse } from "@/lib/api/response";
-import { rejectIfRateLimited } from "@/lib/api/rate-limit";
-import { rejectUnauthorizedRead } from "@/lib/api/authorization";
+import { readRoute } from "@/lib/api/read-route";
+import { tokenGatedJsonResponse } from "@/lib/api/response";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(request: Request) {
-  const limited = await rejectIfRateLimited(request, "read");
-  if (limited) return limited;
-
-  const unauthorized = rejectUnauthorizedRead(request);
-  if (unauthorized) return unauthorized;
-
-  try {
-    const stations = await getStationStatuses(getDb());
-    return tokenGatedJsonResponse({ stations });
-  } catch (error) {
-    return loggedErrorResponse("GET /api/stations", error, "Unable to read station data");
-  }
-}
+export const GET = readRoute("Unable to read station data", async ({ db }) => {
+  const stations = await getStationStatuses(db);
+  return tokenGatedJsonResponse({ stations });
+});

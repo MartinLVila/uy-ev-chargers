@@ -1,47 +1,33 @@
-import { getDb } from "@/lib/db/client";
 import { checkSchema, describeFaults } from "@/lib/db/schema-check";
 import { getNetworkSnapshot } from "@/lib/metrics/queries";
-import { tokenGatedJsonResponse, loggedErrorResponse } from "@/lib/api/response";
-import { rejectIfRateLimited } from "@/lib/api/rate-limit";
-import { rejectUnauthorizedRead } from "@/lib/api/authorization";
+import { readRoute } from "@/lib/api/read-route";
+import { tokenGatedJsonResponse } from "@/lib/api/response";
 
 export const dynamic = "force-dynamic";
 
 let schemaAlreadyConfirmed = false;
 
-export async function GET(request: Request) {
-  const limited = await rejectIfRateLimited(request, "read");
-  if (limited) return limited;
+export const GET = readRoute("Database unavailable", async ({ db }) => {
+  if (!schemaAlreadyConfirmed) {
+    const schema = await checkSchema(db);
 
-  const unauthorized = rejectUnauthorizedRead(request);
-  if (unauthorized) return unauthorized;
-
-  try {
-    const db = getDb();
-
-    if (!schemaAlreadyConfirmed) {
-      const schema = await checkSchema(db);
-
-      if (!schema.matches) {
-        console.error(
-          `GET /api/health found the schema behind the code: ${describeFaults(schema.faults)}`,
-        );
-        return tokenGatedJsonResponse(
-          { status: "schema_behind", faults: schema.faults },
-          { status: 503 },
-        );
-      }
-
-      schemaAlreadyConfirmed = true;
+    if (!schema.matches) {
+      console.error(
+        `GET /api/health found the schema behind the code: ${describeFaults(schema.faults)}`,
+      );
+      return tokenGatedJsonResponse(
+        { status: "schema_behind", faults: schema.faults },
+        { status: 503 },
+      );
     }
 
-    const snapshot = await getNetworkSnapshot(db);
-    return tokenGatedJsonResponse({
-      status: "ok",
-      lastSuccessfulPollAt: snapshot.lastSuccessfulPollAt,
-      stations: snapshot.stations.total,
-    });
-  } catch (error) {
-    return loggedErrorResponse("GET /api/health", error, "Database unavailable");
+    schemaAlreadyConfirmed = true;
   }
-}
+
+  const snapshot = await getNetworkSnapshot(db);
+  return tokenGatedJsonResponse({
+    status: "ok",
+    lastSuccessfulPollAt: snapshot.lastSuccessfulPollAt,
+    stations: snapshot.stations.total,
+  });
+});
