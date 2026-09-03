@@ -12,6 +12,7 @@ import {
   type ConnectorGroupUsageProfile,
   type UsageHour,
 } from "@/lib/ui/hourly-usage";
+import { describeUsagePattern, makesAClaimAboutUsage, usagePattern } from "@/lib/ui/usage-windows";
 
 const BAR_HEIGHT = 72;
 const OUT_OF_SERVICE_HEIGHT = 9;
@@ -118,6 +119,19 @@ function LegendItem({
   );
 }
 
+function WhenToCome({ profile }: { profile: ConnectorGroupUsageProfile }) {
+  const pattern = usagePattern(profile);
+
+  return (
+    <p style={{ margin: 0, fontSize: 14.5, color: "var(--text-secondary)" }}>
+      {describeUsagePattern(pattern)}
+      {makesAClaimAboutUsage(pattern) && (
+        <span style={{ color: "var(--text-muted)" }}> Es lo observado hasta ahora, no una lectura en vivo.</span>
+      )}
+    </p>
+  );
+}
+
 function GroupChart({ profile }: { profile: ConnectorGroupUsageProfile }) {
   const showsOutOfService = profile.hoursOutOfService > 0;
 
@@ -170,6 +184,8 @@ function GroupChart({ profile }: { profile: ConnectorGroupUsageProfile }) {
           </span>
         </div>
       </div>
+
+      <WhenToCome profile={profile} />
 
       <div
         role="img"
