@@ -1,19 +1,19 @@
 import type { StationTimelineEntry } from "@/lib/metrics/queries";
 import { connectorUsageState, type ConnectorUsage } from "./health";
 
-export interface UsageBand {
-  state: ConnectorUsage;
-  connectors: number;
-  sharePct: number;
-}
-
-export interface TimelineSlice {
+export interface LaneSlice {
   leftPct: number;
   widthPct: number;
   from: number;
   to: number;
-  connectors: number;
-  bands: UsageBand[];
+  state: ConnectorUsage;
+}
+
+export interface ConnectorLane {
+  key: string;
+  position: number;
+  slices: LaneSlice[];
+  seconds: Record<ConnectorUsage, number>;
 }
 
 export interface ConnectorGroupTimeline {
@@ -22,7 +22,7 @@ export interface ConnectorGroupTimeline {
   powerKw: number;
   hasCable: boolean;
   connectors: number;
-  slices: TimelineSlice[];
+  lanes: ConnectorLane[];
   seconds: Record<ConnectorUsage, number>;
 }
 
@@ -33,6 +33,13 @@ interface ClippedEntry {
   connectors: number;
 }
 
+interface Moment {
+  from: number;
+  to: number;
+  counts: Map<ConnectorUsage, number>;
+  connectors: number;
+}
+
 const EMPTY_SECONDS: Record<ConnectorUsage, number> = {
   free: 0,
   inUse: 0,
@@ -40,6 +47,8 @@ const EMPTY_SECONDS: Record<ConnectorUsage, number> = {
   absent: 0,
   unknown: 0,
 };
+
+const STATE_ORDER: ConnectorUsage[] = ["broken", "absent", "unknown", "inUse", "free"];
 
 export function buildConnectorTimelines(
   timeline: StationTimelineEntry[],
@@ -62,7 +71,8 @@ export function buildConnectorTimelines(
 
   for (const [key, members] of entriesByGroup) {
     const clipped = members.map((member) => member.clipped);
-    const slices = sliceByOverlap(clipped, rangeStart, span);
+    const moments = momentsOfChange(clipped);
+    if (moments.length === 0) continue;
     const head = members[0].entry;
 
     timelines.push({
@@ -70,8 +80,8 @@ export function buildConnectorTimelines(
       connectorType: head.connectorType,
       powerKw: head.powerKw,
       hasCable: head.hasCable,
-      connectors: slices.length > 0 ? slices[slices.length - 1].connectors : 0,
-      slices,
+      connectors: moments.length > 0 ? moments[moments.length - 1].connectors : 0,
+      lanes: lanesOf(moments, key, rangeStart, span),
       seconds: totalSecondsByState(clipped),
     });
   }
@@ -106,16 +116,12 @@ function clip(
   };
 }
 
-function sliceByOverlap(
-  entries: ClippedEntry[],
-  rangeStart: number,
-  span: number,
-): TimelineSlice[] {
+function momentsOfChange(entries: ClippedEntry[]): Moment[] {
   const boundaries = [...new Set(entries.flatMap((entry) => [entry.from, entry.to]))].sort(
     (a, b) => a - b,
   );
 
-  const slices: TimelineSlice[] = [];
+  const moments: Moment[] = [];
 
   for (let index = 0; index < boundaries.length - 1; index += 1) {
     const from = boundaries[index];
@@ -123,34 +129,96 @@ function sliceByOverlap(
     const active = entries.filter((entry) => entry.from < to && entry.to > from);
     if (active.length === 0) continue;
 
+    const counts = new Map<ConnectorUsage, number>();
+    for (const entry of active) {
+      counts.set(entry.state, (counts.get(entry.state) ?? 0) + entry.connectors);
+    }
+
     const connectors = active.reduce((total, entry) => total + entry.connectors, 0);
     if (connectors === 0) continue;
 
-    slices.push({
-      leftPct: ((from - rangeStart) / span) * 100,
-      widthPct: ((to - from) / span) * 100,
-      from,
-      to,
-      connectors,
-      bands: bandsFor(active, connectors),
-    });
+    moments.push({ from, to, counts, connectors });
   }
 
-  return slices;
+  return moments;
 }
 
-const BAND_ORDER: ConnectorUsage[] = ["broken", "absent", "unknown", "inUse", "free"];
+function lanesOf(
+  moments: Moment[],
+  groupKey: string,
+  rangeStart: number,
+  span: number,
+): ConnectorLane[] {
+  const width = moments.reduce((widest, moment) => Math.max(widest, moment.connectors), 0);
+  const held: (ConnectorUsage | null)[] = Array.from({ length: width }, () => null);
+  const runs: LaneSlice[][] = Array.from({ length: width }, () => []);
 
-function bandsFor(active: ClippedEntry[], connectors: number): UsageBand[] {
-  const byState = new Map<ConnectorUsage, number>();
-  for (const entry of active) {
-    byState.set(entry.state, (byState.get(entry.state) ?? 0) + entry.connectors);
+  for (const moment of moments) {
+    const assigned = assignMoment(held, moment.counts);
+
+    for (let lane = 0; lane < width; lane += 1) {
+      held[lane] = assigned[lane];
+      const state = assigned[lane];
+      if (state === null) continue;
+      extendRun(runs[lane], moment, state);
+    }
   }
 
-  return BAND_ORDER.filter((state) => (byState.get(state) ?? 0) > 0).map((state) => {
-    const count = byState.get(state) ?? 0;
-    return { state, connectors: count, sharePct: (count / connectors) * 100 };
+  return runs.map((slices, index) => ({
+    key: `${groupKey}|${index}`,
+    position: index + 1,
+    slices: slices.map((slice) => ({
+      ...slice,
+      leftPct: ((slice.from - rangeStart) / span) * 100,
+      widthPct: ((slice.to - slice.from) / span) * 100,
+    })),
+    seconds: secondsOfLane(slices),
+  }));
+}
+
+function assignMoment(
+  held: (ConnectorUsage | null)[],
+  counts: Map<ConnectorUsage, number>,
+): (ConnectorUsage | null)[] {
+  const remaining = new Map(counts);
+  const assigned: (ConnectorUsage | null)[] = held.map(() => null);
+
+  held.forEach((state, lane) => {
+    if (state === null) return;
+    const left = remaining.get(state) ?? 0;
+    if (left === 0) return;
+    assigned[lane] = state;
+    remaining.set(state, left - 1);
   });
+
+  for (const state of STATE_ORDER) {
+    let left = remaining.get(state) ?? 0;
+    for (let lane = 0; lane < assigned.length && left > 0; lane += 1) {
+      if (assigned[lane] !== null) continue;
+      assigned[lane] = state;
+      left -= 1;
+    }
+    remaining.set(state, left);
+  }
+
+  return assigned;
+}
+
+function extendRun(slices: LaneSlice[], moment: Moment, state: ConnectorUsage): void {
+  const open = slices[slices.length - 1];
+
+  if (open && open.state === state && open.to === moment.from) {
+    open.to = moment.to;
+    return;
+  }
+
+  slices.push({ leftPct: 0, widthPct: 0, from: moment.from, to: moment.to, state });
+}
+
+function secondsOfLane(slices: LaneSlice[]): Record<ConnectorUsage, number> {
+  const seconds = { ...EMPTY_SECONDS };
+  for (const slice of slices) seconds[slice.state] += (slice.to - slice.from) / 1000;
+  return seconds;
 }
 
 function totalSecondsByState(entries: ClippedEntry[]): Record<ConnectorUsage, number> {
