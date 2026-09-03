@@ -1,26 +1,10 @@
-import { getDb } from "@/lib/db/client";
 import { getDailyHistory } from "@/lib/metrics/queries";
-import { parseWindowDays, windowFromDays } from "@/lib/metrics/window";
-import { tokenGatedJsonResponse, loggedErrorResponse } from "@/lib/api/response";
-import { rejectIfRateLimited, requestUnitsForWindow } from "@/lib/api/rate-limit";
-import { rejectUnauthorizedRead } from "@/lib/api/authorization";
+import { windowedReadRoute } from "@/lib/api/read-route";
+import { tokenGatedJsonResponse } from "@/lib/api/response";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(request: Request) {
-  const days = parseWindowDays(new URL(request.url).searchParams.get("days"));
-  const window = windowFromDays(days);
-
-  const limited = await rejectIfRateLimited(request, "read", requestUnitsForWindow(days));
-  if (limited) return limited;
-
-  const unauthorized = rejectUnauthorizedRead(request);
-  if (unauthorized) return unauthorized;
-
-  try {
-    const series = await getDailyHistory(getDb(), window);
-    return tokenGatedJsonResponse({ days, series });
-  } catch (error) {
-    return loggedErrorResponse("GET /api/metrics/history", error, "Unable to read history");
-  }
-}
+export const GET = windowedReadRoute("Unable to read history", async ({ db, days, window }) => {
+  const series = await getDailyHistory(db, window);
+  return tokenGatedJsonResponse({ days, series });
+});
