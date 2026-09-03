@@ -17,7 +17,7 @@ import {
   UNKNOWN_STATUS,
   type StationPresence,
 } from "../ute/status";
-import type { FeedResult, StationPayload } from "../ute/types";
+import type { FeedResult, StationPayload, UnusableFeed, UsableFeed } from "../ute/types";
 
 type Transaction = Parameters<Parameters<WriteDatabase["transaction"]>[0]>[0];
 
@@ -42,7 +42,6 @@ export interface IngestResult {
   stationsInFeed: number;
   connectorsInFeed: number;
   duplicateStations: number;
-  rejectedStations: number;
   stationsCreated: number;
   connectorGroupsCreated: number;
   stationStateChanges: number;
@@ -82,7 +81,7 @@ export async function runIngestion(
 
 async function recordUnusableFeed(
   db: WriteDatabase,
-  feed: FeedResult,
+  feed: UnusableFeed,
   observedAt: Date,
 ): Promise<IngestResult> {
   const [run] = await db
@@ -94,7 +93,7 @@ async function recordUnusableFeed(
       httpStatus: feed.httpStatus,
       stationCount: null,
       connectorCount: null,
-      payloadDigest: feed.payloadDigest,
+      payloadDigest: null,
       errorMessage: feed.errorMessage,
     })
     .returning({ id: pollRuns.id });
@@ -105,14 +104,13 @@ async function recordUnusableFeed(
     outcome: feed.outcome,
     observedAt,
     durationMs: feed.durationMs,
-    rejectedStations: feed.rejectedStations,
     errorMessage: feed.errorMessage,
   };
 }
 
 async function applyFeed(
   tx: Transaction,
-  feed: FeedResult,
+  feed: UsableFeed,
   observedAt: Date,
 ): Promise<IngestResult> {
   const incoming = readIncomingStations(feed.stations);
@@ -164,7 +162,6 @@ async function applyFeed(
     stationsInFeed: incoming.entries.length,
     connectorsInFeed: incoming.connectorCount,
     duplicateStations: incoming.duplicates,
-    rejectedStations: feed.rejectedStations,
     stationsCreated: reconciledStations.created,
     connectorGroupsCreated: reconciledConnectors.created,
     stationStateChanges: presencePlan.openings.length,
@@ -180,7 +177,7 @@ function collapsedAgainst(storedCount: number, incomingCount: number): boolean {
 
 async function rejectImplausibleFeed(
   tx: Transaction,
-  feed: FeedResult,
+  feed: UsableFeed,
   observedAt: Date,
   incoming: IncomingFeed,
   storedCount: number,
@@ -212,7 +209,6 @@ async function rejectImplausibleFeed(
     stationsInFeed: incoming.entries.length,
     connectorsInFeed: incoming.connectorCount,
     duplicateStations: incoming.duplicates,
-    rejectedStations: feed.rejectedStations,
     errorMessage,
   };
 }

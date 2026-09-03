@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { fetchStationFeedV2 } from "../src/lib/ute/v2-client";
+import { usable } from "./helpers/feed";
 
 interface BulkRecord {
   id: number;
@@ -49,12 +50,11 @@ function detailBody(id: number, groups: Record<string, unknown>[] = [CCS2_FREE])
 async function digestOf(
   stations: BulkRecord[],
   groups: Record<string, unknown>[],
-): Promise<string | null> {
+): Promise<string> {
   mockUte(stations, (id) => new Response(JSON.stringify(detailBody(id, groups)), { status: 200 }));
   const feed = await fetchStationFeedV2(options);
   vi.unstubAllGlobals();
-  expect(feed.outcome).toBe("success");
-  return feed.payloadDigest;
+  return usable(feed).payloadDigest;
 }
 
 function mockUte(stations: BulkRecord[], respondToDetail: (id: number) => Response) {
@@ -93,7 +93,6 @@ describe("fetchStationFeedV2", () => {
     const feed = await fetchStationFeedV2(options);
 
     expect(feed.outcome).toBe("fetch_error");
-    expect(feed.stations).toHaveLength(0);
     expect(feed.errorMessage).toContain("8 of 10");
   });
 
@@ -113,7 +112,7 @@ describe("fetchStationFeedV2", () => {
                : new Response(JSON.stringify(detailBody(id)), { status: 200 }),
     );
 
-    const feed = await fetchStationFeedV2(options);
+    const feed = usable(await fetchStationFeedV2(options));
 
     expect(feed.outcome).toBe("success");
     expect(feed.stations).toHaveLength(10);
@@ -136,7 +135,7 @@ describe("fetchStationFeedV2", () => {
       return new Response(JSON.stringify(detailBody(id)), { status: 200 });
     });
 
-    const feed = await fetchStationFeedV2(options);
+    const feed = usable(await fetchStationFeedV2(options));
 
     expect(feed.outcome).toBe("success");
     expect(attempts.get(1)).toBe(3);
@@ -160,8 +159,6 @@ describe("fetchStationFeedV2", () => {
     const feed = await fetchStationFeedV2(options);
 
     expect(feed.outcome).toBe("fetch_error");
-    expect(feed.stations).toHaveLength(0);
-    expect(feed.payloadDigest).toBeNull();
   });
 
   it("gives the same digest when only the order of stations and groups changes", async () => {

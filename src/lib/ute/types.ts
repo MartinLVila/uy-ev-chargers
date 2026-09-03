@@ -48,12 +48,22 @@ export type StationPayload = z.infer<typeof stationPayloadSchema>;
 
 export type FeedOutcome = "success" | "fetch_error" | "parse_error";
 
-export interface FeedResult {
-  outcome: FeedOutcome;
+export type UnusableFeedOutcome = Exclude<FeedOutcome, "success">;
+
+interface FeedAttempt {
   httpStatus: number | null;
   durationMs: number;
-  payloadDigest: string | null;
-  stations: StationPayload[];
-  rejectedStations: number;
   errorMessage: string | null;
 }
+
+export interface UsableFeed extends FeedAttempt {
+  outcome: "success";
+  payloadDigest: string;
+  stations: StationPayload[];
+}
+
+export interface UnusableFeed extends FeedAttempt {
+  outcome: UnusableFeedOutcome;
+}
+
+export type FeedResult = UsableFeed | UnusableFeed;

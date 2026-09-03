@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { fetchStationFeedV2 } from "../src/lib/ute/v2-client";
+import { usable } from "./helpers/feed";
 import { stationPayloadSchema } from "../src/lib/ute/types";
 
 interface BulkRecord {
@@ -72,7 +73,7 @@ describe("the schema that declares the feed is the schema that validates it", ()
       new Response(JSON.stringify(detailBody(id, id === 3 ? { lat: 991 } : {})), { status: 200 }),
     );
 
-    const feed = await fetchStationFeedV2(OPTIONS);
+    const feed = usable(await fetchStationFeedV2(OPTIONS));
 
     expect(feed.outcome).toBe("success");
     const station = feed.stations.find((candidate) => candidate.name === "Station 3");
@@ -85,7 +86,7 @@ describe("the schema that declares the feed is the schema that validates it", ()
       new Response(JSON.stringify(detailBody(id, id === 7 ? { lng: -1000 } : {})), { status: 200 }),
     );
 
-    const feed = await fetchStationFeedV2(OPTIONS);
+    const feed = usable(await fetchStationFeedV2(OPTIONS));
 
     const station = feed.stations.find((candidate) => candidate.name === "Station 7");
     expect(station?.connectorStatusAcc).toBeNull();
@@ -102,7 +103,6 @@ describe("the schema that declares the feed is the schema that validates it", ()
     const feed = await fetchStationFeedV2(OPTIONS);
 
     expect(feed.outcome).toBe("parse_error");
-    expect(feed.stations).toHaveLength(0);
     expect(feed.errorMessage).toContain("failed the feed schema");
     expect(feed.errorMessage).toContain("reads as one that left the network");
   });
@@ -134,10 +134,9 @@ describe("the schema that declares the feed is the schema that validates it", ()
   it("keeps every station when the feed is within range", async () => {
     mockUte(bulkStations(10), (id) => new Response(JSON.stringify(detailBody(id)), { status: 200 }));
 
-    const feed = await fetchStationFeedV2(OPTIONS);
+    const feed = usable(await fetchStationFeedV2(OPTIONS));
 
     expect(feed.stations).toHaveLength(10);
-    expect(feed.rejectedStations).toBe(0);
     expect(feed.errorMessage).toBeNull();
   });
 
@@ -150,7 +149,6 @@ describe("the schema that declares the feed is the schema that validates it", ()
     const feed = await fetchStationFeedV2(OPTIONS);
 
     expect(feed.outcome).toBe("parse_error");
-    expect(feed.stations).toHaveLength(0);
   });
 
   it("bounds coordinates identically wherever the feed is parsed", () => {
