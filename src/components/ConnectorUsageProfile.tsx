@@ -55,8 +55,9 @@ export function ConnectorUsageProfile({ groups }: { groups: ConnectorGroupHourly
         </div>
       ))}
       <p style={{ margin: 0, fontSize: 12, color: "var(--text-muted)" }}>
-        Cada barra es la proporción del tiempo en que ese conector estuvo ocupado durante esa hora
-        del día, en horario de Montevideo. Todos los grupos usan la misma escala de 0 a 100%.
+        Cada barra es la proporción del tiempo en que los conectores del grupo estuvieron ocupados
+        durante esa hora del día, en horario de Montevideo. Es un promedio del grupo: el feed no
+        dice cuál de ellos estaba ocupado. Todos los grupos usan la misma escala de 0 a 100%.
       </p>
     </div>
   );

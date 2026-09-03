@@ -2,12 +2,14 @@ import { describe, expect, it } from "vitest";
 import {
   buildConnectorTimelines,
   resolveTimelineRange,
+  type ConnectorGroupTimeline,
   type TimelineRange,
 } from "../src/lib/ui/connector-timeline";
 import type { StationTimelineEntry } from "../src/lib/metrics/queries";
 
 const RANGE_START = new Date("2026-03-01T00:00:00Z").getTime();
 const RANGE_END = new Date("2026-03-02T00:00:00Z").getTime();
+const MIDDAY = "2026-03-01T12:00:00Z";
 
 function entry(overrides: Partial<StationTimelineEntry> = {}): StationTimelineEntry {
   return {
@@ -23,118 +25,170 @@ function entry(overrides: Partial<StationTimelineEntry> = {}): StationTimelineEn
   };
 }
 
-describe("buildConnectorTimelines", () => {
-  it("keeps a fault visible alongside a free connector in the same bank", () => {
-    const [group] = buildConnectorTimelines(
-      [
-        entry({ connectorCount: 3, statusDetail: "Disponible", health: "operational" }),
-        entry({ connectorCount: 1, statusDetail: "Faulted", health: "faulted" }),
-      ],
-      RANGE_START,
-      RANGE_END,
-    );
+function free(count: number, overrides: Partial<StationTimelineEntry> = {}) {
+  return entry({
+    connectorCount: count,
+    statusDetail: "Disponible",
+    health: "operational",
+    ...overrides,
+  });
+}
 
-    expect(group.slices).toHaveLength(1);
-    const states = group.slices[0].bands.map((band) => band.state);
-    expect(states).toContain("broken");
-    expect(states).toContain("free");
+function faulted(count: number, overrides: Partial<StationTimelineEntry> = {}) {
+  return entry({
+    connectorCount: count,
+    statusDetail: "Faulted",
+    health: "faulted",
+    ...overrides,
+  });
+}
+
+function charging(count: number, overrides: Partial<StationTimelineEntry> = {}) {
+  return entry({
+    connectorCount: count,
+    statusDetail: "Ocupado",
+    health: "operational",
+    ...overrides,
+  });
+}
+
+function statesOf(group: ConnectorGroupTimeline): string[][] {
+  return group.lanes.map((lane) => lane.slices.map((slice) => slice.state));
+}
+
+function drawnAt(group: ConnectorGroupTimeline, moment: string): Record<string, number> {
+  const at = new Date(moment).getTime();
+  const tally: Record<string, number> = {};
+
+  for (const lane of group.lanes) {
+    const slice = lane.slices.find((candidate) => candidate.from <= at && candidate.to > at);
+    if (!slice) continue;
+    tally[slice.state] = (tally[slice.state] ?? 0) + 1;
+  }
+
+  return tally;
+}
+
+describe("buildConnectorTimelines", () => {
+  it("gives every connector in a bank a bar of its own", () => {
+    const [group] = buildConnectorTimelines([free(3), faulted(1)], RANGE_START, RANGE_END);
+
+    expect(group.lanes).toHaveLength(4);
+    expect(group.lanes.map((lane) => lane.position)).toEqual([1, 2, 3, 4]);
   });
 
-  it("sizes each band by its share of the bank", () => {
+  it("keeps a fault on a bar of its own rather than stacked over a free connector", () => {
+    const [group] = buildConnectorTimelines([free(3), faulted(1)], RANGE_START, RANGE_END);
+
+    expect(statesOf(group)).toEqual([["broken"], ["free"], ["free"], ["free"]]);
+  });
+
+  it("shows exactly the states that were observed at any moment it draws", () => {
     const [group] = buildConnectorTimelines(
       [
-        entry({ connectorCount: 3, statusDetail: "Disponible", health: "operational" }),
-        entry({ connectorCount: 1, statusDetail: "Faulted", health: "faulted" }),
+        free(2, { startedAt: "2026-03-01T00:00:00Z", endedAt: MIDDAY }),
+        charging(1, { startedAt: "2026-03-01T00:00:00Z", endedAt: MIDDAY }),
+        free(1, { startedAt: MIDDAY, endedAt: "2026-03-02T00:00:00Z" }),
+        faulted(2, { startedAt: MIDDAY, endedAt: "2026-03-02T00:00:00Z" }),
       ],
       RANGE_START,
       RANGE_END,
     );
 
-    const bands = new Map(group.slices[0].bands.map((band) => [band.state, band]));
-    expect(bands.get("free")?.sharePct).toBeCloseTo(75, 6);
-    expect(bands.get("broken")?.sharePct).toBeCloseTo(25, 6);
-    expect(group.slices[0].connectors).toBe(4);
+    expect(drawnAt(group, "2026-03-01T06:00:00Z")).toEqual({ free: 2, inUse: 1 });
+    expect(drawnAt(group, "2026-03-01T18:00:00Z")).toEqual({ broken: 2, free: 1 });
   });
 
   it("is not affected by the order the entries arrive in", () => {
-    const free = entry({ connectorCount: 3, statusDetail: "Disponible", health: "operational" });
-    const faulted = entry({ connectorCount: 1, statusDetail: "Faulted", health: "faulted" });
+    const [ascending] = buildConnectorTimelines([free(3), faulted(1)], RANGE_START, RANGE_END);
+    const [descending] = buildConnectorTimelines([faulted(1), free(3)], RANGE_START, RANGE_END);
 
-    const [ascending] = buildConnectorTimelines([free, faulted], RANGE_START, RANGE_END);
-    const [descending] = buildConnectorTimelines([faulted, free], RANGE_START, RANGE_END);
-
-    expect(descending.slices).toEqual(ascending.slices);
+    expect(descending.lanes).toEqual(ascending.lanes);
   });
 
-  it("splits the bar where the mix changes", () => {
+  it("leaves a connector that never changed as one unbroken bar", () => {
     const [group] = buildConnectorTimelines(
       [
-        entry({
-          connectorCount: 2,
-          statusDetail: "Disponible",
-          health: "operational",
-          startedAt: "2026-03-01T00:00:00Z",
-          endedAt: "2026-03-02T00:00:00Z",
-        }),
-        entry({
-          connectorCount: 1,
-          statusDetail: "Faulted",
-          health: "faulted",
-          startedAt: "2026-03-01T12:00:00Z",
-          endedAt: "2026-03-02T00:00:00Z",
-        }),
+        free(2, { startedAt: "2026-03-01T00:00:00Z", endedAt: MIDDAY }),
+        free(1, { startedAt: MIDDAY, endedAt: "2026-03-02T00:00:00Z" }),
+        faulted(1, { startedAt: MIDDAY, endedAt: "2026-03-02T00:00:00Z" }),
       ],
       RANGE_START,
       RANGE_END,
     );
 
-    expect(group.slices).toHaveLength(2);
-    expect(group.slices[0].connectors).toBe(2);
-    expect(group.slices[0].bands.map((band) => band.state)).toEqual(["free"]);
-    expect(group.slices[1].connectors).toBe(3);
-    expect(group.slices[1].bands.map((band) => band.state)).toEqual(["broken", "free"]);
-    expect(group.slices[1].leftPct).toBeCloseTo(50, 6);
+    expect(statesOf(group)).toEqual([["free"], ["free", "broken"]]);
+    expect(group.lanes[0].slices[0].widthPct).toBeCloseTo(100, 6);
   });
 
-  it("reports the bank size at the most recent slice rather than one entry of it", () => {
+  it("starts the fault where it was first reported", () => {
     const [group] = buildConnectorTimelines(
       [
-        entry({ connectorCount: 3, statusDetail: "Disponible", health: "operational" }),
-        entry({ connectorCount: 1, statusDetail: "Faulted", health: "faulted" }),
+        free(2, { startedAt: "2026-03-01T00:00:00Z", endedAt: MIDDAY }),
+        free(1, { startedAt: MIDDAY, endedAt: "2026-03-02T00:00:00Z" }),
+        faulted(1, { startedAt: MIDDAY, endedAt: "2026-03-02T00:00:00Z" }),
       ],
       RANGE_START,
       RANGE_END,
     );
+
+    const [, broken] = group.lanes[1].slices;
+    expect(broken.leftPct).toBeCloseTo(50, 6);
+    expect(broken.widthPct).toBeCloseTo(50, 6);
+  });
+
+  it("counts a bar's time for one connector rather than for the whole bank", () => {
+    const [group] = buildConnectorTimelines([free(3)], RANGE_START, RANGE_END);
+
+    for (const lane of group.lanes) {
+      expect(lane.seconds.free).toBeCloseTo(24 * 3600, 6);
+    }
+    expect(group.seconds.free).toBeCloseTo(3 * 24 * 3600, 6);
+  });
+
+  it("reports the bank size at the most recent moment rather than one entry of it", () => {
+    const [group] = buildConnectorTimelines([free(3), faulted(1)], RANGE_START, RANGE_END);
 
     expect(group.connectors).toBe(4);
   });
 
-  it("clips an interval that starts before the window", () => {
+  it("keeps a bar for a connector that has since disappeared, empty where it was gone", () => {
     const [group] = buildConnectorTimelines(
       [
-        entry({
-          connectorCount: 1,
-          startedAt: "2026-02-01T00:00:00Z",
-          endedAt: "2026-03-01T12:00:00Z",
-        }),
+        free(2, { startedAt: "2026-03-01T00:00:00Z", endedAt: MIDDAY }),
+        free(1, { startedAt: MIDDAY, endedAt: "2026-03-02T00:00:00Z" }),
       ],
       RANGE_START,
       RANGE_END,
     );
 
-    expect(group.slices[0].leftPct).toBeCloseTo(0, 6);
-    expect(group.slices[0].widthPct).toBeCloseTo(50, 6);
+    expect(group.lanes).toHaveLength(2);
+    expect(group.connectors).toBe(1);
+    expect(group.lanes[1].slices).toHaveLength(1);
+    expect(group.lanes[1].slices[0].widthPct).toBeCloseTo(50, 6);
+  });
+
+  it("clips an interval that starts before the window", () => {
+    const [group] = buildConnectorTimelines(
+      [free(1, { startedAt: "2026-02-01T00:00:00Z", endedAt: MIDDAY })],
+      RANGE_START,
+      RANGE_END,
+    );
+
+    expect(group.lanes[0].slices[0].leftPct).toBeCloseTo(0, 6);
+    expect(group.lanes[0].slices[0].widthPct).toBeCloseTo(50, 6);
     expect(group.seconds.free).toBeCloseTo(12 * 3600, 6);
+  });
+
+  it("drops a group the feed reported with no connectors at all", () => {
+    const groups = buildConnectorTimelines([free(0)], RANGE_START, RANGE_END);
+
+    expect(groups).toEqual([]);
   });
 
   it("drops an interval that falls entirely outside the window", () => {
     const groups = buildConnectorTimelines(
-      [
-        entry({
-          startedAt: "2026-01-01T00:00:00Z",
-          endedAt: "2026-01-02T00:00:00Z",
-        }),
-      ],
+      [entry({ startedAt: "2026-01-01T00:00:00Z", endedAt: "2026-01-02T00:00:00Z" })],
       RANGE_START,
       RANGE_END,
     );
@@ -209,8 +263,8 @@ describe("resolveTimelineRange", () => {
 
     const [group] = buildConnectorTimelines(timeline, range.start, range.end);
 
-    expect(group.slices).toHaveLength(1);
-    expect(group.slices[0].leftPct).toBeCloseTo(0, 6);
-    expect(group.slices[0].widthPct).toBeCloseTo(100, 6);
+    expect(group.lanes[0].slices).toHaveLength(1);
+    expect(group.lanes[0].slices[0].leftPct).toBeCloseTo(0, 6);
+    expect(group.lanes[0].slices[0].widthPct).toBeCloseTo(100, 6);
   });
 });
