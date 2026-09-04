@@ -118,7 +118,7 @@ describe("buildConnectorTimelines", () => {
     );
 
     expect(statesOf(group)).toEqual([["free"], ["free", "broken"]]);
-    expect(group.lanes[0].slices[0].widthPct).toBeCloseTo(100, 6);
+    expect(group.lanes[0].slices[0].to - group.lanes[0].slices[0].from).toBe(RANGE_END - RANGE_START);
   });
 
   it("starts the fault where it was first reported", () => {
@@ -133,8 +133,8 @@ describe("buildConnectorTimelines", () => {
     );
 
     const [, broken] = group.lanes[1].slices;
-    expect(broken.leftPct).toBeCloseTo(50, 6);
-    expect(broken.widthPct).toBeCloseTo(50, 6);
+    expect(broken.from).toBe(new Date(MIDDAY).getTime());
+    expect(broken.to).toBe(RANGE_END);
   });
 
   it("counts a bar's time for one connector rather than for the whole bank", () => {
@@ -165,7 +165,7 @@ describe("buildConnectorTimelines", () => {
     expect(group.lanes).toHaveLength(2);
     expect(group.connectors).toBe(1);
     expect(group.lanes[1].slices).toHaveLength(1);
-    expect(group.lanes[1].slices[0].widthPct).toBeCloseTo(50, 6);
+    expect(group.lanes[1].slices[0].to).toBe(new Date(MIDDAY).getTime());
   });
 
   it("clips an interval that starts before the window", () => {
@@ -175,8 +175,8 @@ describe("buildConnectorTimelines", () => {
       RANGE_END,
     );
 
-    expect(group.lanes[0].slices[0].leftPct).toBeCloseTo(0, 6);
-    expect(group.lanes[0].slices[0].widthPct).toBeCloseTo(50, 6);
+    expect(group.lanes[0].slices[0].from).toBe(RANGE_START);
+    expect(group.lanes[0].slices[0].to).toBe(new Date(MIDDAY).getTime());
     expect(group.seconds.free).toBeCloseTo(12 * 3600, 6);
   });
 
@@ -264,7 +264,7 @@ describe("resolveTimelineRange", () => {
     const [group] = buildConnectorTimelines(timeline, range.start, range.end);
 
     expect(group.lanes[0].slices).toHaveLength(1);
-    expect(group.lanes[0].slices[0].leftPct).toBeCloseTo(0, 6);
-    expect(group.lanes[0].slices[0].widthPct).toBeCloseTo(100, 6);
+    expect(group.lanes[0].slices[0].from).toBe(range.start);
+    expect(group.lanes[0].slices[0].to).toBe(range.end);
   });
 });

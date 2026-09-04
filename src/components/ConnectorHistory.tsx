@@ -1,21 +1,42 @@
 import { formatDateTime, formatNumber } from "@/lib/ui/format";
 import {
   buildConnectorTimelines,
+  isOutOfService,
   resolveTimelineRange,
   type ConnectorGroupTimeline,
   type ConnectorLane,
-  type LaneSlice,
+  type DayCell,
 } from "@/lib/ui/connector-timeline";
 import { USAGE_PRESENTATION, type ConnectorUsage } from "@/lib/ui/health";
 import type { StationTimelineEntry } from "@/lib/metrics/queries";
 
+const MONTHS = [
+  "ene",
+  "feb",
+  "mar",
+  "abr",
+  "may",
+  "jun",
+  "jul",
+  "ago",
+  "set",
+  "oct",
+  "nov",
+  "dic",
+];
+
 const LEGEND: ConnectorUsage[] = ["free", "inUse", "broken", "absent", "unknown"];
 
-const ONE_BAR_EACH =
-  "El feed informa cuántos conectores de este grupo están en cada estado, no cuál es cuál. Hay una barra por conector y en cada momento las barras suman los estados observados, pero ninguna barra sigue a un cargador en particular a lo largo del tiempo.";
+const DAY_FILL: Record<ConnectorUsage, string> = {
+  free: "var(--day-free)",
+  inUse: "var(--day-in-use)",
+  broken: "var(--day-out)",
+  absent: "var(--day-absent)",
+  unknown: "var(--day-unknown)",
+};
 
-const A_BAR_THAT_DID_NOT_EXIST_YET =
-  "Un tramo vacío es un conector que el grupo todavía no tenía en ese momento.";
+const ONE_ROW_EACH =
+  "El feed informa cuántos conectores de este grupo están en cada estado, no cuál es cuál. Hay una fila por conector y en cada momento las filas suman los estados observados, pero ninguna fila sigue a un cargador en particular a lo largo del tiempo.";
 
 function percentage(numerator: number, denominator: number): number {
   return denominator > 0 ? Math.round((numerator / denominator) * 100) : 0;
@@ -39,61 +60,114 @@ function readingOf(group: ConnectorGroupTimeline): GroupReading {
 
 function groupName(group: ConnectorGroupTimeline): string {
   const cable = group.hasCable ? "con cable" : "sin cable";
-  const bars = group.lanes.length;
-  return `${group.connectorType} de ${group.powerKw} kW ${cable}, ${formatNumber(bars)} ${
-    bars === 1 ? "conector" : "conectores"
+  const rows = group.lanes.length;
+  return `${group.connectorType} de ${group.powerKw} kW ${cable}, ${formatNumber(rows)} ${
+    rows === 1 ? "conector" : "conectores"
   }`;
 }
 
+function daysOutOfService(group: ConnectorGroupTimeline): number {
+  const affected = new Set<number>();
+
+  for (const lane of group.lanes) {
+    for (const day of lane.days) {
+      if (isOutOfService(day.state) || day.partlyOutOfService) affected.add(day.from);
+    }
+  }
+
+  return affected.size;
+}
+
+function outageWording(days: number): string {
+  return days === 1 ? "día fuera de servicio" : "días fuera de servicio";
+}
+
 function groupDescription(group: ConnectorGroupTimeline, reading: GroupReading): string {
+  const days = daysOutOfService(group);
   const outage = reading.interrupted
-    ? `, y fuera de servicio ${reading.outOfService}% del tiempo con telemetría`
+    ? `, y fuera de servicio ${reading.outOfService}% del tiempo con telemetría, en ${formatNumber(days)} ${outageWording(days)}`
     : ", sin interrupciones registradas";
-  const perConnector =
-    group.lanes.length === 1 ? "" : ` Una barra por conector. ${ONE_BAR_EACH}`;
-  return `Líneas de tiempo de ${groupName(group)}: en uso ${reading.utilization}% del tiempo que estuvo en servicio${outage}.${perConnector} El detalle intervalo por intervalo está en la lista de cambios, al final de la página.`;
+  const perConnector = group.lanes.length === 1 ? "" : ` Una fila por conector. ${ONE_ROW_EACH}`;
+  return `Calendario de ${groupName(group)}: un día por celda, en uso ${reading.utilization}% del tiempo que estuvo en servicio${outage}.${perConnector} El detalle intervalo por intervalo está en la lista de cambios, al final de la página.`;
 }
 
-function sliceTitle(slice: LaneSlice): string {
-  return `${USAGE_PRESENTATION[slice.state].label}\n${formatDateTime(
-    new Date(slice.from).toISOString(),
-  )} → ${formatDateTime(new Date(slice.to).toISOString())}`;
+function dayTitle(day: DayCell): string {
+  const date = `${formatNumber(day.dayOfMonth)} ${MONTHS[day.month - 1]}`;
+  if (day.state === null) return `${date}: sin datos`;
+
+  const notes = [
+    day.partlyOutOfService ? "parte del día fuera de servicio" : "",
+    day.thinlyObserved ? "poco observado" : "",
+  ].filter(Boolean);
+
+  const label = USAGE_PRESENTATION[day.state].label.toLowerCase();
+  return notes.length === 0 ? `${date}: ${label}` : `${date}: ${label}, ${notes.join(", ")}`;
 }
 
-function hasEmptyStretch(group: ConnectorGroupTimeline): boolean {
-  return group.lanes.some(
-    (lane) => lane.slices.reduce((drawn, slice) => drawn + slice.widthPct, 0) < 99.5,
+function Day({ day }: { day: DayCell }) {
+  const presentation = day.state === null ? null : USAGE_PRESENTATION[day.state];
+
+  return (
+    <div
+      title={dayTitle(day)}
+      style={{
+        flex: "1 1 0",
+        minWidth: 4,
+        height: 16,
+        borderRadius: 2,
+        opacity: day.thinlyObserved ? 0.45 : 1,
+        background: day.state === null ? "transparent" : DAY_FILL[day.state],
+        backgroundImage: presentation?.pattern,
+        boxShadow: presentation ? undefined : "inset 0 0 0 1px var(--text-muted)",
+        borderBottom: day.partlyOutOfService ? "3px solid var(--day-out)" : undefined,
+      }}
+    />
   );
 }
 
-function Bar({ lane }: { lane: ConnectorLane }) {
+function Row({ lane }: { lane: ConnectorLane }) {
   return (
-    <div
-      aria-hidden
-      style={{
-        position: "relative",
-        height: 12,
-        borderRadius: 999,
-        background: "var(--surface-2)",
-        overflow: "hidden",
-      }}
-    >
-      {[...lane.slices].reverse().map((slice, index) => (
-        <div
-          key={`${lane.key}-${index}`}
-          title={sliceTitle(slice)}
-          style={{
-            position: "absolute",
-            top: 0,
-            bottom: 0,
-            left: `${slice.leftPct}%`,
-            width: `max(2px, ${slice.widthPct}%)`,
-            backgroundColor: USAGE_PRESENTATION[slice.state].color,
-            backgroundImage: USAGE_PRESENTATION[slice.state].pattern,
-          }}
-        />
+    <div aria-hidden style={{ display: "flex", gap: 1 }}>
+      {lane.days.map((day) => (
+        <Day key={day.from} day={day} />
       ))}
     </div>
+  );
+}
+
+function MonthScale({ days }: { days: DayCell[] }) {
+  return (
+    <div aria-hidden style={{ display: "flex", gap: 1, marginTop: 2 }}>
+      {days.map((day, index) => (
+        <div
+          key={day.from}
+          style={{
+            flex: "1 1 0",
+            minWidth: 4,
+            fontSize: 10.5,
+            color: "var(--text-muted)",
+            whiteSpace: "nowrap",
+          }}
+        >
+          {index === 0 || day.dayOfMonth === 1 ? MONTHS[day.month - 1] : ""}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function Swatch({ fill, pattern }: { fill: string; pattern?: string }) {
+  return (
+    <span
+      aria-hidden
+      style={{
+        width: 14,
+        height: 14,
+        borderRadius: 2,
+        background: fill,
+        backgroundImage: pattern,
+      }}
+    />
   );
 }
 
@@ -123,10 +197,11 @@ export function ConnectorHistory({
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: 26 }}>
       {groups.map((group) => {
         const reading = readingOf(group);
-        const bars = group.lanes.length;
+        const rows = group.lanes.length;
+        const outageDays = daysOutOfService(group);
 
         return (
           <div key={group.key} style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -142,8 +217,8 @@ export function ConnectorHistory({
               <div style={{ fontSize: 14, fontWeight: 600 }}>
                 {group.connectorType} · {group.powerKw} kW
                 <span style={{ color: "var(--text-muted)", fontWeight: 400 }}>
-                  {group.hasCable ? " · con cable" : " · sin cable"} · {formatNumber(bars)}{" "}
-                  {bars === 1 ? "conector" : "conectores"}
+                  {group.hasCable ? " · con cable" : " · sin cable"} · {formatNumber(rows)}{" "}
+                  {rows === 1 ? "conector" : "conectores"}
                 </span>
               </div>
               <div
@@ -153,34 +228,35 @@ export function ConnectorHistory({
                   fontVariantNumeric: "tabular-nums",
                 }}
               >
-                Uso <strong style={{ color: "var(--text-primary)" }}>{reading.utilization}%</strong>
-                {reading.outOfService > 0 && (
+                {outageDays === 0 ? (
+                  <>Sin días fuera de servicio</>
+                ) : (
                   <>
-                    {" "}
-                    · Fuera de servicio{" "}
                     <strong style={{ color: "var(--status-critical)" }}>
-                      {reading.outOfService}%
-                    </strong>
+                      {formatNumber(outageDays)}
+                    </strong>{" "}
+                    {outageWording(outageDays)}
                   </>
-                )}
+                )}{" "}
+                · Uso <strong style={{ color: "var(--text-primary)" }}>{reading.utilization}%</strong>
               </div>
             </div>
 
-            <div
-              role="img"
-              aria-label={groupDescription(group, reading)}
-              style={{ display: "flex", flexDirection: "column", gap: 4 }}
-            >
-              {group.lanes.map((lane) => (
-                <Bar key={lane.key} lane={lane} />
-              ))}
+            <div style={{ overflowX: "auto" }}>
+              <div
+                role="img"
+                aria-label={groupDescription(group, reading)}
+                style={{ display: "flex", flexDirection: "column", gap: 3, minWidth: 320 }}
+              >
+                {group.lanes.map((lane) => (
+                  <Row key={lane.key} lane={lane} />
+                ))}
+                <MonthScale days={group.lanes[0].days} />
+              </div>
             </div>
 
-            {bars > 1 && (
-              <p style={{ margin: 0, fontSize: 12, color: "var(--text-muted)" }}>
-                {ONE_BAR_EACH}
-                {hasEmptyStretch(group) && ` ${A_BAR_THAT_DID_NOT_EXIST_YET}`}
-              </p>
+            {rows > 1 && (
+              <p style={{ margin: 0, fontSize: 12, color: "var(--text-muted)" }}>{ONE_ROW_EACH}</p>
             )}
           </div>
         );
@@ -189,26 +265,43 @@ export function ConnectorHistory({
       <div style={{ display: "flex", gap: 16, flexWrap: "wrap", fontSize: 12.5 }}>
         {LEGEND.map((state) => (
           <span key={state} style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <span
-              aria-hidden
-              style={{
-                width: 12,
-                height: 12,
-                borderRadius: 2,
-                backgroundColor: USAGE_PRESENTATION[state].color,
-                backgroundImage: USAGE_PRESENTATION[state].pattern,
-              }}
-            />
-            <span aria-hidden style={{ color: USAGE_PRESENTATION[state].color, fontSize: 11 }}>
-              {USAGE_PRESENTATION[state].symbol}
-            </span>
+            <Swatch fill={DAY_FILL[state]} pattern={USAGE_PRESENTATION[state].pattern} />
             <span style={{ color: "var(--text-secondary)" }}>{USAGE_PRESENTATION[state].label}</span>
           </span>
         ))}
+        <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <span
+            aria-hidden
+            style={{
+              width: 14,
+              height: 14,
+              borderRadius: 2,
+              boxShadow: "inset 0 0 0 1px var(--text-muted)",
+            }}
+          />
+          <span style={{ color: "var(--text-secondary)" }}>Sin datos</span>
+        </span>
+        <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <span
+            aria-hidden
+            style={{
+              width: 14,
+              height: 14,
+              borderRadius: 2,
+              background: "var(--day-free)",
+              borderBottom: "3px solid var(--day-out)",
+            }}
+          />
+          <span style={{ color: "var(--text-secondary)" }}>
+            Con parte del día fuera de servicio
+          </span>
+        </span>
       </div>
 
       <p style={{ margin: 0, fontSize: 12, color: "var(--text-muted)" }}>
-        Ventana: {formatDateTime(new Date(range.start).toISOString())} →{" "}
+        Cada celda es un día en horario de Montevideo, pintado con el estado que más duró ese día.
+        Un día apenas observado se dibuja atenuado. Ventana:{" "}
+        {formatDateTime(new Date(range.start).toISOString())} →{" "}
         {formatDateTime(new Date(range.end).toISOString())}.
         {range.clampedByRowLimit && (
           <>
