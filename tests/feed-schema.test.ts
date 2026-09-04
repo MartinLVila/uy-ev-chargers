@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { fetchStationFeedV2 } from "../src/lib/ute/v2-client";
 import { usable } from "./helpers/feed";
-import { stationPayloadSchema } from "../src/lib/ute/types";
+import { connectorGroupPayloadSchema, stationPayloadSchema } from "../src/lib/ute/types";
 
 interface BulkRecord {
   id: number;
@@ -157,6 +157,56 @@ describe("the schema that declares the feed is the schema that validates it", ()
     mockUte([bulkRecord], (id) => new Response(JSON.stringify(detailBody(id)), { status: 200 }));
 
     expect(stationPayloadSchema.safeParse({ name: "S", lat: 991, lng: -56.1 }).success).toBe(false);
+  });
+
+  it("refuses a station the feed did not locate rather than placing it at zero", () => {
+    const within = { name: "Somewhere", lat: -34.9, lng: -56.1 };
+
+    for (const missing of [null, "", "   ", false, []]) {
+      expect(
+        stationPayloadSchema.safeParse({ ...within, lat: missing }).success,
+        `lat ${JSON.stringify(missing)} was accepted`,
+      ).toBe(false);
+      expect(
+        stationPayloadSchema.safeParse({ ...within, lng: missing }).success,
+        `lng ${JSON.stringify(missing)} was accepted`,
+      ).toBe(false);
+    }
+  });
+
+  it("refuses a connector group whose power the feed did not report", () => {
+    const group = { count: 2, type: "CCS2", power: 60 };
+
+    expect(connectorGroupPayloadSchema.safeParse(group).success).toBe(true);
+
+    for (const missing of [null, "", "   ", false, []]) {
+      expect(
+        connectorGroupPayloadSchema.safeParse({ ...group, power: missing }).success,
+        `power ${JSON.stringify(missing)} was accepted`,
+      ).toBe(false);
+    }
+  });
+
+  it("refuses a coordinate that is a number in some other base", () => {
+    const within = { name: "Somewhere", lat: -34.9, lng: -56.1 };
+
+    for (const notDecimal of ["0x10", "0b11", "0o17", "1_0", "12abc", "Infinity"]) {
+      expect(
+        stationPayloadSchema.safeParse({ ...within, lat: notDecimal }).success,
+        `lat ${notDecimal} was accepted`,
+      ).toBe(false);
+    }
+  });
+
+  it("still reads a coordinate the feed sent as a string", () => {
+    const parsed = stationPayloadSchema.safeParse({
+      name: "Somewhere",
+      lat: "-34.9",
+      lng: " -56.1 ",
+    });
+
+    expect(parsed.success && parsed.data.lat).toBe(-34.9);
+    expect(parsed.success && parsed.data.lng).toBe(-56.1);
   });
 
   it("bounds the coordinates it claims to bound", () => {

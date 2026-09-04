@@ -12,17 +12,26 @@ export const MAX_FEED_TEXT = {
 
 export const MAX_CONNECTOR_GROUPS_PER_STATION = 50;
 
+const DECIMAL = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$/;
+
+function numberTheFeedReported() {
+  return z
+    .union([z.number(), z.string().trim().regex(DECIMAL)])
+    .transform(Number)
+    .pipe(z.number().refine(Number.isFinite));
+}
+
 export const connectorGroupPayloadSchema = z.object({
   count: z.number().int().nonnegative(),
   type: z.string().min(1).max(MAX_FEED_TEXT.connectorType),
-  power: z.coerce.number().nonnegative(),
+  power: numberTheFeedReported().pipe(z.number().nonnegative()),
   status: z.number().int().nullable().optional(),
   statusDetail: z.string().max(MAX_FEED_TEXT.status).nullable().optional(),
   hose: z.boolean().nullable().optional(),
 });
 
-export const latitudeSchema = z.coerce.number().min(-90).max(90);
-export const longitudeSchema = z.coerce.number().min(-180).max(180);
+export const latitudeSchema = numberTheFeedReported().pipe(z.number().min(-90).max(90));
+export const longitudeSchema = numberTheFeedReported().pipe(z.number().min(-180).max(180));
 
 export function unknownWhenOverlong(limit: number) {
   return z.string().max(limit).nullable().optional().catch(null);
