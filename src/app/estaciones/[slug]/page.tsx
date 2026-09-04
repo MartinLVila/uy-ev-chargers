@@ -144,8 +144,8 @@ export default async function StationPage({ params }: { params: Promise<{ slug: 
         <div className="container">
           <h2 className="section-title">Cómo estuvo cada cargador</h2>
           <p className="support-text" style={{ marginTop: 12, marginBottom: 32 }}>
-            Cada barra muestra la evolución de un conector en los últimos {WINDOW_DAYS} días: libre,
-            en uso o fuera de servicio.
+            Una fila por conector y una celda por día, con el estado que más duró ese día, durante
+            los últimos {WINDOW_DAYS} días.
           </p>
           <ConnectorHistory
             timeline={station.timeline}

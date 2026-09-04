@@ -1,18 +1,28 @@
 import type { StationTimelineEntry } from "@/lib/metrics/queries";
 import { connectorUsageState, type ConnectorUsage } from "./health";
+import { localDays, type LocalDay } from "./local-days";
 
 export interface LaneSlice {
-  leftPct: number;
-  widthPct: number;
   from: number;
   to: number;
   state: ConnectorUsage;
+}
+
+export interface DayCell {
+  from: number;
+  to: number;
+  month: number;
+  dayOfMonth: number;
+  state: ConnectorUsage | null;
+  partlyOutOfService: boolean;
+  thinlyObserved: boolean;
 }
 
 export interface ConnectorLane {
   key: string;
   position: number;
   slices: LaneSlice[];
+  days: DayCell[];
   seconds: Record<ConnectorUsage, number>;
 }
 
@@ -55,7 +65,6 @@ export function buildConnectorTimelines(
   rangeStart: number,
   rangeEnd: number,
 ): ConnectorGroupTimeline[] {
-  const span = Math.max(rangeEnd - rangeStart, 1);
   const entriesByGroup = new Map<string, { entry: StationTimelineEntry; clipped: ClippedEntry }[]>();
 
   for (const entry of timeline) {
@@ -81,7 +90,7 @@ export function buildConnectorTimelines(
       powerKw: head.powerKw,
       hasCable: head.hasCable,
       connectors: moments.length > 0 ? moments[moments.length - 1].connectors : 0,
-      lanes: lanesOf(moments, key, rangeStart, span),
+      lanes: lanesOf(moments, key, rangeStart, rangeEnd),
       seconds: totalSecondsByState(clipped),
     });
   }
@@ -147,7 +156,7 @@ function lanesOf(
   moments: Moment[],
   groupKey: string,
   rangeStart: number,
-  span: number,
+  rangeEnd: number,
 ): ConnectorLane[] {
   const width = moments.reduce((widest, moment) => Math.max(widest, moment.connectors), 0);
   const held: (ConnectorUsage | null)[] = Array.from({ length: width }, () => null);
@@ -164,16 +173,71 @@ function lanesOf(
     }
   }
 
+  const calendar = localDays(rangeStart, rangeEnd);
+
   return runs.map((slices, index) => ({
     key: `${groupKey}|${index}`,
     position: index + 1,
-    slices: slices.map((slice) => ({
-      ...slice,
-      leftPct: ((slice.from - rangeStart) / span) * 100,
-      widthPct: ((slice.to - slice.from) / span) * 100,
-    })),
+    slices,
+    days: daysOfLane(slices, calendar, rangeStart, rangeEnd),
     seconds: secondsOfLane(slices),
   }));
+}
+
+export const OUT_OF_SERVICE: ConnectorUsage[] = ["broken", "absent"];
+
+const THINLY_OBSERVED_BELOW = 0.25;
+
+function daysOfLane(
+  slices: LaneSlice[],
+  calendar: LocalDay[],
+  rangeStart: number,
+  rangeEnd: number,
+): DayCell[] {
+  return calendar.map((day) => {
+    const from = Math.max(day.from, rangeStart);
+    const to = Math.min(day.to, rangeEnd);
+    const seconds = new Map<ConnectorUsage, number>();
+
+    for (const slice of slices) {
+      const overlap = Math.min(slice.to, to) - Math.max(slice.from, from);
+      if (overlap <= 0) continue;
+      seconds.set(slice.state, (seconds.get(slice.state) ?? 0) + overlap / 1000);
+    }
+
+    const observed = [...seconds.values()].reduce((total, held) => total + held, 0);
+    const outOfService = OUT_OF_SERVICE.reduce((total, state) => total + (seconds.get(state) ?? 0), 0);
+    const state = dominantState(seconds);
+
+    return {
+      from,
+      to,
+      month: day.month,
+      dayOfMonth: day.dayOfMonth,
+      state,
+      partlyOutOfService: outOfService > 0 && !isOutOfService(state),
+      thinlyObserved: observed > 0 && observed < ((to - from) / 1000) * THINLY_OBSERVED_BELOW,
+    };
+  });
+}
+
+export function isOutOfService(state: ConnectorUsage | null): boolean {
+  return state !== null && OUT_OF_SERVICE.includes(state);
+}
+
+function dominantState(seconds: Map<ConnectorUsage, number>): ConnectorUsage | null {
+  let dominant: ConnectorUsage | null = null;
+  let held = 0;
+
+  for (const state of STATE_ORDER) {
+    const candidate = seconds.get(state) ?? 0;
+    if (candidate > held) {
+      dominant = state;
+      held = candidate;
+    }
+  }
+
+  return dominant;
 }
 
 function assignMoment(
@@ -212,7 +276,7 @@ function extendRun(slices: LaneSlice[], moment: Moment, state: ConnectorUsage): 
     return;
   }
 
-  slices.push({ leftPct: 0, widthPct: 0, from: moment.from, to: moment.to, state });
+  slices.push({ from: moment.from, to: moment.to, state });
 }
 
 function secondsOfLane(slices: LaneSlice[]): Record<ConnectorUsage, number> {
