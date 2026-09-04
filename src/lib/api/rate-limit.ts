@@ -13,7 +13,11 @@ export type RateLimitScope = "read" | "poll";
 
 const blockedIdentifiers = new Map<string, number>();
 
-let limiters: Record<RateLimitScope, Ratelimit> | null | undefined;
+interface LimiterBuild {
+  limiters: Record<RateLimitScope, Ratelimit> | null;
+}
+
+let build: LimiterBuild | null = null;
 
 function redisCredentials(): { url: string; token: string } | null {
   const url = process.env.KV_REST_API_URL;
@@ -50,8 +54,8 @@ function buildLimiters(): Record<RateLimitScope, Ratelimit> | null {
 }
 
 function limiterFor(scope: RateLimitScope): Ratelimit | null {
-  if (limiters === undefined) limiters = buildLimiters();
-  return limiters === null ? null : limiters[scope];
+  build ??= { limiters: buildLimiters() };
+  return build.limiters?.[scope] ?? null;
 }
 
 export function clientIdentifier(request: Request): string {
