@@ -43,6 +43,7 @@ export interface IngestResult {
   connectorsInFeed: number;
   duplicateStations: number;
   stationsCreated: number;
+  contestedCoordinates: number;
   connectorGroupsCreated: number;
   stationStateChanges: number;
   connectorStateChanges: number;
@@ -60,6 +61,7 @@ const NO_CHANGES = {
   connectorsInFeed: 0,
   duplicateStations: 0,
   stationsCreated: 0,
+  contestedCoordinates: 0,
   connectorGroupsCreated: 0,
   stationStateChanges: 0,
   connectorStateChanges: 0,
@@ -139,6 +141,9 @@ async function applyFeed(
   await closeIntervals(tx, connectorPlan.closures, presencePlan.closures, observedAt);
   await openIntervals(tx, connectorPlan.openings, presencePlan.openings);
 
+  const errorMessage =
+    contestedCoordinatesMessage(reconciledStations.contestedCoordinates) ?? feed.errorMessage;
+
   const [run] = await tx
     .insert(pollRuns)
     .values({
@@ -149,7 +154,7 @@ async function applyFeed(
       stationCount: incoming.entries.length,
       connectorCount: incoming.connectorCount,
       payloadDigest: feed.payloadDigest,
-      errorMessage: feed.errorMessage,
+      errorMessage,
     })
     .returning({ id: pollRuns.id });
 
@@ -163,11 +168,21 @@ async function applyFeed(
     connectorsInFeed: incoming.connectorCount,
     duplicateStations: incoming.duplicates,
     stationsCreated: reconciledStations.created,
+    contestedCoordinates: reconciledStations.contestedCoordinates,
     connectorGroupsCreated: reconciledConnectors.created,
     stationStateChanges: presencePlan.openings.length,
     connectorStateChanges: connectorPlan.openings.length,
-    errorMessage: feed.errorMessage,
+    errorMessage,
   };
+}
+
+function contestedCoordinatesMessage(contested: number): string | null {
+  if (contested === 0) return null;
+  const stationWord = contested === 1 ? "station" : "stations";
+  return (
+    `${contested} ${stationWord} reported coordinates another station already holds; ` +
+    "their locations were left as recorded"
+  );
 }
 
 function collapsedAgainst(storedCount: number, incomingCount: number): boolean {
@@ -246,6 +261,7 @@ async function loadStoredState(tx: Transaction): Promise<StoredState> {
 interface ReconciledStations {
   matched: Map<number, IncomingStation>;
   created: number;
+  contestedCoordinates: number;
 }
 
 async function reconcileStations(
@@ -262,13 +278,16 @@ async function reconcileStations(
   const { matched, unmatched } = matchStations(entries, idByCoordKey, idByNameKey);
 
   const updatesByChanges = new Map<string, { changes: StationChanges; ids: number[] }>();
+  let refusedMoves = 0;
 
   for (const [stationId, entry] of matched) {
     const current = storedById.get(stationId);
     if (!current) continue;
 
-    const claimedCoordKey = claimCoordinateKey(idByCoordKey, current, entry, stationId);
-    const changes = changedStationFields(current, entry, claimedCoordKey);
+    const claim = claimCoordinateKey(idByCoordKey, current, entry, stationId);
+    if (claim.kind === "refused") refusedMoves += 1;
+
+    const changes = changedStationFields(current, entry, claim);
     if (!changes) continue;
 
     const signature = JSON.stringify(changes);
@@ -281,14 +300,25 @@ async function reconcileStations(
     await tx.update(stations).set(changes).where(inArray(stations.id, ids));
   }
 
-  const created = await insertStations(tx, unmatched, matched, idByCoordKey, takenSlugs, observedAt);
+  const inserted = await insertStations(
+    tx,
+    unmatched,
+    matched,
+    idByCoordKey,
+    takenSlugs,
+    observedAt,
+  );
 
   const seenIds = [...matched.keys()];
   if (seenIds.length > 0) {
     await tx.update(stations).set({ lastSeenAt: observedAt }).where(inArray(stations.id, seenIds));
   }
 
-  return { matched, created };
+  return {
+    matched,
+    created: inserted.created,
+    contestedCoordinates: refusedMoves + inserted.contested,
+  };
 }
 
 interface MatchedStations {
@@ -349,26 +379,37 @@ function keysAppearingExactlyOnce(keys: string[]): Set<string> {
   return new Set([...counts].filter(([, count]) => count === 1).map(([key]) => key));
 }
 
+type CoordinateClaim =
+  | { kind: "unchanged" }
+  | { kind: "claimed"; coordKey: string }
+  | { kind: "refused"; heldBy: number };
+
 function claimCoordinateKey(
   idByCoordKey: Map<string, number>,
   current: StationRow,
   entry: IncomingStation,
   stationId: number,
-): string | null {
-  if (current.coordKey === entry.coordKey) return null;
+): CoordinateClaim {
+  if (current.coordKey === entry.coordKey) return { kind: "unchanged" };
 
-  const owner = idByCoordKey.get(entry.coordKey);
-  if (owner !== undefined && owner !== stationId) return null;
+  const heldBy = idByCoordKey.get(entry.coordKey);
+  if (heldBy !== undefined && heldBy !== stationId) {
+    console.warn(
+      `Station ${stationId} reported coordinates held by station ${heldBy}; ` +
+        "keeping the coordinates already on record",
+    );
+    return { kind: "refused", heldBy };
+  }
 
   idByCoordKey.delete(current.coordKey);
   idByCoordKey.set(entry.coordKey, stationId);
-  return entry.coordKey;
+  return { kind: "claimed", coordKey: entry.coordKey };
 }
 
 function changedStationFields(
   current: StationRow,
   entry: IncomingStation,
-  claimedCoordKey: string | null,
+  claim: CoordinateClaim,
 ): StationChanges | null {
   const changes: StationChanges = {};
 
@@ -383,11 +424,18 @@ function changedStationFields(
     changes.departmentRaw = entry.departmentRaw;
   }
   if (current.source !== entry.source && entry.source !== null) changes.source = entry.source;
-  if (current.latitude !== entry.latitude) changes.latitude = entry.latitude;
-  if (current.longitude !== entry.longitude) changes.longitude = entry.longitude;
-  if (claimedCoordKey !== null) changes.coordKey = claimedCoordKey;
+  if (claim.kind !== "refused") {
+    if (current.latitude !== entry.latitude) changes.latitude = entry.latitude;
+    if (current.longitude !== entry.longitude) changes.longitude = entry.longitude;
+    if (claim.kind === "claimed") changes.coordKey = claim.coordKey;
+  }
 
   return Object.keys(changes).length > 0 ? changes : null;
+}
+
+interface InsertedStations {
+  created: number;
+  contested: number;
 }
 
 async function insertStations(
@@ -397,10 +445,21 @@ async function insertStations(
   idByCoordKey: Map<string, number>,
   takenSlugs: Set<string>,
   observedAt: Date,
-): Promise<number> {
-  if (entries.length === 0) return 0;
+): Promise<InsertedStations> {
+  const placeable = entries.filter((entry) => {
+    const heldBy = idByCoordKey.get(entry.coordKey);
+    if (heldBy === undefined) return true;
+    console.warn(
+      `Not inserting ${JSON.stringify(entry.name)} at ${entry.coordKey}: ` +
+        `station ${heldBy} already holds those coordinates`,
+    );
+    return false;
+  });
 
-  const rows = entries.map((entry) => ({
+  const contested = entries.length - placeable.length;
+  if (placeable.length === 0) return { created: 0, contested };
+
+  const rows = placeable.map((entry) => ({
     slug: claimSlug(slugify(entry.name), takenSlugs),
     coordKey: entry.coordKey,
     nameKey: entry.nameKey,
@@ -421,7 +480,7 @@ async function insertStations(
     .values(rows)
     .returning({ id: stations.id, coordKey: stations.coordKey });
 
-  const entryByCoordKey = new Map(entries.map((entry) => [entry.coordKey, entry]));
+  const entryByCoordKey = new Map(placeable.map((entry) => [entry.coordKey, entry]));
   for (const row of inserted) {
     const entry = entryByCoordKey.get(row.coordKey);
     if (!entry) continue;
@@ -429,7 +488,7 @@ async function insertStations(
     idByCoordKey.set(row.coordKey, row.id);
   }
 
-  return inserted.length;
+  return { created: inserted.length, contested };
 }
 
 interface ReconciledConnectors {
