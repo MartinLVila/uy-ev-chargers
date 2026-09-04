@@ -1,12 +1,20 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { and, eq, isNull } from "drizzle-orm";
 import { runIngestion } from "../src/lib/ingest/pipeline";
-import { connectorStates, stationStates, stations } from "../src/lib/db/schema";
+import { connectorStates, pollRuns, stationStates, stations } from "../src/lib/db/schema";
 import { createTestDatabase, type TestDatabase } from "./helpers/database";
 import { failedFeed, station, successFeed } from "./helpers/feed";
 
 const T0 = new Date("2026-01-01T00:00:00Z");
 const T1 = new Date("2026-01-01T00:15:00Z");
 const T2 = new Date("2026-01-01T00:30:00Z");
+
+const FOUR_STATIONS = [
+  station({ name: "One", lat: -34.1, lng: -56.1 }),
+  station({ name: "Two", lat: -34.2, lng: -56.2 }),
+  station({ name: "Three", lat: -34.3, lng: -56.3 }),
+  station({ name: "Four", lat: -34.4, lng: -56.4 }),
+];
 
 describe("runIngestion", () => {
   let db: TestDatabase;
@@ -442,6 +450,151 @@ describe("runIngestion", () => {
     expect(connectors.every((row) => row.health === "operational" && row.endedAt === null)).toBe(
       true,
     );
+  });
+
+  it("keeps accepting feeds while churn piles up station rows nothing prunes", async () => {
+    const cohort = (offset: number) =>
+      [1, 2, 3, 4].map((n) =>
+        station({ name: `Site ${offset + n}`, lat: -34 - (offset + n) / 100, lng: -56.1 }),
+      );
+
+    const minutesApart = (n: number) => new Date(T0.getTime() + n * 15 * 60 * 1000);
+
+    for (const [index, offset] of [0, 10, 20].entries()) {
+      const poll = await runIngestion(db, {
+        observedAt: minutesApart(index),
+        feed: successFeed(cohort(offset)),
+      });
+      expect(poll.outcome).toBe("success");
+    }
+
+    const accumulated = await db.select().from(stations);
+    expect(accumulated.length).toBe(12);
+
+    const result = await runIngestion(db, {
+      observedAt: minutesApart(3),
+      feed: successFeed(cohort(30)),
+    });
+
+    expect(result.outcome).toBe("success");
+    expect(result.stationsInFeed).toBe(4);
+  });
+
+  it("refuses a second halving measured against the peak, not against the last poll", async () => {
+
+    await runIngestion(db, { observedAt: T0, feed: successFeed(FOUR_STATIONS) });
+    const halved = await runIngestion(db, { observedAt: T1, feed: successFeed(FOUR_STATIONS.slice(0, 2)) });
+    expect(halved.outcome).toBe("success");
+
+    const delisted = await db
+      .select()
+      .from(stationStates)
+      .where(and(eq(stationStates.state, "delisted"), isNull(stationStates.endedAt)));
+    expect(delisted).toHaveLength(2);
+
+    const again = await runIngestion(db, { observedAt: T2, feed: successFeed(FOUR_STATIONS.slice(0, 1)) });
+
+    expect(again.outcome).toBe("implausible_payload");
+    expect(again.errorMessage).toContain("against a recent peak of 4");
+  });
+
+  it("keeps refusing a collapse however long the feed reports it", async () => {
+    const collapsed = successFeed(FOUR_STATIONS.slice(0, 1));
+
+    await runIngestion(db, { observedAt: T0, feed: successFeed(FOUR_STATIONS) });
+
+    for (const hoursLater of [1, 25, 49]) {
+      const later = new Date(T0.getTime() + hoursLater * 60 * 60 * 1000);
+      const refused = await runIngestion(db, { observedAt: later, feed: collapsed });
+      expect(refused.outcome).toBe("implausible_payload");
+    }
+
+    const delisted = await db
+      .select()
+      .from(stationStates)
+      .where(and(eq(stationStates.state, "delisted"), isNull(stationStates.endedAt)));
+    expect(delisted).toHaveLength(0);
+  });
+
+  it("takes the count the network really has once the window holds no accepted poll", async () => {
+    await runIngestion(db, { observedAt: T0, feed: successFeed(FOUR_STATIONS) });
+
+    const halved = new Date(T0.getTime() + 25 * 60 * 60 * 1000);
+    const stepDown = await runIngestion(db, {
+      observedAt: halved,
+      feed: successFeed(FOUR_STATIONS.slice(0, 2)),
+    });
+    expect(stepDown.outcome).toBe("success");
+
+    const muchLater = new Date(T0.getTime() + 100 * 60 * 60 * 1000);
+    const recovered = await runIngestion(db, {
+      observedAt: muchLater,
+      feed: successFeed(FOUR_STATIONS),
+    });
+
+    expect(recovered.outcome).toBe("success");
+    expect(recovered.stationsInFeed).toBe(4);
+  });
+
+  it("guards a feed even when the audit trail holds no poll to compare against", async () => {
+    await runIngestion(db, { observedAt: T0, feed: successFeed(FOUR_STATIONS) });
+    await db.delete(pollRuns);
+
+    const result = await runIngestion(db, {
+      observedAt: T1,
+      feed: successFeed(FOUR_STATIONS.slice(0, 1)),
+    });
+
+    expect(result.outcome).toBe("implausible_payload");
+    expect(result.errorMessage).toContain("against the 4 currently listed");
+
+    const delisted = await db
+      .select()
+      .from(stationStates)
+      .where(and(eq(stationStates.state, "delisted"), isNull(stationStates.endedAt)));
+    expect(delisted).toHaveLength(0);
+  });
+
+  it("keeps refusing a collapse that arrives after an outage rather than an insistence", async () => {
+    await runIngestion(db, { observedAt: T0, feed: successFeed(FOUR_STATIONS) });
+
+    for (let hour = 1; hour <= 25; hour += 1) {
+      const during = new Date(T0.getTime() + hour * 60 * 60 * 1000);
+      const outage = await runIngestion(db, { observedAt: during, feed: failedFeed() });
+      expect(outage.outcome).toBe("fetch_error");
+    }
+
+    const afterTheOutage = new Date(T0.getTime() + 26 * 60 * 60 * 1000);
+    const result = await runIngestion(db, {
+      observedAt: afterTheOutage,
+      feed: successFeed(FOUR_STATIONS.slice(0, 1)),
+    });
+
+    expect(result.outcome).toBe("implausible_payload");
+    expect(result.errorMessage).toContain("against the 4 currently listed");
+
+    const delisted = await db
+      .select()
+      .from(stationStates)
+      .where(and(eq(stationStates.state, "delisted"), isNull(stationStates.endedAt)));
+    expect(delisted).toHaveLength(0);
+  });
+
+  it("never takes its baseline from a poll it refused", async () => {
+    await runIngestion(db, { observedAt: T0, feed: successFeed(FOUR_STATIONS) });
+
+    await db.insert(pollRuns).values({
+      startedAt: T1,
+      durationMs: 100,
+      outcome: "implausible_payload",
+      stationCount: 100,
+      connectorCount: 200,
+    });
+
+    const result = await runIngestion(db, { observedAt: T2, feed: successFeed(FOUR_STATIONS) });
+
+    expect(result.outcome).toBe("success");
+    expect(result.stationsInFeed).toBe(4);
   });
 
   it("applies a partial drop that stays within the plausible range", async () => {
