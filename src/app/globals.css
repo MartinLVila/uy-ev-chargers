@@ -439,6 +439,49 @@ a:focus-visible {
   display: block;
 }
 
+.station-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 20px;
+  padding: 12px 0;
+}
+
+.station-row > span {
+  min-width: 0;
+}
+
+.station-row-name {
+  font-weight: 500;
+}
+
+.station-row-city {
+  font-size: 12.5px;
+  color: var(--text-muted);
+}
+
+.station-row-meta {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.station-row-meta > span {
+  white-space: nowrap;
+}
+
+.station-row-broken {
+  font-weight: 600;
+  color: var(--status-critical);
+}
+
+summary:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
 .focusable-chart:focus-visible {
   outline: 3px solid var(--accent);
   outline-offset: 2px;

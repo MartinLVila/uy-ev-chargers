@@ -2,6 +2,7 @@ import { DepartmentChart } from "@/components/DepartmentChart";
 import { HealthBar } from "@/components/HealthBar";
 import { HistoryChart } from "@/components/HistoryChart";
 import { ReliabilityTable } from "@/components/ReliabilityTable";
+import { StationList } from "@/components/StationList";
 import { StationMapPanel } from "@/components/StationMapPanel";
 import { loadDashboard } from "@/lib/metrics/dashboard";
 import { daysOfHistory, lastDaysHeading, lastDaysSentence } from "@/lib/ui/coverage";
@@ -95,6 +96,7 @@ export default async function DashboardPage() {
             {formatNumber(snapshot.stations.delisted)} fuera.
           </p>
           <StationMapPanel stations={stations} />
+          <StationList stations={stations} />
         </div>
       </section>
 
