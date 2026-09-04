@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { sql } from "drizzle-orm";
 import { withIngestionLock, type WriteDb } from "../src/lib/db/write-client";
 import { createTestDatabase, type TestDatabase } from "./helpers/database";
@@ -16,6 +16,7 @@ describe("withIngestionLock", () => {
   });
 
   afterEach(async () => {
+    vi.restoreAllMocks();
     await close();
   });
 
@@ -64,4 +65,46 @@ describe("withIngestionLock", () => {
     const result = await withIngestionLock(lockable, async () => "took over", () => BUSY);
     expect(result).toBe(BUSY);
   });
+
+  it("leaves the lock alone when a later run has already taken it over", async () => {
+    await withIngestionLock(lockable, () => handOverTheLock(), () => BUSY);
+
+    const next = await withIngestionLock(lockable, async () => "next", () => BUSY);
+    expect(next).toBe(BUSY);
+  });
+
+  it("says so when it finds the lock it was holding is no longer its own", async () => {
+    const complained = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+    await withIngestionLock(lockable, () => handOverTheLock(), () => BUSY);
+
+    const said = complained.mock.calls.map((call) => String(call[0])).join(" ");
+    expect(said).toContain("outran its");
+  });
+
+  it("still releases the lock it does hold when a run overlaps nothing", async () => {
+    const complained = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+    await withIngestionLock(lockable, async () => "first", () => BUSY);
+
+    const held = await db.execute<{ name: string }>(
+      sql`SELECT name FROM ingestion_locks WHERE name = 'poll'`,
+    );
+    expect(held.rows).toHaveLength(0);
+    expect(complained).not.toHaveBeenCalled();
+  });
+
+  async function handOverTheLock(): Promise<string> {
+    await db.execute(sql`
+      UPDATE ingestion_locks SET held_until = now() - interval '1 minute' WHERE name = 'poll'
+    `);
+    await db.execute(sql`
+      INSERT INTO ingestion_locks (name, held_until)
+      VALUES ('poll', now() + interval '5 minutes')
+      ON CONFLICT (name) DO UPDATE
+        SET held_until = EXCLUDED.held_until
+        WHERE ingestion_locks.held_until < now()
+    `);
+    return "overran";
+  }
 });
