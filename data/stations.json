@@ -8,12 +8,12 @@
     "latitude": -31.8678235,
     "longitude": -54.1667246,
     "presence": "listed",
-    "connectors": 1,
+    "connectors": 3,
     "operational": 1,
-    "faulted": 0,
+    "faulted": 2,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 2
   },
   {
     "slug": "acceso-emergencia-hospital-de-clinicas",
@@ -505,11 +505,11 @@
     "longitude": -56.744655,
     "presence": "listed",
     "connectors": 3,
-    "operational": 3,
-    "faulted": 0,
+    "operational": 2,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "ancap-los-cerrillos",
@@ -887,13 +887,13 @@
     "department": "Canelones",
     "latitude": -34.646658,
     "longitude": -56.058881,
-    "presence": "delisted",
-    "connectors": 0,
-    "operational": 0,
+    "presence": "listed",
+    "connectors": 1,
+    "operational": 1,
     "faulted": 0,
     "unknown": 0,
-    "absent": 1,
-    "outOfService": 1
+    "absent": 0,
+    "outOfService": 0
   },
   {
     "slug": "ancap-solanas",
@@ -1001,11 +1001,11 @@
     "longitude": -54.687176,
     "presence": "listed",
     "connectors": 1,
-    "operational": 1,
-    "faulted": 0,
+    "operational": 0,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "ancap-young",
@@ -1226,6 +1226,38 @@
     "presence": "listed",
     "connectors": 4,
     "operational": 4,
+    "faulted": 0,
+    "unknown": 0,
+    "absent": 0,
+    "outOfService": 0
+  },
+  {
+    "slug": "campera-almacen-1",
+    "name": "Campera Almacén 1",
+    "address": "Ruta 8 km 34500",
+    "city": "Pando",
+    "department": "Desconocido",
+    "latitude": -34.707086,
+    "longitude": -55.92769,
+    "presence": "listed",
+    "connectors": 2,
+    "operational": 2,
+    "faulted": 0,
+    "unknown": 0,
+    "absent": 0,
+    "outOfService": 0
+  },
+  {
+    "slug": "campera-almacen-2",
+    "name": "Campera Almacén 2",
+    "address": "Ruta 8 km 345000",
+    "city": "Pando",
+    "department": "Desconocido",
+    "latitude": -34.707027,
+    "longitude": -55.92774,
+    "presence": "listed",
+    "connectors": 2,
+    "operational": 2,
     "faulted": 0,
     "unknown": 0,
     "absent": 0,
@@ -1465,11 +1497,11 @@
     "longitude": -57.835495,
     "presence": "listed",
     "connectors": 7,
-    "operational": 6,
-    "faulted": 1,
+    "operational": 7,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "colonia-valdense",
@@ -1881,11 +1913,11 @@
     "longitude": -58.0716883,
     "presence": "listed",
     "connectors": 4,
-    "operational": 4,
-    "faulted": 0,
+    "operational": 2,
+    "faulted": 2,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 2
   },
   {
     "slug": "fing-reissig",
@@ -2105,11 +2137,11 @@
     "longitude": -56.148899,
     "presence": "listed",
     "connectors": 4,
-    "operational": 4,
-    "faulted": 0,
+    "operational": 3,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "junta-local-centenario",
@@ -2140,8 +2172,8 @@
     "operational": 2,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "la-cumparsita",
@@ -2169,11 +2201,11 @@
     "longitude": -56.1833816,
     "presence": "listed",
     "connectors": 4,
-    "operational": 4,
-    "faulted": 0,
+    "operational": 2,
+    "faulted": 2,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 2
   },
   {
     "slug": "la-paloma",
@@ -3033,11 +3065,11 @@
     "longitude": -55.957135,
     "presence": "listed",
     "connectors": 2,
-    "operational": 1,
-    "faulted": 1,
+    "operational": 2,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "plaza-de-la-familia-carmelo",
@@ -3081,11 +3113,11 @@
     "longitude": -57.8650452,
     "presence": "listed",
     "connectors": 2,
-    "operational": 0,
-    "faulted": 2,
+    "operational": 2,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 2
+    "outOfService": 0
   },
   {
     "slug": "plaza-independencia-durazno",
@@ -3433,11 +3465,11 @@
     "longitude": -54.9162997,
     "presence": "listed",
     "connectors": 4,
-    "operational": 2,
-    "faulted": 2,
+    "operational": 4,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 2
+    "outOfService": 0
   },
   {
     "slug": "san-ramon",
@@ -3511,13 +3543,13 @@
     "department": "Desconocido",
     "latitude": -33.508548,
     "longitude": -56.9300983,
-    "presence": "delisted",
-    "connectors": 0,
-    "operational": 0,
+    "presence": "listed",
+    "connectors": 1,
+    "operational": 1,
     "faulted": 0,
     "unknown": 0,
-    "absent": 1,
-    "outOfService": 1
+    "absent": 0,
+    "outOfService": 0
   },
   {
     "slug": "tambores",
@@ -3561,11 +3593,11 @@
     "longitude": -56.214462,
     "presence": "listed",
     "connectors": 2,
-    "operational": 2,
-    "faulted": 0,
+    "operational": 1,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "tata-maldonado",
@@ -3864,8 +3896,8 @@
     "latitude": -34.883584,
     "longitude": -56.0816265,
     "presence": "listed",
-    "connectors": 3,
-    "operational": 3,
+    "connectors": 4,
+    "operational": 4,
     "faulted": 0,
     "unknown": 0,
     "absent": 0,
@@ -3913,11 +3945,11 @@
     "longitude": -56.615782,
     "presence": "listed",
     "connectors": 3,
-    "operational": 2,
-    "faulted": 1,
+    "operational": 3,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "utec-durazno",
