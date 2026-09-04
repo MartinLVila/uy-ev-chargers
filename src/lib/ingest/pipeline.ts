@@ -267,8 +267,8 @@ async function reconcileStations(
     const current = storedById.get(stationId);
     if (!current) continue;
 
-    const claimedCoordKey = claimCoordinateKey(idByCoordKey, current, entry, stationId);
-    const changes = changedStationFields(current, entry, claimedCoordKey);
+    const claim = claimCoordinateKey(idByCoordKey, current, entry, stationId);
+    const changes = changedStationFields(current, entry, claim);
     if (!changes) continue;
 
     const signature = JSON.stringify(changes);
@@ -349,26 +349,41 @@ function keysAppearingExactlyOnce(keys: string[]): Set<string> {
   return new Set([...counts].filter(([, count]) => count === 1).map(([key]) => key));
 }
 
+type CoordinateClaim =
+  | { moved: false }
+  | { moved: true; coordKey: string }
+  | { moved: false; refusedBy: number };
+
 function claimCoordinateKey(
   idByCoordKey: Map<string, number>,
   current: StationRow,
   entry: IncomingStation,
   stationId: number,
-): string | null {
-  if (current.coordKey === entry.coordKey) return null;
+): CoordinateClaim {
+  if (current.coordKey === entry.coordKey) return { moved: false };
 
   const owner = idByCoordKey.get(entry.coordKey);
-  if (owner !== undefined && owner !== stationId) return null;
+  if (owner !== undefined && owner !== stationId) {
+    console.warn(
+      `Station ${stationId} reported coordinates held by station ${owner}; ` +
+        "keeping the coordinates already on record",
+    );
+    return { moved: false, refusedBy: owner };
+  }
 
   idByCoordKey.delete(current.coordKey);
   idByCoordKey.set(entry.coordKey, stationId);
-  return entry.coordKey;
+  return { moved: true, coordKey: entry.coordKey };
+}
+
+function wasRefused(claim: CoordinateClaim): boolean {
+  return "refusedBy" in claim;
 }
 
 function changedStationFields(
   current: StationRow,
   entry: IncomingStation,
-  claimedCoordKey: string | null,
+  claim: CoordinateClaim,
 ): StationChanges | null {
   const changes: StationChanges = {};
 
@@ -383,9 +398,11 @@ function changedStationFields(
     changes.departmentRaw = entry.departmentRaw;
   }
   if (current.source !== entry.source && entry.source !== null) changes.source = entry.source;
-  if (current.latitude !== entry.latitude) changes.latitude = entry.latitude;
-  if (current.longitude !== entry.longitude) changes.longitude = entry.longitude;
-  if (claimedCoordKey !== null) changes.coordKey = claimedCoordKey;
+  if (!wasRefused(claim)) {
+    if (current.latitude !== entry.latitude) changes.latitude = entry.latitude;
+    if (current.longitude !== entry.longitude) changes.longitude = entry.longitude;
+    if (claim.moved) changes.coordKey = claim.coordKey;
+  }
 
   return Object.keys(changes).length > 0 ? changes : null;
 }
@@ -398,9 +415,18 @@ async function insertStations(
   takenSlugs: Set<string>,
   observedAt: Date,
 ): Promise<number> {
-  if (entries.length === 0) return 0;
+  const placeable = entries.filter((entry) => {
+    const owner = idByCoordKey.get(entry.coordKey);
+    if (owner === undefined) return true;
+    console.warn(
+      `Not inserting «${entry.name}»: station ${owner} already holds its coordinates`,
+    );
+    return false;
+  });
 
-  const rows = entries.map((entry) => ({
+  if (placeable.length === 0) return 0;
+
+  const rows = placeable.map((entry) => ({
     slug: claimSlug(slugify(entry.name), takenSlugs),
     coordKey: entry.coordKey,
     nameKey: entry.nameKey,
@@ -421,7 +447,7 @@ async function insertStations(
     .values(rows)
     .returning({ id: stations.id, coordKey: stations.coordKey });
 
-  const entryByCoordKey = new Map(entries.map((entry) => [entry.coordKey, entry]));
+  const entryByCoordKey = new Map(placeable.map((entry) => [entry.coordKey, entry]));
   for (const row of inserted) {
     const entry = entryByCoordKey.get(row.coordKey);
     if (!entry) continue;
