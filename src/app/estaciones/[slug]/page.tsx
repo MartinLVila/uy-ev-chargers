@@ -77,7 +77,8 @@ export default async function StationPage({ params }: { params: Promise<{ slug: 
       <div className="container" style={{ paddingTop: 58, paddingBottom: 58 }}>
         <h1 className="section-title">No se pudo cargar la estación</h1>
         <p className="support-text" style={{ marginTop: 12, maxWidth: 640 }}>
-          La base de datos no respondió. Probá de nuevo en unos minutos.
+          No pudimos leer los datos de esta estación en este momento. Probá de nuevo en unos
+          minutos.
         </p>
         <p style={{ margin: "16px 0 0", fontSize: 15 }}>
           <Link href="/">← Volver al mapa</Link>

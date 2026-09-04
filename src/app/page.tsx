@@ -13,9 +13,8 @@ export default async function DashboardPage() {
 
   if (!data) {
     return (
-      <Notice title="Base de datos no disponible">
-        No se pudo leer la base. Verificá que <code>DATABASE_URL</code> esté configurada y que las
-        migraciones se hayan aplicado con <code>npm run db:migrate</code>.
+      <Notice title="No se pudieron cargar los datos">
+        No pudimos leer los datos en este momento. Probá de nuevo en unos minutos.
       </Notice>
     );
   }
@@ -26,8 +25,7 @@ export default async function DashboardPage() {
   if (snapshot.stations.total === 0) {
     return (
       <Notice title="Todavía no hay datos">
-        La base está conectada pero vacía. Ejecutá <code>npm run poll</code> para hacer la primera
-        lectura del feed de UTE, o esperá a que corra el workflow programado.
+        Todavía no se registró ninguna lectura del feed de UTE. Volvé a intentar más tarde.
       </Notice>
     );
   }
