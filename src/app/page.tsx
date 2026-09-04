@@ -4,6 +4,7 @@ import { HistoryChart } from "@/components/HistoryChart";
 import { ReliabilityTable } from "@/components/ReliabilityTable";
 import { StationMapPanel } from "@/components/StationMapPanel";
 import { loadDashboard } from "@/lib/metrics/dashboard";
+import { daysOfHistory, lastDaysHeading, lastDaysSentence } from "@/lib/ui/coverage";
 import { formatDateTime, formatElapsed, formatNumber, formatPercent } from "@/lib/ui/format";
 
 export const revalidate = 60;
@@ -32,6 +33,8 @@ export default async function DashboardPage() {
 
   const fleet = snapshot.connectors.reported + snapshot.connectors.absent;
   const outOfServiceRatio = fleet > 0 ? snapshot.connectors.outOfService / fleet : 0;
+  const historyCovers = daysOfHistory(history, historyDays);
+  const reliabilityCovers = daysOfHistory(history, reliabilityDays);
 
   return (
     <>
@@ -119,7 +122,7 @@ export default async function DashboardPage() {
 
       <section className="band band-tinted">
         <div className="container">
-          <h2 className="section-title">Los últimos {historyDays} días</h2>
+          <h2 className="section-title">{lastDaysHeading(historyCovers)}</h2>
           <p className="support-text" style={{ marginTop: 12, marginBottom: 32 }}>
             Promedio diario de conectores fuera de servicio, ponderado por el tiempo que pasaron en
             cada estado.
@@ -132,8 +135,8 @@ export default async function DashboardPage() {
         <div className="container">
           <h2 className="section-title">Estaciones con peor disponibilidad</h2>
           <p className="support-text" style={{ marginTop: 12, marginBottom: 32 }}>
-            Últimos {reliabilityDays} días, ponderado por cantidad de conectores y duración de la
-            caída.
+            {lastDaysSentence(reliabilityCovers)}, ponderado por cantidad de conectores y duración
+            de la caída.
           </p>
           <ReliabilityTable stations={reliability} />
         </div>

@@ -11,6 +11,8 @@ import {
   type StationTimelineEntry,
 } from "@/lib/metrics/queries";
 import { windowFromDays } from "@/lib/metrics/window";
+import { resolveTimelineRange } from "@/lib/ui/connector-timeline";
+import { daysOfRange, lastDaysPhrase, observedSince, observedSpan } from "@/lib/ui/coverage";
 import { formatDateTime, formatElapsed, formatNumber } from "@/lib/ui/format";
 import { connectorUsage, connectorsNow, stationPresence } from "@/lib/ui/health";
 
@@ -94,6 +96,20 @@ export default async function StationPage({ params }: { params: Promise<{ slug: 
   const where = [station.address, station.city, station.department].filter(Boolean).join(", ");
   const showsWholeHistory =
     !station.timelineTruncated && new Date(station.firstSeenAt) >= timeWindow.from;
+  const drawn = lastDaysPhrase(
+    daysOfRange(
+      resolveTimelineRange(
+        station.timelineCoversFrom,
+        station.firstSeenAt,
+        timeWindow.from.toISOString(),
+        timeWindow.to.toISOString(),
+      ),
+      WINDOW_DAYS,
+    ),
+  );
+  const observed = observedSpan(
+    daysOfRange(observedSince(station.firstSeenAt, timeWindow), WINDOW_DAYS),
+  );
 
   return (
     <>
@@ -145,8 +161,8 @@ export default async function StationPage({ params }: { params: Promise<{ slug: 
         <div className="container">
           <h2 className="section-title">Cómo estuvo cada cargador</h2>
           <p className="support-text" style={{ marginTop: 12, marginBottom: 32 }}>
-            Una fila por conector y una celda por día, con el estado que más duró ese día, durante
-            los últimos {WINDOW_DAYS} días.
+            Una fila por conector y una celda por día, con el estado que más duró ese día, durante{" "}
+            {drawn}.
           </p>
           <ConnectorHistory
             timeline={station.timeline}
@@ -162,8 +178,8 @@ export default async function StationPage({ params }: { params: Promise<{ slug: 
         <div className="container">
           <h2 className="section-title">A qué hora se ocupa</h2>
           <p className="support-text" style={{ marginTop: 12, marginBottom: 32 }}>
-            Qué tan ocupado estuvo cada cargador en cada hora del día durante los últimos{" "}
-            {WINDOW_DAYS} días, medido sobre el tiempo en que estuvo en servicio.
+            Qué tan ocupado estuvo cada cargador en cada hora del día durante {observed}, medido
+            sobre el tiempo en que estuvo en servicio.
           </p>
           {hourlyUsage.read ? (
             <ConnectorUsageProfile groups={hourlyUsage.groups} />
@@ -176,9 +192,7 @@ export default async function StationPage({ params }: { params: Promise<{ slug: 
       <section className="band band-tinted">
         <div className="container">
           <h2 className="section-title">
-            {showsWholeHistory
-              ? "Cada cambio, desde el principio"
-              : `Cada cambio, últimos ${WINDOW_DAYS} días`}
+            {changesHeading(showsWholeHistory, station.timelineTruncated, drawn)}
           </h2>
           <p className="support-text" style={{ marginTop: 12, marginBottom: 32 }}>
             Cada fila es un intervalo durante el cual el grupo de conectores mantuvo el mismo estado.
@@ -193,6 +207,12 @@ export default async function StationPage({ params }: { params: Promise<{ slug: 
       </section>
     </>
   );
+}
+
+function changesHeading(wholeHistory: boolean, truncated: boolean, drawn: string): string {
+  if (wholeHistory) return "Cada cambio, desde el principio";
+  if (truncated) return "Cada cambio, los más recientes";
+  return `Cada cambio, en ${drawn}`;
 }
 
 function UsageCouldNotBeRead() {
