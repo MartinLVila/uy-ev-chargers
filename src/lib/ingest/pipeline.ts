@@ -1,4 +1,4 @@
-import { desc, eq, inArray, isNull } from "drizzle-orm";
+import { and, desc, eq, gte, inArray, isNotNull, isNull, lte } from "drizzle-orm";
 import type { WriteDatabase } from "../db/client";
 import { connectorGroups, connectorStates, pollRuns, stationStates, stations } from "../db/schema";
 import {
@@ -30,6 +30,7 @@ type StationChanges = Partial<typeof stations.$inferInsert>;
 export const IMPLAUSIBLE_PAYLOAD = "implausible_payload";
 
 const MIN_PLAUSIBLE_STATION_RATIO = 0.5;
+const PLAUSIBLE_BASELINE_HOURS = 24;
 
 export type IngestOutcome = FeedResult["outcome"] | typeof IMPLAUSIBLE_PAYLOAD;
 
@@ -119,8 +120,9 @@ async function applyFeed(
   const previousDigest = await lastSuccessfulDigest(tx);
   const stored = await loadStoredState(tx);
 
-  if (collapsedAgainst(stored.stations.length, incoming.entries.length)) {
-    return rejectImplausibleFeed(tx, feed, observedAt, incoming, stored.stations.length);
+  const baseline = await collapseBaseline(tx, stored, observedAt);
+  if (collapsedAgainst(baseline.count, incoming.entries.length)) {
+    return rejectImplausibleFeed(tx, feed, observedAt, incoming, baseline.describedAs);
   }
 
   const reconciledStations = await reconcileStations(tx, incoming.entries, stored, observedAt);
@@ -185,9 +187,58 @@ function contestedCoordinatesMessage(contested: number): string | null {
   );
 }
 
-function collapsedAgainst(storedCount: number, incomingCount: number): boolean {
-  if (storedCount === 0) return false;
-  return incomingCount < storedCount * MIN_PLAUSIBLE_STATION_RATIO;
+interface CollapseBaseline {
+  count: number;
+  describedAs: string;
+}
+
+async function collapseBaseline(
+  tx: Transaction,
+  stored: StoredState,
+  observedAt: Date,
+): Promise<CollapseBaseline> {
+  const recentPeak = await peakAcceptedStationCount(tx, windowStart(observedAt), observedAt);
+  if (recentPeak !== null) {
+    return { count: recentPeak, describedAs: `a recent peak of ${recentPeak}` };
+  }
+
+  const listed = countListedStations(stored.openStationStates);
+  return { count: listed, describedAs: `the ${listed} currently listed` };
+}
+
+function countListedStations(openStationStates: StationStateRow[]): number {
+  return openStationStates.filter((row) => row.state !== STATION_PRESENCE.delisted).length;
+}
+
+function windowStart(observedAt: Date): Date {
+  return new Date(observedAt.getTime() - PLAUSIBLE_BASELINE_HOURS * 60 * 60 * 1000);
+}
+
+async function peakAcceptedStationCount(
+  tx: Transaction,
+  since: Date,
+  until: Date,
+): Promise<number | null> {
+  const [row] = await tx
+    .select({ stationCount: pollRuns.stationCount })
+    .from(pollRuns)
+    .where(
+      and(
+        eq(pollRuns.outcome, "success"),
+        isNotNull(pollRuns.stationCount),
+        gte(pollRuns.startedAt, since),
+        lte(pollRuns.startedAt, until),
+      ),
+    )
+    .orderBy(desc(pollRuns.stationCount))
+    .limit(1);
+
+  return row?.stationCount ?? null;
+}
+
+function collapsedAgainst(baseline: number, incomingCount: number): boolean {
+  if (baseline === 0) return false;
+  return incomingCount < baseline * MIN_PLAUSIBLE_STATION_RATIO;
 }
 
 async function rejectImplausibleFeed(
@@ -195,10 +246,10 @@ async function rejectImplausibleFeed(
   feed: UsableFeed,
   observedAt: Date,
   incoming: IncomingFeed,
-  storedCount: number,
+  baselineDescription: string,
 ): Promise<IngestResult> {
   const errorMessage =
-    `Feed reported ${incoming.entries.length} stations against ${storedCount} on record; ` +
+    `Feed reported ${incoming.entries.length} stations against ${baselineDescription}; ` +
     "state left untouched";
 
   const [run] = await tx
