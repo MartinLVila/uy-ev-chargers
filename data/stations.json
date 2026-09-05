@@ -185,11 +185,11 @@
     "longitude": -54.966438,
     "presence": "listed",
     "connectors": 1,
-    "operational": 1,
-    "faulted": 0,
+    "operational": 0,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "ancap-cardona",
@@ -460,8 +460,8 @@
     "operational": 4,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "ancap-jose-pedro-varela",
@@ -505,11 +505,11 @@
     "longitude": -56.744655,
     "presence": "listed",
     "connectors": 3,
-    "operational": 2,
-    "faulted": 1,
+    "operational": 3,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "ancap-los-cerrillos",
@@ -1225,11 +1225,11 @@
     "longitude": -56.132189,
     "presence": "listed",
     "connectors": 4,
-    "operational": 4,
-    "faulted": 0,
+    "operational": 3,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "campera-almacen-1",
@@ -1452,8 +1452,8 @@
     "operational": 4,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "ciudad-rodriguez",
@@ -1913,11 +1913,11 @@
     "longitude": -58.0716883,
     "presence": "listed",
     "connectors": 4,
-    "operational": 2,
-    "faulted": 2,
+    "operational": 4,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 2
+    "outOfService": 0
   },
   {
     "slug": "fing-reissig",
@@ -2137,11 +2137,11 @@
     "longitude": -56.148899,
     "presence": "listed",
     "connectors": 4,
-    "operational": 3,
-    "faulted": 1,
+    "operational": 4,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "junta-local-centenario",
@@ -2201,11 +2201,11 @@
     "longitude": -56.1833816,
     "presence": "listed",
     "connectors": 4,
-    "operational": 2,
-    "faulted": 2,
+    "operational": 4,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 2
+    "outOfService": 0
   },
   {
     "slug": "la-paloma",
@@ -2316,8 +2316,8 @@
     "operational": 8,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 2,
+    "outOfService": 2
   },
   {
     "slug": "liv-district-carrasco-1",
@@ -2439,12 +2439,12 @@
     "department": "Montevideo",
     "latitude": -34.903968,
     "longitude": -56.136669,
-    "presence": "listed",
-    "connectors": 2,
-    "operational": 1,
-    "faulted": 1,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
+    "faulted": 0,
     "unknown": 0,
-    "absent": 0,
+    "absent": 1,
     "outOfService": 1
   },
   {
@@ -2489,11 +2489,11 @@
     "longitude": -54.9400916,
     "presence": "listed",
     "connectors": 3,
-    "operational": 1,
-    "faulted": 2,
+    "operational": 2,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 2
+    "outOfService": 1
   },
   {
     "slug": "municipio-vergara",
@@ -2716,8 +2716,8 @@
     "operational": 2,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "parque-del-plata-rambla",
@@ -3175,13 +3175,13 @@
     "department": "Colonia",
     "latitude": -34.2848757,
     "longitude": -57.2338976,
-    "presence": "listed",
-    "connectors": 1,
-    "operational": 1,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "plaza-pando",
@@ -3400,8 +3400,8 @@
     "latitude": -34.939691,
     "longitude": -54.934102,
     "presence": "listed",
-    "connectors": 4,
-    "operational": 4,
+    "connectors": 2,
+    "operational": 2,
     "faulted": 0,
     "unknown": 0,
     "absent": 0,
@@ -3497,11 +3497,11 @@
     "longitude": -56.2027049,
     "presence": "listed",
     "connectors": 2,
-    "operational": 2,
-    "faulted": 0,
+    "operational": 1,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "shopping-nuevocentro",
@@ -3513,11 +3513,11 @@
     "longitude": -56.169246,
     "presence": "listed",
     "connectors": 2,
-    "operational": 2,
-    "faulted": 0,
+    "operational": 1,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "skatepark-carrasco",
@@ -3544,8 +3544,8 @@
     "latitude": -33.508548,
     "longitude": -56.9300983,
     "presence": "listed",
-    "connectors": 1,
-    "operational": 1,
+    "connectors": 2,
+    "operational": 2,
     "faulted": 0,
     "unknown": 0,
     "absent": 0,
@@ -3580,8 +3580,8 @@
     "operational": 2,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 2,
+    "outOfService": 2
   },
   {
     "slug": "tata-florida",
@@ -3607,13 +3607,13 @@
     "department": "Maldonado",
     "latitude": -34.909077,
     "longitude": -54.955319,
-    "presence": "listed",
-    "connectors": 2,
-    "operational": 2,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 2,
+    "outOfService": 2
   },
   {
     "slug": "tata-melo",
@@ -3639,13 +3639,13 @@
     "department": "Soriano",
     "latitude": -33.250149,
     "longitude": -58.028526,
-    "presence": "listed",
-    "connectors": 2,
-    "operational": 2,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 2,
+    "outOfService": 2
   },
   {
     "slug": "tata-paysandu",
@@ -3832,12 +3832,12 @@
     "latitude": -34.86203,
     "longitude": -55.274783,
     "presence": "listed",
-    "connectors": 8,
+    "connectors": 4,
     "operational": 4,
-    "faulted": 4,
+    "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 4
+    "absent": 3,
+    "outOfService": 3
   },
   {
     "slug": "terminal-punta-del-diablo",
@@ -3896,8 +3896,8 @@
     "latitude": -34.883584,
     "longitude": -56.0816265,
     "presence": "listed",
-    "connectors": 4,
-    "operational": 4,
+    "connectors": 3,
+    "operational": 3,
     "faulted": 0,
     "unknown": 0,
     "absent": 0,
