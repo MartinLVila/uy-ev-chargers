@@ -225,6 +225,18 @@ export function isOutOfService(state: ConnectorUsage | null): boolean {
   return state !== null && OUT_OF_SERVICE.includes(state);
 }
 
+export function daysOutOfService(group: ConnectorGroupTimeline): number {
+  const affected = new Set<number>();
+
+  for (const lane of group.lanes) {
+    for (const day of lane.days) {
+      if (isOutOfService(day.state) || day.partlyOutOfService) affected.add(day.from);
+    }
+  }
+
+  return affected.size;
+}
+
 function dominantState(seconds: Map<ConnectorUsage, number>): ConnectorUsage | null {
   let dominant: ConnectorUsage | null = null;
   let held = 0;

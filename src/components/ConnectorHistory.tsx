@@ -1,7 +1,7 @@
 import { formatDateTime, formatNumber } from "@/lib/ui/format";
 import {
   buildConnectorTimelines,
-  isOutOfService,
+  daysOutOfService,
   resolveTimelineRange,
   type ConnectorGroupTimeline,
   type ConnectorLane,
@@ -41,6 +41,7 @@ interface GroupReading {
   utilization: number;
   outOfService: number;
   interrupted: boolean;
+  outageDays: number;
 }
 
 function readingOf(group: ConnectorGroupTimeline): GroupReading {
@@ -50,6 +51,7 @@ function readingOf(group: ConnectorGroupTimeline): GroupReading {
     utilization: percentage(group.seconds.inUse, active),
     outOfService: percentage(outage, active + outage),
     interrupted: outage > 0,
+    outageDays: daysOutOfService(group),
   };
 }
 
@@ -78,24 +80,12 @@ function rowsExplained(group: ConnectorGroupTimeline): string {
   return `${COUNTS_NOT_IDENTITY} ${whatTheRowsAre(group)} ${ROWS_SUM_THE_STATES}`;
 }
 
-function daysOutOfService(group: ConnectorGroupTimeline): number {
-  const affected = new Set<number>();
-
-  for (const lane of group.lanes) {
-    for (const day of lane.days) {
-      if (isOutOfService(day.state) || day.partlyOutOfService) affected.add(day.from);
-    }
-  }
-
-  return affected.size;
-}
-
 function outageWording(days: number): string {
   return days === 1 ? "día fuera de servicio" : "días fuera de servicio";
 }
 
 function groupDescription(group: ConnectorGroupTimeline, reading: GroupReading): string {
-  const days = daysOutOfService(group);
+  const days = reading.outageDays;
   const outage = reading.interrupted
     ? `, y fuera de servicio ${reading.outOfService}% del tiempo con telemetría, en ${formatNumber(days)} ${outageWording(days)}`
     : ", sin interrupciones registradas";
@@ -215,7 +205,7 @@ export function ConnectorHistory({
       {groups.map((group) => {
         const reading = readingOf(group);
         const rows = group.lanes.length;
-        const outageDays = daysOutOfService(group);
+        const { outageDays } = reading;
 
         return (
           <div key={group.key} style={{ display: "flex", flexDirection: "column", gap: 8 }}>
