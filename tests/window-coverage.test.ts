@@ -24,7 +24,6 @@ vi.mock("@/lib/metrics/queries", () => ({
   getStationHourlyUsage,
   getStationStatuses: async () => [],
 }));
-vi.mock("@/components/ConnectorHistory", () => ({ ConnectorHistory: () => null }));
 vi.mock("@/components/ConnectorUsageProfile", () => ({ ConnectorUsageProfile: () => null }));
 
 const { default: DashboardPage } = await import("../src/app/page");
@@ -228,7 +227,6 @@ describe("a station page names the span it has been observed for", () => {
   it("counts from the day the station first appeared", async () => {
     const markup = await renderStation(detail(12));
 
-    expect(markup).toContain("durante los últimos 12 días.");
     expect(markup).toContain("los últimos 12 días que llevamos observando esta estación");
     expect(markup).not.toContain("90 días");
   });
@@ -247,12 +245,9 @@ describe("a station page names the span it has been observed for", () => {
     expect(markup).toContain("los últimos 90 días que llevamos observando esta estación");
   });
 
-  it("captions the day grid with what it draws and the hourly chart with what it read", async () => {
+  it("captions the hourly chart with what it read, not with what the timeline reaches", async () => {
     const markup = await renderStation(detail(30, true));
 
-    expect(markup, "the grid only reaches back to the row-limit cutoff").toContain(
-      "durante los últimos 2 días.",
-    );
     expect(
       markup,
       "the hourly aggregate covers the window, so a row-limit cutoff must not shorten its caption",
