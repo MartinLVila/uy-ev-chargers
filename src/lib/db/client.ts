@@ -7,6 +7,10 @@ export type ReadDatabase = ReturnType<typeof createReadDatabase>;
 
 export type WriteDatabase = PgDatabase<PgQueryResultHKT, typeof schema>;
 
+export function databaseIsConfigured(): boolean {
+  return Boolean(process.env.DATABASE_URL);
+}
+
 export function connectionString(): string {
   const url = process.env.DATABASE_URL;
   if (!url) {
