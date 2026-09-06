@@ -2,10 +2,12 @@
 
 import "leaflet/dist/leaflet.css";
 import Link from "next/link";
-import { useMemo, useState } from "react";
-import { CircleMarker, MapContainer, Popup, TileLayer } from "react-leaflet";
+import { useEffect, useMemo, useState } from "react";
+import { CircleMarker, MapContainer, Popup, TileLayer, useMap } from "react-leaflet";
 import type { StationStatus } from "@/lib/metrics/queries";
 import { formatElapsed, formatNumber } from "@/lib/ui/format";
+import { keepFittingUntilTheReaderMoves } from "@/lib/ui/map-fit";
+import { MAP_FRAME_ASPECT, MAP_FRAME_MAX_HEIGHT, URUGUAY_BOUNDS } from "@/lib/ui/map-view";
 import {
   MARKER_PRESENTATION,
   stationMarker,
@@ -13,10 +15,15 @@ import {
   type MarkerPresentation,
 } from "@/lib/ui/health";
 
-const URUGUAY_CENTER: [number, number] = [-32.8, -55.9];
-const INITIAL_ZOOM = 7;
-
 const LEGEND = Object.values(MARKER_PRESENTATION);
+
+function KeepFittingTheCountry() {
+  const map = useMap();
+
+  useEffect(() => keepFittingUntilTheReaderMoves(map, URUGUAY_BOUNDS), [map]);
+
+  return null;
+}
 
 type StatusFilter = "all" | "problem";
 
@@ -81,7 +88,8 @@ export function StationMap({ stations }: StationMapProps) {
 
       <div
         style={{
-          height: 460,
+          aspectRatio: MAP_FRAME_ASPECT,
+          maxHeight: MAP_FRAME_MAX_HEIGHT,
           borderRadius: 10,
           overflow: "hidden",
           border: "1px solid var(--border)",
@@ -89,12 +97,12 @@ export function StationMap({ stations }: StationMapProps) {
         }}
       >
         <MapContainer
-          center={URUGUAY_CENTER}
-          zoom={INITIAL_ZOOM}
+          bounds={URUGUAY_BOUNDS}
+          zoomSnap={0}
           scrollWheelZoom={false}
           style={{ height: "100%", width: "100%" }}
         >
-
+          <KeepFittingTheCountry />
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
