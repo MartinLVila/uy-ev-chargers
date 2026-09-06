@@ -91,9 +91,10 @@ export function StationMap({ stations }: StationMapProps) {
         <MapContainer
           center={URUGUAY_CENTER}
           zoom={INITIAL_ZOOM}
-          scrollWheelZoom
+          scrollWheelZoom={false}
           style={{ height: "100%", width: "100%" }}
         >
+
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -121,6 +122,10 @@ export function StationMap({ stations }: StationMapProps) {
           })}
         </MapContainer>
       </div>
+
+      <p style={{ margin: "10px 0 0", fontSize: 12.5, color: "var(--text-muted)" }}>
+        Arrastrá para moverte por el mapa y usá los botones + y − para acercar y alejar.
+      </p>
 
       <ul
         style={{
