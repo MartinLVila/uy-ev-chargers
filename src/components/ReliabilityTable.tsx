@@ -18,6 +18,10 @@ export function ReliabilityTable({ stations }: ReliabilityTableProps) {
   return (
     <div style={{ overflowX: "auto" }}>
       <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14.5, minWidth: 560 }}>
+        <caption className="visually-hidden">
+          Una fila por estación, con su departamento, su disponibilidad, las horas·conector que
+          estuvo caída y cuántos conectores tiene fuera de servicio ahora
+        </caption>
         <thead>
           <tr>
             <Th align="left">Estación</Th>
@@ -37,14 +41,17 @@ export function ReliabilityTable({ stations }: ReliabilityTableProps) {
                 className="row-wash"
                 style={{ borderTop: "1px solid var(--border)" }}
               >
-                <td style={{ padding: "10px 12px 10px 0" }}>
+                <th
+                  scope="row"
+                  style={{ padding: "10px 12px 10px 0", textAlign: "left", fontWeight: 400 }}
+                >
                   <Link href={`/estaciones/${station.slug}`} style={{ fontWeight: 500 }}>
                     {station.name}
                   </Link>
                   {station.city && (
                     <div style={{ color: "var(--text-muted)", fontSize: 12 }}>{station.city}</div>
                   )}
-                </td>
+                </th>
                 <td style={{ padding: "10px 12px 10px 0", color: "var(--text-secondary)" }}>
                   {station.department}
                 </td>
@@ -112,9 +119,19 @@ export function ReliabilityTable({ stations }: ReliabilityTableProps) {
                     fontWeight: station.currentlyOutOfService > 0 ? 600 : 400,
                   }}
                 >
-                  {station.currentlyOutOfService > 0
-                    ? `✕ ${formatNumber(station.currentlyOutOfService)}`
-                    : "—"}
+                  {station.currentlyOutOfService > 0 ? (
+                    <>
+                      <span aria-hidden>✕ {formatNumber(station.currentlyOutOfService)}</span>
+                      <span className="visually-hidden">
+                        {formatNumber(station.currentlyOutOfService)} fuera de servicio
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <span aria-hidden>—</span>
+                      <span className="visually-hidden">ninguno fuera de servicio</span>
+                    </>
+                  )}
                 </td>
               </tr>
             );
@@ -128,6 +145,7 @@ export function ReliabilityTable({ stations }: ReliabilityTableProps) {
 function Th({ children, align }: { children: React.ReactNode; align: "left" | "right" }) {
   return (
     <th
+      scope="col"
       style={{
         textAlign: align,
         padding: "0 12px 8px 0",
