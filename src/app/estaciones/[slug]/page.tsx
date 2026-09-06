@@ -161,8 +161,7 @@ export default async function StationPage({ params }: { params: Promise<{ slug: 
         <div className="container">
           <h2 className="section-title">Cómo estuvo cada cargador</h2>
           <p className="support-text" style={{ marginTop: 12, marginBottom: 32 }}>
-            Una fila por conector y una celda por día, con el estado que más duró ese día, durante{" "}
-            {drawn}.
+            Una celda por día, con el estado que más duró ese día, durante {drawn}.
           </p>
           <ConnectorHistory
             timeline={station.timeline}
