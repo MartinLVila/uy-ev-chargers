@@ -8,6 +8,7 @@ import type { StationStatus } from "@/lib/metrics/queries";
 import { formatElapsed, formatNumber } from "@/lib/ui/format";
 import { keepFittingUntilTheReaderMoves } from "@/lib/ui/map-fit";
 import { MAP_FRAME_ASPECT, MAP_FRAME_MAX_HEIGHT, URUGUAY_BOUNDS } from "@/lib/ui/map-view";
+import { wheelZoomFollowsFocus } from "@/lib/ui/wheel-zoom";
 import {
   MARKER_PRESENTATION,
   stationMarker,
@@ -16,6 +17,14 @@ import {
 } from "@/lib/ui/health";
 
 const LEGEND = Object.values(MARKER_PRESENTATION);
+
+function WheelZoomFollowsFocus() {
+  const map = useMap();
+
+  useEffect(() => wheelZoomFollowsFocus(map.getContainer(), map.scrollWheelZoom), [map]);
+
+  return null;
+}
 
 function KeepFittingTheCountry() {
   const map = useMap();
@@ -103,6 +112,7 @@ export function StationMap({ stations }: StationMapProps) {
           style={{ height: "100%", width: "100%" }}
         >
           <KeepFittingTheCountry />
+          <WheelZoomFollowsFocus />
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -132,7 +142,8 @@ export function StationMap({ stations }: StationMapProps) {
       </div>
 
       <p style={{ margin: "10px 0 0", fontSize: 12.5, color: "var(--text-muted)" }}>
-        Arrastrá para moverte por el mapa y usá los botones + y − para acercar y alejar.
+        Arrastrá para moverte por el mapa. Hacé clic en él, o llegá con el tabulador, y la rueda
+        pasa a hacer zoom; con Escape se la devolvés a la página. Los botones + y − andan siempre.
       </p>
 
       <ul
