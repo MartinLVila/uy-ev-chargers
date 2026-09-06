@@ -193,6 +193,14 @@ table {
     transition:
       background-color var(--theme-swap) var(--ease),
       border-color var(--theme-swap) var(--ease),
+      color var(--theme-swap) var(--ease);
+  }
+
+  svg:not(.leaflet-container svg),
+  svg:not(.leaflet-container svg) * {
+    transition:
+      background-color var(--theme-swap) var(--ease),
+      border-color var(--theme-swap) var(--ease),
       color var(--theme-swap) var(--ease),
       fill var(--theme-swap) var(--ease),
       stroke var(--theme-swap) var(--ease);
