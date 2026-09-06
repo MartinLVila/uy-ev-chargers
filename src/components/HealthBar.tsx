@@ -10,6 +10,8 @@ interface HealthBarProps {
   segments: HealthSegment[];
 }
 
+export const NARROWEST_VISIBLE_SEGMENT = 3;
+
 export function HealthBar({ segments }: HealthBarProps) {
   const present = segments.filter((segment) => segment.count > 0);
   const total = present.reduce((sum, segment) => sum + segment.count, 0);
@@ -34,6 +36,7 @@ export function HealthBar({ segments }: HealthBarProps) {
               style={{
                 flexGrow: segment.count,
                 flexBasis: 0,
+                minWidth: NARROWEST_VISIBLE_SEGMENT,
                 backgroundColor: presentation.color,
                 backgroundImage: presentation.pattern,
               }}
