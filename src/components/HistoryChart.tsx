@@ -3,6 +3,13 @@
 import { useMemo, useRef, useState } from "react";
 import type { DailyPoint } from "@/lib/metrics/queries";
 import { formatDay, formatNumber, formatPercent } from "@/lib/ui/format";
+import {
+  isSpoken,
+  readingAt,
+  readingStepped,
+  readingUnderPointer,
+  type Reading,
+} from "@/lib/ui/chart-reading";
 
 const VIEW_WIDTH = 840;
 const VIEW_HEIGHT = 260;
@@ -14,7 +21,8 @@ interface HistoryChartProps {
 
 export function HistoryChart({ series }: HistoryChartProps) {
   const svgRef = useRef<SVGSVGElement>(null);
-  const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const [reading, setReading] = useState<Reading | null>(null);
+  const activeIndex = reading?.index ?? null;
 
   const geometry = useMemo(() => {
     if (series.length === 0) return null;
@@ -75,14 +83,15 @@ export function HistoryChart({ series }: HistoryChartProps) {
     const plotWidth = VIEW_WIDTH - PADDING.left - PADDING.right;
     const position = ((x - PADDING.left) / plotWidth) * (series.length - 1);
     const index = Math.min(series.length - 1, Math.max(0, Math.round(position)));
-    setActiveIndex(index);
+    setReading((current) => readingUnderPointer(current, index));
+  };
+
+  const readDay = (index: number) => {
+    setReading(readingAt(index, series.length - 1));
   };
 
   const step = (delta: number) => {
-    setActiveIndex((current) => {
-      if (current === null) return series.length - 1;
-      return Math.min(series.length - 1, Math.max(0, current + delta));
-    });
+    setReading((current) => readingStepped(current, delta, series.length - 1));
   };
 
   const handleKey = (event: React.KeyboardEvent<SVGSVGElement>) => {
@@ -99,12 +108,12 @@ export function HistoryChart({ series }: HistoryChartProps) {
     }
     if (event.key === "Home") {
       event.preventDefault();
-      setActiveIndex(0);
+      readDay(0);
     } else if (event.key === "End") {
       event.preventDefault();
-      setActiveIndex(series.length - 1);
+      readDay(series.length - 1);
     } else if (event.key === "Escape") {
-      setActiveIndex(null);
+      setReading(null);
     }
   };
 
@@ -120,19 +129,20 @@ export function HistoryChart({ series }: HistoryChartProps) {
         ref={svgRef}
         className="focusable-chart"
         viewBox={`0 0 ${VIEW_WIDTH} ${VIEW_HEIGHT}`}
-        style={{ width: "100%", height: "auto", display: "block", touchAction: "none" }}
+        style={{ width: "100%", height: "auto", display: "block", touchAction: "pan-y pinch-zoom" }}
         onPointerMove={handlePointer}
         onPointerDown={handlePointer}
-        onPointerLeave={() => setActiveIndex(null)}
+        onPointerLeave={() => setReading(null)}
+        onPointerCancel={() => setReading(null)}
         onKeyDown={handleKey}
-        onBlur={() => setActiveIndex(null)}
+        onBlur={() => setReading(null)}
         tabIndex={0}
         role="img"
         aria-label={`Conectores fuera de servicio por día, del ${formatDay(series[0].day)} al ${formatDay(
           lastPoint.day,
         )}. El peor día fue el ${formatDay(worstDay.day)} con ${formatNumber(
           worstDay.connectorsOutOfService,
-        )}.`}
+        )}. Los valores día por día están en la tabla que sigue; con el gráfico enfocado, las flechas los recorren uno a uno.`}
       >
         {geometry.ticks.map((tick) => (
           <g key={tick.y}>
@@ -266,7 +276,7 @@ export function HistoryChart({ series }: HistoryChartProps) {
       </div>
 
       <div aria-live="polite" className="visually-hidden">
-        {active
+        {isSpoken(reading) && active
           ? `${formatDay(active.day)}: ${formatNumber(
               active.connectorsOutOfService,
             )} conectores fuera de servicio de ${formatNumber(
