@@ -49,17 +49,10 @@ function emptyDashboard(): DashboardData {
 }
 
 describe("the dashboard's failure states say nothing only an operator could use", () => {
-  it("tells a visitor the data could not be read, without naming a cause nobody observed", async () => {
-    loadDashboard.mockResolvedValue(null);
+  it("raises a failed read instead of describing it in a body Next would keep", async () => {
+    loadDashboard.mockRejectedValue(new Error("Failed query"));
 
-    const markup = await renderPage();
-
-    expect(markup).toContain("No pudimos leer los datos en este momento");
-    expect(markup, "the catch covers every failure, so the page cannot name one").not.toContain(
-      "no respondió",
-    );
-    expect(markup).not.toContain("<code>");
-    expectNothingOperational(markup, "the failure page");
+    await expect(renderPage()).rejects.toThrow("Failed query");
   });
 
   it("tells a visitor there are no readings yet, and nothing about how to take one", async () => {

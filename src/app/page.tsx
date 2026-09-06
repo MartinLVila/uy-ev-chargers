@@ -15,8 +15,8 @@ export default async function DashboardPage() {
 
   if (!data) {
     return (
-      <Notice title="No se pudieron cargar los datos">
-        No pudimos leer los datos en este momento. Probá de nuevo en unos minutos.
+      <Notice title="No hay datos para mostrar">
+        No hay datos para mostrar en este momento. Volvé a intentar más tarde.
       </Notice>
     );
   }

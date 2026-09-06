@@ -1,4 +1,4 @@
-import { getDb } from "@/lib/db/client";
+import { databaseIsConfigured, getDb } from "@/lib/db/client";
 import {
   getDailyHistory,
   getDepartmentBreakdown,
@@ -29,6 +29,11 @@ export interface DashboardData {
 }
 
 export async function loadDashboard(historyDays = 90): Promise<DashboardData | null> {
+  if (!databaseIsConfigured()) {
+    console.error("Dashboard has no database configured, so there was no read to fail");
+    return null;
+  }
+
   try {
     const db = getDb();
     const window = windowFromDays(historyDays);
@@ -57,6 +62,6 @@ export async function loadDashboard(historyDays = 90): Promise<DashboardData | n
     };
   } catch (error) {
     console.error("Dashboard query failed", error);
-    return null;
+    throw error;
   }
 }
