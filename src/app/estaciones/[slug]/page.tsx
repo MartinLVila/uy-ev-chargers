@@ -258,7 +258,7 @@ function StateHistory({
           en este período.
         </p>
       )}
-      <ul className="hairline-list">
+      <ul className="hairline-list" role="list">
         {timeline.map((entry, index) => {
           const usage = connectorUsage(entry.health, entry.statusDetail);
           return (

@@ -123,6 +123,7 @@ export function StationMap({ stations }: StationMapProps) {
       </div>
 
       <ul
+        role="list"
         style={{
           listStyle: "none",
           display: "flex",

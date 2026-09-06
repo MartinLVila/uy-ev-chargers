@@ -43,6 +43,7 @@ export function HealthBar({ segments }: HealthBarProps) {
       </div>
 
       <ul
+        role="list"
         style={{
           listStyle: "none",
           margin: "36px 0 0",
