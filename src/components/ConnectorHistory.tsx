@@ -35,8 +35,11 @@ const DAY_FILL: Record<ConnectorUsage, string> = {
   unknown: "var(--day-unknown)",
 };
 
-const ONE_ROW_EACH =
-  "El feed informa cuántos conectores de este grupo están en cada estado, no cuál es cuál. Hay una fila por conector y en cada momento las filas suman los estados observados, pero ninguna fila sigue a un cargador en particular a lo largo del tiempo.";
+const COUNTS_NOT_IDENTITY =
+  "El feed informa cuántos conectores de este grupo están en cada estado, no cuál es cuál.";
+
+const ROWS_SUM_THE_STATES =
+  "En cada momento las filas suman los estados observados, pero ninguna fila sigue a un cargador en particular a lo largo del tiempo.";
 
 function percentage(numerator: number, denominator: number): number {
   return denominator > 0 ? Math.round((numerator / denominator) * 100) : 0;
@@ -58,12 +61,29 @@ function readingOf(group: ConnectorGroupTimeline): GroupReading {
   };
 }
 
+function connectorWording(connectors: number): string {
+  return connectors === 1 ? "conector" : "conectores";
+}
+
 function groupName(group: ConnectorGroupTimeline): string {
   const cable = group.hasCable ? "con cable" : "sin cable";
+  return `${group.connectorType} de ${group.powerKw} kW ${cable}, ${formatNumber(
+    group.connectors,
+  )} ${connectorWording(group.connectors)}`;
+}
+
+function whatTheRowsAre(group: ConnectorGroupTimeline): string {
   const rows = group.lanes.length;
-  return `${group.connectorType} de ${group.powerKw} kW ${cable}, ${formatNumber(rows)} ${
-    rows === 1 ? "conector" : "conectores"
-  }`;
+
+  return rows === group.connectors
+    ? "Hay una fila por conector."
+    : `El calendario dibuja ${formatNumber(
+        rows,
+      )} filas, que es la mayor cantidad de conectores que el feed reportó a la vez en este período.`;
+}
+
+function rowsExplained(group: ConnectorGroupTimeline): string {
+  return `${COUNTS_NOT_IDENTITY} ${whatTheRowsAre(group)} ${ROWS_SUM_THE_STATES}`;
 }
 
 function daysOutOfService(group: ConnectorGroupTimeline): number {
@@ -87,7 +107,7 @@ function groupDescription(group: ConnectorGroupTimeline, reading: GroupReading):
   const outage = reading.interrupted
     ? `, y fuera de servicio ${reading.outOfService}% del tiempo con telemetría, en ${formatNumber(days)} ${outageWording(days)}`
     : ", sin interrupciones registradas";
-  const perConnector = group.lanes.length === 1 ? "" : ` Una fila por conector. ${ONE_ROW_EACH}`;
+  const perConnector = group.lanes.length === 1 ? "" : ` ${rowsExplained(group)}`;
   return `Calendario de ${groupName(group)}: un día por celda, en uso ${reading.utilization}% del tiempo que estuvo en servicio${outage}.${perConnector} El detalle intervalo por intervalo está en la lista de cambios, al final de la página.`;
 }
 
@@ -217,8 +237,8 @@ export function ConnectorHistory({
               <div style={{ fontSize: 14, fontWeight: 600 }}>
                 {group.connectorType} · {group.powerKw} kW
                 <span style={{ color: "var(--text-muted)", fontWeight: 400 }}>
-                  {group.hasCable ? " · con cable" : " · sin cable"} · {formatNumber(rows)}{" "}
-                  {rows === 1 ? "conector" : "conectores"}
+                  {group.hasCable ? " · con cable" : " · sin cable"} ·{" "}
+                  {formatNumber(group.connectors)} {connectorWording(group.connectors)}
                 </span>
               </div>
               <div
@@ -256,7 +276,9 @@ export function ConnectorHistory({
             </div>
 
             {rows > 1 && (
-              <p style={{ margin: 0, fontSize: 12, color: "var(--text-muted)" }}>{ONE_ROW_EACH}</p>
+              <p style={{ margin: 0, fontSize: 12, color: "var(--text-muted)" }}>
+                {rowsExplained(group)}
+              </p>
             )}
           </div>
         );
