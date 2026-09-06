@@ -15,8 +15,8 @@ const TEN_MINUTES_INTO_THE_SECOND_DAY = "2026-03-02T03:10:00Z";
 
 const DAY_CELL = "height:16px";
 const NOTHING_OBSERVED = "inset 0 0 0 1px var(--text-muted)";
-const BRIEF_OUTAGE = "border-bottom:3px solid var(--day-out)";
-const OUT_OF_SERVICE_FILL = "background:var(--day-out)";
+const BRIEF_OUTAGE = "border-bottom:3px solid var(--status-critical)";
+const OUT_OF_SERVICE_FILL = "background:var(--status-critical)";
 const FREE_FILL = "background:var(--day-free)";
 const ABSENT_FILL = "background:var(--day-absent)";
 

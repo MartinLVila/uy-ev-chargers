@@ -171,7 +171,7 @@ describe("the charger stays quiet when the evidence does not support a claim", (
     const broken = patternOf(hours((hour) => ({ utilization: hour >= 18 ? 0.9 : 0.05, brokenShare: 0.8 })));
 
     expect(broken.kind).toBe("out-of-service");
-    expect(describeUsagePattern(broken)).toContain("fuera de servicio");
+    expect(describeUsagePattern(broken)).toContain("con falla");
     expect(describeUsagePattern(broken)).not.toContain("18:00");
   });
 });

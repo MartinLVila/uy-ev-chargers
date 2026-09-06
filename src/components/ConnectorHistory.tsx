@@ -27,14 +27,6 @@ const MONTHS = [
 
 const LEGEND: ConnectorUsage[] = ["free", "inUse", "broken", "absent", "unknown"];
 
-const DAY_FILL: Record<ConnectorUsage, string> = {
-  free: "var(--day-free)",
-  inUse: "var(--day-in-use)",
-  broken: "var(--day-out)",
-  absent: "var(--day-absent)",
-  unknown: "var(--day-unknown)",
-};
-
 const COUNTS_NOT_IDENTITY =
   "El feed informa cuántos conectores de este grupo están en cada estado, no cuál es cuál.";
 
@@ -136,10 +128,12 @@ function Day({ day }: { day: DayCell }) {
         height: 16,
         borderRadius: 2,
         opacity: day.thinlyObserved ? 0.45 : 1,
-        background: day.state === null ? "transparent" : DAY_FILL[day.state],
+        background: day.state === null ? "transparent" : USAGE_PRESENTATION[day.state].dayFill,
         backgroundImage: presentation?.pattern,
         boxShadow: presentation ? undefined : "inset 0 0 0 1px var(--text-muted)",
-        borderBottom: day.partlyOutOfService ? "3px solid var(--day-out)" : undefined,
+        borderBottom: day.partlyOutOfService
+          ? `3px solid ${USAGE_PRESENTATION.broken.dayFill}`
+          : undefined,
       }}
     />
   );
@@ -287,7 +281,7 @@ export function ConnectorHistory({
       <div style={{ display: "flex", gap: 16, flexWrap: "wrap", fontSize: 12.5 }}>
         {LEGEND.map((state) => (
           <span key={state} style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <Swatch fill={DAY_FILL[state]} pattern={USAGE_PRESENTATION[state].pattern} />
+            <Swatch fill={USAGE_PRESENTATION[state].dayFill} pattern={USAGE_PRESENTATION[state].pattern} />
             <span style={{ color: "var(--text-secondary)" }}>{USAGE_PRESENTATION[state].label}</span>
           </span>
         ))}
@@ -310,8 +304,8 @@ export function ConnectorHistory({
               width: 14,
               height: 14,
               borderRadius: 2,
-              background: "var(--day-free)",
-              borderBottom: "3px solid var(--day-out)",
+              background: USAGE_PRESENTATION.free.dayFill,
+              borderBottom: `3px solid ${USAGE_PRESENTATION.broken.dayFill}`,
             }}
           />
           <span style={{ color: "var(--text-secondary)" }}>

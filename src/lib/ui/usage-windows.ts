@@ -1,5 +1,11 @@
 import { formatPercent } from "./format";
-import { HOURS_IN_DAY, hourLabel, type ConnectorGroupUsageProfile, type UsageHour } from "./hourly-usage";
+import {
+  BROKEN_IN_PROSE,
+  HOURS_IN_DAY,
+  hourLabel,
+  type ConnectorGroupUsageProfile,
+  type UsageHour,
+} from "./hourly-usage";
 
 const ENOUGH_OBSERVED_HOURS = 20;
 const ENOUGH_OBSERVED_DAYS = 7;
@@ -151,7 +157,7 @@ export function makesAClaimAboutUsage(pattern: UsagePattern): boolean {
 export function describeUsagePattern(pattern: UsagePattern): string {
   switch (pattern.kind) {
     case "out-of-service":
-      return "Estuvo fuera de servicio buena parte del período, así que no tiene sentido hablar de horarios.";
+      return `Estuvo ${BROKEN_IN_PROSE} buena parte del período, así que no tiene sentido hablar de horarios.`;
     case "not-enough-observation":
       return "Todavía no se observó lo suficiente como para decir a qué hora conviene venir.";
     case "no-clear-pattern":
