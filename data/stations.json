@@ -73,11 +73,11 @@
     "longitude": -56.0196459,
     "presence": "listed",
     "connectors": 2,
-    "operational": 2,
-    "faulted": 0,
+    "operational": 1,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "ancap-america-tacuarembo",
@@ -825,11 +825,11 @@
     "longitude": -55.576509,
     "presence": "listed",
     "connectors": 2,
-    "operational": 2,
-    "faulted": 0,
+    "operational": 1,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "ancap-santa-lucia",
@@ -1689,11 +1689,11 @@
     "longitude": -56.140618,
     "presence": "listed",
     "connectors": 14,
-    "operational": 12,
-    "faulted": 2,
+    "operational": 11,
+    "faulted": 3,
     "unknown": 0,
     "absent": 6,
-    "outOfService": 8
+    "outOfService": 9
   },
   {
     "slug": "electrolinera-malvin",
@@ -1944,8 +1944,8 @@
     "latitude": -34.919209,
     "longitude": -56.166498,
     "presence": "listed",
-    "connectors": 1,
-    "operational": 1,
+    "connectors": 2,
+    "operational": 2,
     "faulted": 0,
     "unknown": 0,
     "absent": 0,
@@ -2201,11 +2201,11 @@
     "longitude": -56.1833816,
     "presence": "listed",
     "connectors": 4,
-    "operational": 4,
-    "faulted": 0,
+    "operational": 2,
+    "faulted": 2,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 2
   },
   {
     "slug": "la-paloma",
@@ -2439,13 +2439,13 @@
     "department": "Montevideo",
     "latitude": -34.903968,
     "longitude": -56.136669,
-    "presence": "delisted",
-    "connectors": 0,
-    "operational": 0,
+    "presence": "listed",
+    "connectors": 1,
+    "operational": 1,
     "faulted": 0,
     "unknown": 0,
-    "absent": 1,
-    "outOfService": 1
+    "absent": 0,
+    "outOfService": 0
   },
   {
     "slug": "moreira-automoviles-atlantida",
@@ -2489,11 +2489,11 @@
     "longitude": -54.9400916,
     "presence": "listed",
     "connectors": 3,
-    "operational": 2,
-    "faulted": 1,
+    "operational": 0,
+    "faulted": 3,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 3
   },
   {
     "slug": "municipio-vergara",
@@ -2839,13 +2839,13 @@
     "department": "Colonia",
     "latitude": -33.8758797,
     "longitude": -57.3708861,
-    "presence": "listed",
-    "connectors": 1,
-    "operational": 1,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "plaza-artigas-la-floresta",
@@ -3175,13 +3175,13 @@
     "department": "Colonia",
     "latitude": -34.2848757,
     "longitude": -57.2338976,
-    "presence": "delisted",
-    "connectors": 0,
-    "operational": 0,
+    "presence": "listed",
+    "connectors": 1,
+    "operational": 1,
     "faulted": 0,
     "unknown": 0,
-    "absent": 1,
-    "outOfService": 1
+    "absent": 0,
+    "outOfService": 0
   },
   {
     "slug": "plaza-pando",
@@ -3208,12 +3208,12 @@
     "latitude": -34.8763551,
     "longitude": -56.0377477,
     "presence": "listed",
-    "connectors": 6,
-    "operational": 6,
-    "faulted": 0,
+    "connectors": 8,
+    "operational": 7,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "plaza-rivera-fray-bentos",
@@ -3239,13 +3239,13 @@
     "department": "Lavalleja",
     "latitude": -34.37563,
     "longitude": -55.242589,
-    "presence": "listed",
-    "connectors": 2,
-    "operational": 2,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 2,
+    "outOfService": 2
   },
   {
     "slug": "plaza-romay-nuevo-berlin",
@@ -3497,11 +3497,11 @@
     "longitude": -56.2027049,
     "presence": "listed",
     "connectors": 2,
-    "operational": 1,
-    "faulted": 1,
+    "operational": 2,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "shopping-nuevocentro",
@@ -3513,11 +3513,11 @@
     "longitude": -56.169246,
     "presence": "listed",
     "connectors": 2,
-    "operational": 1,
-    "faulted": 1,
+    "operational": 2,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "skatepark-carrasco",
@@ -3607,13 +3607,13 @@
     "department": "Maldonado",
     "latitude": -34.909077,
     "longitude": -54.955319,
-    "presence": "delisted",
-    "connectors": 0,
-    "operational": 0,
+    "presence": "listed",
+    "connectors": 2,
+    "operational": 2,
     "faulted": 0,
     "unknown": 0,
-    "absent": 2,
-    "outOfService": 2
+    "absent": 0,
+    "outOfService": 0
   },
   {
     "slug": "tata-melo",
@@ -3639,13 +3639,13 @@
     "department": "Soriano",
     "latitude": -33.250149,
     "longitude": -58.028526,
-    "presence": "delisted",
-    "connectors": 0,
-    "operational": 0,
+    "presence": "listed",
+    "connectors": 2,
+    "operational": 2,
     "faulted": 0,
     "unknown": 0,
-    "absent": 2,
-    "outOfService": 2
+    "absent": 0,
+    "outOfService": 0
   },
   {
     "slug": "tata-paysandu",
@@ -3896,8 +3896,8 @@
     "latitude": -34.883584,
     "longitude": -56.0816265,
     "presence": "listed",
-    "connectors": 3,
-    "operational": 3,
+    "connectors": 4,
+    "operational": 4,
     "faulted": 0,
     "unknown": 0,
     "absent": 0,
