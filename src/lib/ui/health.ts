@@ -20,24 +20,43 @@ const VERTICAL_STRIPES =
 
 export type ConnectorUsage = "free" | "inUse" | "broken" | "absent" | "unknown";
 
-export const USAGE_PRESENTATION: Record<ConnectorUsage, HealthPresentation> = {
-  free: { label: "Libre", color: "var(--status-good)", symbol: "○", pattern: SOLID },
-  inUse: { label: "En uso", color: "var(--state-neutral)", symbol: "●", pattern: RISING_STRIPES },
+export interface UsagePresentation extends HealthPresentation {
+  dayFill: string;
+}
+
+export const USAGE_PRESENTATION: Record<ConnectorUsage, UsagePresentation> = {
+  free: {
+    label: "Libre",
+    color: "var(--status-good)",
+    dayFill: "var(--day-free)",
+    symbol: "○",
+    pattern: SOLID,
+  },
+  inUse: {
+    label: "En uso",
+    color: "var(--state-neutral)",
+    dayFill: "var(--day-in-use)",
+    symbol: "●",
+    pattern: RISING_STRIPES,
+  },
   broken: {
     label: "Con falla",
     color: "var(--status-critical)",
+    dayFill: "var(--status-critical)",
     symbol: "✕",
     pattern: FALLING_STRIPES,
   },
   absent: {
     label: "Sin reportar",
     color: "var(--status-warning)",
+    dayFill: "var(--day-absent)",
     symbol: "◍",
     pattern: HORIZONTAL_STRIPES,
   },
   unknown: {
     label: "Desconocido",
     color: "var(--chart-neutral)",
+    dayFill: "var(--day-unknown)",
     symbol: "?",
     pattern: VERTICAL_STRIPES,
   },

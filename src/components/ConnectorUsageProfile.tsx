@@ -66,8 +66,8 @@ export function ConnectorUsageProfile({ groups }: { groups: ConnectorGroupHourly
 function Legend() {
   return (
     <div style={{ display: "flex", gap: 16, flexWrap: "wrap", fontSize: 12.5 }}>
-      <LegendItem color={IN_USE.color} pattern={IN_USE.pattern} label="En uso" />
-      <LegendItem color={BROKEN.color} pattern={BROKEN.pattern} label="Fuera de servicio" />
+      <LegendItem color={IN_USE.color} pattern={IN_USE.pattern} label={IN_USE.label} />
+      <LegendItem color={BROKEN.color} pattern={BROKEN.pattern} label={BROKEN.label} />
       <LegendItem glyph={COVERAGE_GLYPH.sparse} label="Pocas observaciones" />
       <LegendItem glyph={COVERAGE_GLYPH.unobserved} label="Sin datos" />
     </div>
@@ -373,8 +373,8 @@ function HourTable({ profile }: { profile: ConnectorGroupUsageProfile }) {
           <thead>
             <tr>
               <HourTableHeading>Hora</HourTableHeading>
-              <HourTableHeading align="right">En uso</HourTableHeading>
-              <HourTableHeading align="right">Fuera de servicio</HourTableHeading>
+              <HourTableHeading align="right">{IN_USE.label}</HourTableHeading>
+              <HourTableHeading align="right">{BROKEN.label}</HourTableHeading>
               <HourTableHeading align="right">Observación</HourTableHeading>
             </tr>
           </thead>

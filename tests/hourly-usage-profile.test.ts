@@ -163,7 +163,7 @@ describe("connector group usage profiles", () => {
     expect(description).toContain("CCS2 de 60 kW con cable, 2 conectores");
     expect(description).toContain("20:00");
     expect(description).toContain("1 de las 24 horas todavía no se observaron.");
-    expect(description).toContain("fuera de servicio en 1 de las 24 horas");
+    expect(description).toContain("con falla en 1 de las 24 horas");
   });
 
   it("says an unobserved hour has no data instead of calling it empty", () => {

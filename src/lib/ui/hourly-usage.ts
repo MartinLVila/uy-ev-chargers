@@ -1,5 +1,8 @@
 import type { ConnectorGroupHourlyUsage } from "@/lib/metrics/queries";
 import { formatConnectorHours, formatNumber, formatPercent } from "./format";
+import { USAGE_PRESENTATION } from "./health";
+
+export const BROKEN_IN_PROSE = USAGE_PRESENTATION.broken.label.toLowerCase();
 
 export const HOURS_IN_DAY = 24;
 
@@ -147,7 +150,7 @@ export function describeUsageProfile(profile: ConnectorGroupUsageProfile): strin
 
   if (profile.hoursOutOfService > 0) {
     sentences.push(
-      `Se registró fuera de servicio en ${profile.hoursOutOfService} de las 24 horas.`,
+      `Estuvo ${BROKEN_IN_PROSE} en ${profile.hoursOutOfService} de las 24 horas.`,
     );
   }
 
@@ -163,9 +166,11 @@ export function describeUsageHour(profile: ConnectorGroupUsageProfile, entry: Us
   const thin = entry.coverage === "sparse" ? " (pocas observaciones)" : "";
   const brokenShare = entry.brokenShare ?? 0;
   const broken =
-    brokenShare > 0 ? `\nFuera de servicio ${formatPercent(brokenShare)} del tiempo` : "";
+    brokenShare > 0
+      ? `\n${USAGE_PRESENTATION.broken.label} ${formatPercent(brokenShare)} del tiempo`
+      : "";
 
-  return `${usageProfileName(profile)}\n${hourRangeLabel(entry.hour)}\nEn uso ${formatPercent(
-    entry.utilization ?? 0,
-  )} del tiempo en servicio${broken}\n${observed}${thin}`;
+  return `${usageProfileName(profile)}\n${hourRangeLabel(entry.hour)}\n${
+    USAGE_PRESENTATION.inUse.label
+  } ${formatPercent(entry.utilization ?? 0)} del tiempo en servicio${broken}\n${observed}${thin}`;
 }
