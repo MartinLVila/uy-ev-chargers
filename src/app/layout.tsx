@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Chivo } from "next/font/google";
-import Link from "next/link";
-import { ThemeToggle } from "@/components/ThemeToggle";
+import { AppHeader } from "@/components/AppHeader";
 import "./globals.css";
 
 const sans = Chivo({
@@ -22,39 +21,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="es" className={sans.variable} suppressHydrationWarning>
       <body>
         <script src="/theme.js" />
-        <header
-          style={{
-            position: "sticky",
-            top: 0,
-            zIndex: 20,
-            borderBottom: "1px solid var(--border)",
-            background: "var(--surface-page)",
-          }}
-        >
-          <div
-            className="container"
-            style={{
-              paddingTop: 14,
-              paddingBottom: 14,
-              display: "flex",
-              alignItems: "center",
-              gap: 16,
-              flexWrap: "wrap",
-            }}
-          >
-            <Link
-              href="/"
-              className="link-unadorned"
-              style={{ fontWeight: 600, fontSize: 15, letterSpacing: "-0.01em" }}
-            >
-              Cargadores eléctricos · Uruguay
-            </Link>
-            <span style={{ fontSize: 13, color: "var(--text-muted)" }}>
-              Historial de la red pública de UTE
-            </span>
-            <ThemeToggle />
-          </div>
-        </header>
+        <AppHeader />
 
         <main>{children}</main>
 
