@@ -220,7 +220,7 @@ table {
 
 @keyframes uy-ring {
   from {
-    stroke-dashoffset: 534;
+    stroke-dashoffset: var(--ring-circumference, 534);
   }
 
   to {
