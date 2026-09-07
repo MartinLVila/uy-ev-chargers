@@ -1,10 +1,15 @@
 import type { Metadata } from "next";
-import { Instrument_Sans } from "next/font/google";
+import { Chivo } from "next/font/google";
 import Link from "next/link";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import "./globals.css";
 
-const sans = Instrument_Sans({ subsets: ["latin"], display: "swap", variable: "--font-body" });
+const sans = Chivo({
+  subsets: ["latin", "latin-ext"],
+  weight: ["400", "600", "800", "900"],
+  display: "swap",
+  variable: "--font-body",
+});
 
 export const metadata: Metadata = {
   title: "Cargadores eléctricos de Uruguay",

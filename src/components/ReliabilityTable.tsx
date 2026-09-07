@@ -45,7 +45,7 @@ export function ReliabilityTable({ stations }: ReliabilityTableProps) {
                   scope="row"
                   style={{ padding: "10px 12px 10px 0", textAlign: "left", fontWeight: 400 }}
                 >
-                  <Link href={`/estaciones/${station.slug}`} style={{ fontWeight: 500 }}>
+                  <Link href={`/estaciones/${station.slug}`} style={{ fontWeight: 600 }}>
                     {station.name}
                   </Link>
                   {station.city && (

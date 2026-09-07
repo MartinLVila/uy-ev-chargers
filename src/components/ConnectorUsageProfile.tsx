@@ -421,7 +421,7 @@ function HourTableHeading({
         textAlign: align,
         padding: "0 12px 6px 0",
         fontSize: 11,
-        fontWeight: 500,
+        fontWeight: 600,
         textTransform: "uppercase",
         letterSpacing: "0.04em",
         color: "var(--text-muted)",

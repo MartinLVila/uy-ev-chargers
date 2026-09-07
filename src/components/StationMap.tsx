@@ -229,7 +229,7 @@ function StationPopup({ station }: { station: StationStatus }) {
 
       <Link
         href={`/estaciones/${station.slug}`}
-        style={{ display: "inline-block", marginTop: 8, fontSize: 12.5, fontWeight: 500 }}
+        style={{ display: "inline-block", marginTop: 8, fontSize: 12.5, fontWeight: 600 }}
       >
         Ver historial →
       </Link>
