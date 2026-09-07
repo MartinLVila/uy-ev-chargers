@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ConnectorHistory } from "@/components/ConnectorHistory";
 import { ConnectorUsageProfile } from "@/components/ConnectorUsageProfile";
 import { getDb } from "@/lib/db/client";
 import {
@@ -11,7 +10,6 @@ import {
   type StationTimelineEntry,
 } from "@/lib/metrics/queries";
 import { windowFromDays } from "@/lib/metrics/window";
-import { resolveTimelineRange } from "@/lib/ui/connector-timeline";
 import { daysOfRange, lastDaysPhrase, observedSince, observedSpan } from "@/lib/ui/coverage";
 import { formatDateTime, formatElapsed, formatNumber } from "@/lib/ui/format";
 import { connectorUsage, connectorsNow, stationPresence } from "@/lib/ui/health";
@@ -85,17 +83,6 @@ export default async function StationPage({ params }: { params: Promise<{ slug: 
   const where = [station.address, station.city, station.department].filter(Boolean).join(", ");
   const showsWholeHistory =
     !station.timelineTruncated && new Date(station.firstSeenAt) >= timeWindow.from;
-  const drawn = lastDaysPhrase(
-    daysOfRange(
-      resolveTimelineRange(
-        station.timelineCoversFrom,
-        station.firstSeenAt,
-        timeWindow.from.toISOString(),
-        timeWindow.to.toISOString(),
-      ),
-      WINDOW_DAYS,
-    ),
-  );
   const observed = observedSpan(
     daysOfRange(observedSince(station.firstSeenAt, timeWindow), WINDOW_DAYS),
   );
@@ -148,22 +135,6 @@ export default async function StationPage({ params }: { params: Promise<{ slug: 
 
       <section className="band band-tinted">
         <div className="container">
-          <h2 className="section-title">Cómo estuvo cada cargador</h2>
-          <p className="support-text" style={{ marginTop: 12, marginBottom: 32 }}>
-            Una celda por día, con el estado que más duró ese día, durante {drawn}.
-          </p>
-          <ConnectorHistory
-            timeline={station.timeline}
-            timelineCoversFrom={station.timelineCoversFrom}
-            firstSeenAt={station.firstSeenAt}
-            windowStart={timeWindow.from.toISOString()}
-            windowEnd={timeWindow.to.toISOString()}
-          />
-        </div>
-      </section>
-
-      <section className="band">
-        <div className="container">
           <h2 className="section-title">A qué hora se ocupa</h2>
           <p className="support-text" style={{ marginTop: 12, marginBottom: 32 }}>
             Qué tan ocupado estuvo cada cargador en cada hora del día durante {observed}, medido
@@ -177,10 +148,10 @@ export default async function StationPage({ params }: { params: Promise<{ slug: 
         </div>
       </section>
 
-      <section className="band band-tinted">
+      <section className="band">
         <div className="container">
           <h2 className="section-title">
-            {changesHeading(showsWholeHistory, station.timelineTruncated, drawn)}
+            {changesHeading(showsWholeHistory, station.timelineTruncated)}
           </h2>
           <p className="support-text" style={{ marginTop: 12, marginBottom: 32 }}>
             Cada fila es un intervalo durante el cual el grupo de conectores mantuvo el mismo estado.
@@ -197,10 +168,10 @@ export default async function StationPage({ params }: { params: Promise<{ slug: 
   );
 }
 
-function changesHeading(wholeHistory: boolean, truncated: boolean, drawn: string): string {
+function changesHeading(wholeHistory: boolean, truncated: boolean): string {
   if (wholeHistory) return "Cada cambio, desde el principio";
   if (truncated) return "Cada cambio, los más recientes";
-  return `Cada cambio, en ${drawn}`;
+  return `Cada cambio, en ${lastDaysPhrase(WINDOW_DAYS)}`;
 }
 
 function UsageCouldNotBeRead() {

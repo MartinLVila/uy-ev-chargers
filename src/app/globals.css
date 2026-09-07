@@ -24,12 +24,6 @@
   --chart-neutral: #84848a;
   --state-neutral: #4a4a50;
   --stripe: rgb(255 255 255 / 0.85);
-
-  --day-free: #bfdfc8;
-  --day-in-use: #9a9aa2;
-  --day-absent: #e6c9a0;
-  --day-unknown: #cfcfc9;
-  --day-nothing: #ffffff;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -55,12 +49,6 @@
     --chart-neutral: #8f8f97;
     --state-neutral: #c9c9d0;
     --stripe: rgb(0 0 0 / 0.65);
-
-    --day-free: #1f4d33;
-    --day-in-use: #55555d;
-    --day-absent: #6b4a1f;
-    --day-unknown: #3a3a41;
-    --day-nothing: #0a0a0b;
   }
 }
 
@@ -86,12 +74,6 @@
   --chart-neutral: #8f8f97;
   --state-neutral: #c9c9d0;
   --stripe: rgb(0 0 0 / 0.65);
-
-  --day-free: #1f4d33;
-  --day-in-use: #55555d;
-  --day-absent: #6b4a1f;
-  --day-unknown: #3a3a41;
-  --day-nothing: #0a0a0b;
 }
 
 html {
