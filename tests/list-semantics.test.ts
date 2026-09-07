@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
-import { HealthBar } from "../src/components/HealthBar";
+import { ConnectorStateStrip } from "../src/components/ConnectorStateStrip";
 
 const SOURCE = fileURLToPath(new URL("../src", import.meta.url));
 const CSS = readFileSync(new URL("../src/app/globals.css", import.meta.url), "utf8");
@@ -74,7 +74,7 @@ describe("the list reset does not cost the lists their semantics", () => {
   it("finds the lists whose item count is the information", () => {
     const withLists = componentFiles().filter((name) => listTagsIn(name).length > 0);
 
-    expect(withLists).toContain("components/HealthBar.tsx");
+    expect(withLists).toContain("components/ConnectorStateStrip.tsx");
     expect(withLists).toContain("components/StationMap.tsx");
     expect(withLists).toContain("components/StationList.tsx");
     expect(withLists).toContain("app/estaciones/[slug]/page.tsx");
@@ -95,7 +95,7 @@ describe("the list reset does not cost the lists their semantics", () => {
 describe("a rendered list carries the role", () => {
   it("announces the connector health breakdown as a list", () => {
     const markup = renderToStaticMarkup(
-      createElement(HealthBar, {
+      createElement(ConnectorStateStrip, {
         segments: [
           { health: "operational", count: 554 },
           { health: "faulted", count: 27 },
