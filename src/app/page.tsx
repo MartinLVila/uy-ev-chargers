@@ -1,5 +1,7 @@
 import { DepartmentChart } from "@/components/DepartmentChart";
 import { HealthBar } from "@/components/HealthBar";
+import { HeroCount } from "@/components/HeroCount";
+import { HeroRing } from "@/components/HeroRing";
 import { HistoryChart } from "@/components/HistoryChart";
 import { ReliabilityTable } from "@/components/ReliabilityTable";
 import { StationList } from "@/components/StationList";
@@ -7,6 +9,7 @@ import { StationMapPanel } from "@/components/StationMapPanel";
 import { loadDashboard } from "@/lib/metrics/dashboard";
 import { daysOfHistory, lastDaysHeading, lastDaysSentence } from "@/lib/ui/coverage";
 import { formatDateTime, formatElapsed, formatNumber, formatPercent } from "@/lib/ui/format";
+import { heroRingGeometry, mostRecentPollFailed, outOfServiceSentence } from "@/lib/ui/hero";
 
 export const revalidate = 60;
 
@@ -37,35 +40,48 @@ export default async function DashboardPage() {
   const historyCovers = daysOfHistory(history, historyDays);
   const reliabilityCovers = daysOfHistory(history, reliabilityDays);
 
+  const heroColor =
+    snapshot.connectors.outOfService > 0 ? "var(--status-critical)" : "var(--status-good)";
+  const heroSentence = outOfServiceSentence(snapshot.connectors.outOfService, fleet);
+  const dataIsCurrent = !mostRecentPollFailed(snapshot.lastSuccessfulPollAt, feed.lastFailureAt);
+  const ringGeometry =
+    dataIsCurrent ? heroRingGeometry(snapshot.connectors.operational, fleet) : null;
+
   return (
     <>
       <FeedWarning feed={feed} />
 
-      <section className="band band-hero">
-        <div className="container">
-          <h1 style={{ margin: 0 }}>
-            <span
-              className="figure-hero"
-              style={{
-                color:
-                  snapshot.connectors.outOfService > 0
-                    ? "var(--status-critical)"
-                    : "var(--status-good)",
-              }}
-            >
-              {formatNumber(snapshot.connectors.outOfService)}
-            </span>
-            <span
-              className="section-title"
-              style={{ display: "block", marginTop: 18, color: "var(--text-primary)" }}
-            >
-              conectores fuera de servicio
-            </span>
-          </h1>
-          <p className="support-text" style={{ marginTop: 12 }}>
-            {formatPercent(outOfServiceRatio)} de {formatNumber(fleet)} conectores de la red pública
-            de UTE.
-          </p>
+      <section className="band hero-band">
+        <div className="container hero-grid">
+          <div className="hero-left">
+            <span className="hero-eyebrow">Estado de la red ahora</span>
+            <h1 style={{ margin: 0 }}>
+              <HeroCount
+                value={snapshot.connectors.outOfService}
+                className="figure-hero"
+                style={{ color: heroColor }}
+              />
+              <span className="hero-count-label">conectores fuera de servicio</span>
+            </h1>
+            <p className="support-text" style={{ marginTop: 16 }}>
+              {formatPercent(outOfServiceRatio)} de {formatNumber(fleet)} conectores de la red
+              pública de UTE.{heroSentence ? ` ${heroSentence}` : ""}
+            </p>
+          </div>
+
+          <div className="hero-right">
+            {ringGeometry ? (
+              <HeroRing
+                geometry={ringGeometry}
+                inService={snapshot.connectors.operational}
+                fleet={fleet}
+              />
+            ) : (
+              <div className="hero-ring-missing">
+                No pudimos confirmar el estado actual de la red.
+              </div>
+            )}
+          </div>
         </div>
       </section>
 

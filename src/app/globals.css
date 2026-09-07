@@ -313,6 +313,18 @@ table {
     animation: uy-breathe 2s var(--ease) infinite;
   }
 
+  .hero-left {
+    animation: uy-rise 700ms var(--ease) both;
+  }
+
+  .hero-right {
+    animation: uy-fadein 900ms var(--ease) 200ms both;
+  }
+
+  .hero-ring-arc {
+    animation: uy-ring 1.6s var(--ease) 300ms both;
+  }
+
   .row-wash {
     transition: background-color 200ms var(--ease);
   }
@@ -484,16 +496,61 @@ a:focus-visible {
   text-align: center;
 }
 
+.hero-band {
+  padding: 76px 0;
+}
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  align-items: center;
+  gap: 48px;
+}
+
+@media (max-width: 819px) {
+  .hero-grid {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+  }
+}
+
+.hero-eyebrow {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--status-critical);
+}
+
+.hero-count-label {
+  display: block;
+  max-width: 9em;
+  margin-top: 18px;
+  font-size: clamp(26px, 3.2vw, 40px);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+  color: var(--text-primary);
+}
+
+@media (max-width: 819px) {
+  .hero-count-label {
+    max-width: none;
+  }
+}
+
 .band-tinted {
   background: var(--surface-1);
 }
 
 .figure-hero {
   display: block;
-  font-size: clamp(84px, 17vw, 188px);
-  font-weight: 600;
-  letter-spacing: -0.045em;
-  line-height: 0.92;
+  font-size: clamp(88px, 15vw, 172px);
+  font-weight: 900;
+  letter-spacing: -0.055em;
+  line-height: 0.84;
   font-variant-numeric: tabular-nums lining-nums;
 }
 
@@ -537,6 +594,71 @@ a:focus-visible {
   font-size: 17px;
   line-height: 1.5;
   color: var(--text-secondary);
+}
+
+.hero-ring-wrap {
+  position: relative;
+  width: 236px;
+  height: 236px;
+  margin: 0 auto;
+}
+
+.hero-ring-track {
+  stroke: var(--border);
+}
+
+.hero-ring-inner {
+  stroke: var(--border);
+  stroke-dasharray: 2 4;
+}
+
+.hero-ring-arc {
+  stroke: var(--status-good);
+}
+
+.hero-ring-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  text-align: center;
+}
+
+.hero-ring-percent {
+  font-size: 46px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums lining-nums;
+  color: var(--text-primary);
+}
+
+.hero-ring-caption {
+  font-size: 12.5px;
+  color: var(--text-muted);
+}
+
+.hero-ring-counts {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.hero-ring-missing {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 236px;
+  height: 236px;
+  margin: 0 auto;
+  border-radius: 999px;
+  border: 1px dashed var(--border-strong);
+  padding: 32px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-muted);
 }
 
 .figure-row {
