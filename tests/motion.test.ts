@@ -26,9 +26,23 @@ function keyframeBodies(): string[] {
   return [...CSS.matchAll(/@keyframes\s+[\w-]+\s*\{/g)].map((match) => blockAfter(match[0]));
 }
 
+function keyframeNames(): string[] {
+  return [...CSS.matchAll(/@keyframes\s+([\w-]+)\s*\{/g)].map((match) => match[1]);
+}
+
+function keyframeDeclarations(): string[] {
+  return [...CSS.matchAll(/@keyframes\s+[\w-]+\s*\{/g)].map(
+    (match) => match[0] + blockAfter(match[0]) + "}",
+  );
+}
+
 const motion = blockAfter(REDUCED_MOTION_GUARD);
 const outsideMotion = keyframeBodies().reduce(
   (css, body) => css.replace(body, ""),
+  CSS.replace(motion, ""),
+);
+const outsideMotionWithoutKeyframeNames = keyframeDeclarations().reduce(
+  (css, block) => css.replace(block, ""),
   CSS.replace(motion, ""),
 );
 
@@ -43,6 +57,19 @@ describe("reduced motion removes the motion rather than shortening it", () => {
   it("actually puts something inside that guard", () => {
     expect(motion).toMatch(/animation:/);
     expect(motion).toMatch(/transition:/);
+  });
+
+  it("declares at least one named keyframe", () => {
+    expect(keyframeNames().length).toBeGreaterThan(0);
+  });
+
+  it("never triggers a defined keyframe from outside the guard", () => {
+    for (const name of keyframeNames()) {
+      const usedOutside = new RegExp(`\\b${name}\\b`).test(outsideMotionWithoutKeyframeNames);
+      expect(usedOutside, `${name} is triggered somewhere prefers-reduced-motion cannot reach`).toBe(
+        false,
+      );
+    }
   });
 });
 
