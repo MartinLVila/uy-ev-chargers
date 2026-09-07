@@ -135,7 +135,7 @@ export interface MarkerPresentation {
 export const MARKER_PRESENTATION: Record<StationMarkerState, MarkerPresentation> = {
   operational: {
     label: "Todo en servicio",
-    color: "#1d8a3f",
+    color: "#007127",
     statusToken: "status-good",
     symbol: "●",
     dashArray: undefined,
@@ -143,7 +143,7 @@ export const MARKER_PRESENTATION: Record<StationMarkerState, MarkerPresentation>
   },
   degraded: {
     label: "Parcial o sin telemetría",
-    color: "#b4680c",
+    color: "#a27000",
     statusToken: "status-warning",
     symbol: "◐",
     dashArray: "6 4",
@@ -151,7 +151,7 @@ export const MARKER_PRESENTATION: Record<StationMarkerState, MarkerPresentation>
   },
   outOfService: {
     label: "Sin servicio",
-    color: "#c8322a",
+    color: "#b22a00",
     statusToken: "status-critical",
     symbol: "✕",
     dashArray: "2 4",
@@ -159,7 +159,7 @@ export const MARKER_PRESENTATION: Record<StationMarkerState, MarkerPresentation>
   },
   delisted: {
     label: "Fuera del feed",
-    color: "#84848a",
+    color: "#757b81",
     statusToken: "chart-neutral",
     symbol: "◍",
     dashArray: "10 3 2 3",
