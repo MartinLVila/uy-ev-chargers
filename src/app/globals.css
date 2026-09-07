@@ -502,6 +502,11 @@ summary:focus-visible {
   font: inherit;
 }
 
+.leaflet-container.leaflet-container:focus-within {
+  outline: 3px solid var(--accent);
+  outline-offset: -3px;
+}
+
 .leaflet-popup-content-wrapper,
 .leaflet-popup-tip {
   background: var(--surface-1);
