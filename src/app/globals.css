@@ -172,13 +172,87 @@ table {
   }
 }
 
-@keyframes grow-from-base {
+@keyframes uy-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes uy-fadein {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes uy-grow {
   from {
     transform: scaleY(0);
   }
 
   to {
     transform: scaleY(1);
+  }
+}
+
+@keyframes uy-widen {
+  from {
+    transform: scaleX(0);
+  }
+
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes uy-ring {
+  from {
+    stroke-dashoffset: 534;
+  }
+
+  to {
+    stroke-dashoffset: var(--ring-offset, 0);
+  }
+}
+
+@keyframes uy-breathe {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes uy-scan {
+  from {
+    transform: translateY(-100%);
+  }
+
+  to {
+    transform: translateY(900%);
+  }
+}
+
+@keyframes uy-charge {
+  0%,
+  100% {
+    opacity: 0.15;
+  }
+
+  50% {
+    opacity: 1;
   }
 }
 
@@ -214,7 +288,7 @@ table {
 
   .usage-bar-fill {
     transform-origin: bottom;
-    animation: grow-from-base 700ms var(--ease) both;
+    animation: uy-grow 700ms var(--ease) both;
     animation-delay: calc(var(--hour, 0) * 16ms);
   }
 
