@@ -17,7 +17,7 @@ const getStationDetail = vi.hoisted(() => vi.fn());
 const getStationHourlyUsage = vi.hoisted(() => vi.fn());
 
 vi.mock("@/lib/metrics/dashboard", () => ({ loadDashboard }));
-vi.mock("@/components/StationMapPanel", () => ({ StationMapPanel: () => null }));
+vi.mock("@/components/HudMap", () => ({ HudMap: () => null }));
 vi.mock("@/lib/db/client", () => ({ getDb: () => ({ execute: async () => ({ rows: [] }) }) }));
 vi.mock("@/lib/metrics/queries", () => ({
   getStationDetail,
