@@ -1,5 +1,5 @@
 import { DepartmentChart } from "@/components/DepartmentChart";
-import { HealthBar } from "@/components/HealthBar";
+import { ConnectorStateStrip } from "@/components/ConnectorStateStrip";
 import { HeroCount } from "@/components/HeroCount";
 import { HeroRing } from "@/components/HeroRing";
 import { HistoryChart } from "@/components/HistoryChart";
@@ -95,7 +95,7 @@ export default async function DashboardPage() {
           <h2 className="visually-hidden">
             Estado actual de los conectores, según lo último que publicó UTE
           </h2>
-          <HealthBar
+          <ConnectorStateStrip
             segments={[
               { health: "operational", count: snapshot.connectors.operational },
               { health: "faulted", count: snapshot.connectors.faulted },
