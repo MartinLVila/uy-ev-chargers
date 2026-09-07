@@ -9,7 +9,12 @@ import { StationMapPanel } from "@/components/StationMapPanel";
 import { loadDashboard } from "@/lib/metrics/dashboard";
 import { daysOfHistory, lastDaysHeading, lastDaysSentence } from "@/lib/ui/coverage";
 import { formatDateTime, formatElapsed, formatNumber, formatPercent } from "@/lib/ui/format";
-import { heroRingGeometry, mostRecentPollFailed, outOfServiceSentence } from "@/lib/ui/hero";
+import {
+  heroRingGeometry,
+  mostRecentPollFailed,
+  outOfServiceRatio,
+  outOfServiceSentence,
+} from "@/lib/ui/hero";
 
 export const revalidate = 60;
 
@@ -36,7 +41,7 @@ export default async function DashboardPage() {
   }
 
   const fleet = snapshot.connectors.reported + snapshot.connectors.absent;
-  const outOfServiceRatio = fleet > 0 ? snapshot.connectors.outOfService / fleet : 0;
+  const heroRatio = outOfServiceRatio(snapshot.connectors.outOfService, fleet);
   const historyCovers = daysOfHistory(history, historyDays);
   const reliabilityCovers = daysOfHistory(history, reliabilityDays);
 
@@ -64,7 +69,7 @@ export default async function DashboardPage() {
               <span className="hero-count-label">conectores fuera de servicio</span>
             </h1>
             <p className="support-text" style={{ marginTop: 16 }}>
-              {formatPercent(outOfServiceRatio)} de {formatNumber(fleet)} conectores de la red
+              {formatPercent(heroRatio)} de {formatNumber(fleet)} conectores de la red
               pública de UTE.{heroSentence ? ` ${heroSentence}` : ""}
             </p>
           </div>
