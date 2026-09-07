@@ -17,10 +17,14 @@ export function HeroRing({
       className="hero-ring-wrap"
       role="img"
       aria-label={label}
-      style={{ "--ring-offset": geometry.offset } as React.CSSProperties}
+      style={
+        {
+          "--ring-offset": geometry.offset,
+          "--ring-circumference": geometry.circumference,
+        } as React.CSSProperties
+      }
     >
       <svg
-        className="hero-ring-svg"
         width="236"
         height="236"
         viewBox="0 0 236 236"
