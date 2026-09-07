@@ -4,7 +4,7 @@ import { HeroCount } from "@/components/HeroCount";
 import { HeroRing } from "@/components/HeroRing";
 import { HistoryChart } from "@/components/HistoryChart";
 import { ReliabilityTable } from "@/components/ReliabilityTable";
-import { StationList } from "@/components/StationList";
+import Link from "next/link";
 import { StationMapPanel } from "@/components/StationMapPanel";
 import { loadDashboard } from "@/lib/metrics/dashboard";
 import { daysOfHistory, lastDaysHeading, lastDaysSentence } from "@/lib/ui/coverage";
@@ -117,7 +117,9 @@ export default async function DashboardPage() {
             {formatNumber(snapshot.stations.delisted)} fuera.
           </p>
           <StationMapPanel stations={stations} />
-          <StationList stations={stations} />
+          <Link href="/estaciones" style={{ display: "inline-block", marginTop: 24, fontSize: 14 }}>
+            Ver las {formatNumber(stations.length)} estaciones en una lista
+          </Link>
         </div>
       </section>
 
