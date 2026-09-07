@@ -24,7 +24,7 @@
   --status-critical: #b22a00;
 
   --accent: #007127;
-  --grid: #797c7f;
+  --grid: var(--text-faint);
   --chart-neutral: #757b81;
   --state-neutral: #55585b;
   --stripe: rgb(255 255 255 / 0.85);
@@ -53,7 +53,7 @@
     --status-critical: oklch(0.73 0.18 38);
 
     --accent: oklch(0.85 0.17 155);
-    --grid: oklch(0.585 0.005 245);
+    --grid: var(--text-faint);
     --chart-neutral: oklch(0.62 0.012 245);
     --state-neutral: oklch(0.74 0.005 245);
     --stripe: rgb(0 0 0 / 0.65);
@@ -82,7 +82,7 @@
   --status-critical: oklch(0.73 0.18 38);
 
   --accent: oklch(0.85 0.17 155);
-  --grid: oklch(0.585 0.005 245);
+  --grid: var(--text-faint);
   --chart-neutral: oklch(0.62 0.012 245);
   --state-neutral: oklch(0.74 0.005 245);
   --stripe: rgb(0 0 0 / 0.65);
