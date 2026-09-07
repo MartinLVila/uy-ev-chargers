@@ -33,7 +33,7 @@ describe("the chosen theme is applied before the page first paints", () => {
 
   it("runs the theme script ahead of everything the reader can see", () => {
     const script = LAYOUT.search(themeScriptTag);
-    const firstMarkup = LAYOUT.indexOf("<header");
+    const firstMarkup = LAYOUT.indexOf("<AppHeader");
 
     expect(script).toBeGreaterThan(-1);
     expect(firstMarkup).toBeGreaterThan(-1);
