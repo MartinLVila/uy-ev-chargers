@@ -160,16 +160,6 @@ table {
   }
 }
 
-@keyframes grow-from-base {
-  from {
-    transform: scaleY(0);
-  }
-
-  to {
-    transform: scaleY(1);
-  }
-}
-
 @keyframes uy-rise {
   from {
     opacity: 0;
@@ -286,7 +276,7 @@ table {
 
   .usage-bar-fill {
     transform-origin: bottom;
-    animation: grow-from-base 700ms var(--ease) both;
+    animation: uy-grow 700ms var(--ease) both;
     animation-delay: calc(var(--hour, 0) * 16ms);
   }
 
