@@ -3,7 +3,6 @@ import {
   getDailyHistory,
   getDepartmentBreakdown,
   getFeedHealth,
-  getNetworkSnapshot,
   getStationReliability,
   getStationStatuses,
   type DailyPoint,
@@ -13,6 +12,7 @@ import {
   type StationReliability,
   type StationStatus,
 } from "./queries";
+import { loadNetworkSnapshot } from "./snapshot";
 import { windowFromDays } from "./window";
 
 const RELIABILITY_DAYS = 30;
@@ -39,7 +39,7 @@ export async function loadDashboard(historyDays = 90): Promise<DashboardData | n
     const window = windowFromDays(historyDays);
 
     const [snapshot, feed, departments, stations, reliability, history] = await Promise.all([
-      getNetworkSnapshot(db),
+      loadNetworkSnapshot(),
       getFeedHealth(db, window),
       getDepartmentBreakdown(db),
       getStationStatuses(db),
