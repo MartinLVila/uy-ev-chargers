@@ -8,7 +8,14 @@ interface Tab {
   label: string;
 }
 
-const TABS: Tab[] = [{ href: "/", label: "Red" }];
+const TABS: Tab[] = [
+  { href: "/", label: "Red" },
+  { href: "/estaciones", label: "Estaciones" },
+];
+
+function tabIsActive(pathname: string, href: string): boolean {
+  return href === "/" ? pathname === href : pathname === href || pathname.startsWith(`${href}/`);
+}
 
 export function AppNav() {
   const pathname = usePathname();
@@ -16,7 +23,7 @@ export function AppNav() {
   return (
     <nav className="app-nav" aria-label="Secciones">
       {TABS.map((tab) => {
-        const active = pathname === tab.href;
+        const active = tabIsActive(pathname, tab.href);
         return (
           <Link
             key={tab.href}

@@ -318,7 +318,7 @@ table {
   }
 
   @supports (animation-timeline: view()) {
-    main .band > .container {
+    main .band > .container:not(.stations-container) {
       animation: rise-in linear both;
       animation-timeline: view();
       animation-range: entry 15% cover 25%;
@@ -679,6 +679,157 @@ a:focus-visible {
 .station-row-broken {
   font-weight: 600;
   color: var(--status-critical);
+}
+
+.stations-controls {
+  position: sticky;
+  top: var(--header-height);
+  z-index: 10;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 0;
+  background: var(--surface-page);
+  border-bottom: 1px solid var(--border);
+}
+
+.stations-search {
+  flex: 1 1 240px;
+  min-width: 0;
+  padding: 8px 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  background: var(--surface-page);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 14px;
+}
+
+.stations-search:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.stations-fault-toggle {
+  flex-shrink: 0;
+  padding: 7px 14px;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  background: var(--surface-page);
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.stations-fault-toggle[data-active] {
+  border-color: var(--status-critical);
+  background: color-mix(in oklab, var(--status-critical) 14%, var(--surface-page));
+  color: var(--status-critical);
+}
+
+.stations-fault-toggle:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.stations-live-count {
+  flex-shrink: 0;
+  margin-left: auto;
+  font-size: 13px;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.stations-department {
+  margin-top: 32px;
+}
+
+.stations-department-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.015em;
+}
+
+.stations-department-count {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.station-index-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  padding: 14px 0;
+  color: inherit;
+}
+
+.station-index-identity {
+  flex: 1 1 200px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.station-index-meta {
+  flex-shrink: 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.station-index-fault {
+  flex-shrink: 0;
+  min-width: 7em;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--status-critical);
+  white-space: nowrap;
+}
+
+.station-index-arrow {
+  flex-shrink: 0;
+  color: var(--text-muted);
+}
+
+.station-pip-strip {
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-end;
+  gap: 1px;
+  height: 16px;
+  max-width: 160px;
+  flex-wrap: wrap;
+}
+
+.station-pip {
+  width: 5px;
+  height: 16px;
+  border-radius: 1px;
+}
+
+.station-pip-good {
+  background: var(--status-good);
+}
+
+.station-pip-warn {
+  background: var(--status-warning);
+}
+
+.station-pip-bad {
+  background: var(--status-critical);
 }
 
 summary:focus-visible {

@@ -2,16 +2,19 @@ import { readFileSync } from "node:fs";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
-import { StationList } from "../src/components/StationList";
-import type { DashboardData } from "../src/lib/metrics/dashboard";
+import { StationsIndex } from "../src/components/StationsIndex";
 import type { StationStatus } from "../src/lib/metrics/queries";
+import type { DashboardData } from "../src/lib/metrics/dashboard";
 
 const loadDashboard = vi.hoisted(() => vi.fn());
+const loadStationList = vi.hoisted(() => vi.fn());
 
 vi.mock("@/lib/metrics/dashboard", () => ({ loadDashboard }));
+vi.mock("@/lib/metrics/station-list", () => ({ loadStationList }));
 vi.mock("@/components/StationMapPanel", () => ({ StationMapPanel: () => null }));
 
 const { default: DashboardPage } = await import("../src/app/page");
+const { default: StationsPage } = await import("../src/app/estaciones/page");
 
 function station(overrides: Partial<StationStatus> = {}): StationStatus {
   return {
@@ -45,8 +48,8 @@ function manyStations(count: number): StationStatus[] {
   );
 }
 
-function renderList(stations: StationStatus[]): string {
-  return renderToStaticMarkup(createElement(StationList, { stations }));
+function renderIndex(stations: StationStatus[]): string {
+  return renderToStaticMarkup(createElement(StationsIndex, { stations }));
 }
 
 function linkedSlugs(markup: string): string[] {
@@ -91,67 +94,77 @@ describe("every station is reachable without a pointing device", () => {
   it("gives each station its own link", () => {
     const stations = manyStations(40);
 
-    expect(new Set(linkedSlugs(renderList(stations)))).toEqual(
+    expect(new Set(linkedSlugs(renderIndex(stations)))).toEqual(
       new Set(stations.map((entry) => entry.slug)),
     );
   });
 
-  it("reaches every station from the dashboard, not only the ones in the reliability table", async () => {
+  it("renders on the server, so the links exist before any JavaScript runs", () => {
+    const source = renderIndex(manyStations(3));
+
+    expect(source).toContain("<li");
+    expect(source).toContain("/estaciones/estacion-0");
+  });
+
+  it("reaches every station from its own route, not only the ones in the reliability table", async () => {
+    const stations = manyStations(251);
+    loadStationList.mockResolvedValue(stations);
+
+    const markup = renderToStaticMarkup(await StationsPage());
+
+    expect(new Set(linkedSlugs(markup)).size, "the /estaciones route omits a station").toBe(251);
+  });
+});
+
+describe("the home page no longer carries the whole list", () => {
+  it("points at /estaciones instead of embedding all 251 rows", async () => {
     const stations = manyStations(251);
     loadDashboard.mockResolvedValue(dashboard(stations));
 
     const markup = renderToStaticMarkup(await DashboardPage());
 
+    expect(markup).toContain('href="/estaciones"');
     expect(
-      new Set(linkedSlugs(markup)).size,
-      "the map is the only route to a station again",
-    ).toBe(251);
-  });
-
-  it("renders on the server, so it does not need the map or any JavaScript", () => {
-    const source = renderList(manyStations(3));
-
-    expect(source).toContain("<li");
-    expect(source).toContain("/estaciones/estacion-0");
+      linkedSlugs(markup).length,
+      "the home page grew the full station list back",
+    ).toBe(0);
   });
 });
 
 describe("the list is navigable rather than a wall of links", () => {
   it("groups by department and orders both the groups and the stations", () => {
-    const markup = renderList([
+    const markup = renderIndex([
       station({ slug: "b-mvd", name: "Zeta", department: "Montevideo" }),
       station({ slug: "a-mvd", name: "Alfa", department: "Montevideo" }),
       station({ slug: "a-art", name: "Uno", department: "Artigas" }),
     ]);
 
-    const headings = [...markup.matchAll(/<h3 class="label-caps">([^<·]+)/g)].map((match) =>
-      match[1].trim(),
+    const headings = [...markup.matchAll(/<h2 class="stations-department-heading">([^<]+)/g)].map(
+      (match) => match[1].trim(),
     );
     expect(headings).toEqual(["Artigas", "Montevideo"]);
     expect(linkedSlugs(markup)).toEqual(["a-art", "a-mvd", "b-mvd"]);
   });
 
   it("keeps the list role the stylesheet reset would otherwise strip", () => {
-    expect(renderList(manyStations(2))).toContain('role="list"');
+    expect(renderIndex(manyStations(2))).toContain('role="list"');
   });
 
   it("says how many stations each department holds", () => {
-    const markup = renderList([
+    const markup = renderIndex([
       station({ slug: "solo", department: "Rocha" }),
       station({ slug: "a", department: "Salto" }),
       station({ slug: "b", department: "Salto" }),
     ]);
 
-    expect(markup).toContain("Rocha · 1 estación");
-    expect(markup).toContain("Salto · 2 estaciones");
-  });
-
-  it("renders nothing at all rather than an empty disclosure", () => {
-    expect(renderList([])).toBe("");
+    expect(markup).toContain("Rocha");
+    expect(markup).toContain("1 estación");
+    expect(markup).toContain("Salto");
+    expect(markup).toContain("2 estaciones");
   });
 });
 
-describe("a row reflows instead of pushing the page sideways", () => {
+describe("a station shows without a pointer, and reflows instead of scrolling sideways", () => {
   const CSS = readFileSync(new URL("../src/app/globals.css", import.meta.url), "utf8");
 
   function blockFor(selector: string): string {
@@ -163,42 +176,31 @@ describe("a row reflows instead of pushing the page sideways", () => {
     return CSS.slice(open + 1, close);
   }
 
-  it("lets the meta line wrap, and holds only its own fragments together", () => {
-    expect(
-      blockFor(".station-row-meta"),
-      "a line that cannot wrap forces horizontal scroll at 320px — WCAG 1.4.10",
-    ).not.toMatch(/white-space:\s*nowrap/);
-    expect(blockFor(".station-row-meta > span")).toMatch(/white-space:\s*nowrap/);
+  it("lets a row wrap rather than forcing horizontal scroll at 320px — WCAG 1.4.10", () => {
+    expect(blockFor(".station-index-row")).toMatch(/flex-wrap:\s*wrap/);
   });
 
-  it("keeps the separators outside the unbreakable fragments", () => {
-    const markup = renderList([
-      station({ slug: "peor", presence: "delisted", connectors: 12, outOfService: 3 }),
-    ]);
-    const meta = markup.split('class="station-row-meta"')[1] ?? "";
-
-    expect(
-      meta,
-      "every space sits inside a nowrap span, so the line has nowhere to break",
-    ).toContain("</span> · <span");
-  });
-});
-
-describe("a station's state survives without colour", () => {
   it("names a station that is out of service, and marks it with a glyph", () => {
-    const markup = renderList([station({ slug: "rota", outOfService: 2, connectors: 3 })]);
+    const markup = renderIndex([station({ slug: "rota", outOfService: 2, faulted: 2 })]);
 
-    expect(markup).toContain("fuera de servicio");
+    expect(markup).toContain("fuera");
     expect(markup).toContain("✕");
   });
 
-  it("names a station the feed no longer lists", () => {
-    const markup = renderList([station({ slug: "ida", presence: "delisted" })]);
+  it("says nothing broke rather than showing a bare zero", () => {
+    const markup = renderIndex([station({ slug: "sana", outOfService: 0 })]);
 
-    expect(markup).toContain("Fuera del feed");
+    expect(markup).toContain(">—<");
   });
+});
 
-  it("stays quiet about presence for a station that is simply listed", () => {
-    expect(renderList([station()])).not.toContain("En el feed");
+describe("the page shows a notice instead of empty controls when there is nothing to list", () => {
+  it("does not render the search row for an empty network", async () => {
+    loadStationList.mockResolvedValue([]);
+
+    const markup = renderToStaticMarkup(await StationsPage());
+
+    expect(markup).not.toContain("stations-controls");
+    expect(markup).toContain("No hay datos para mostrar");
   });
 });
