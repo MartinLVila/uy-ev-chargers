@@ -15,6 +15,7 @@ import {
   outOfServiceRatio,
   outOfServiceSentence,
 } from "@/lib/ui/hero";
+import { buildHistoryWindow, historyWindowCoverage } from "@/lib/ui/history-window";
 
 export const revalidate = 60;
 
@@ -29,8 +30,7 @@ export default async function DashboardPage() {
     );
   }
 
-  const { snapshot, feed, departments, stations, reliability, history, historyDays, reliabilityDays } =
-    data;
+  const { snapshot, feed, departments, stations, reliability, history, reliabilityDays } = data;
 
   if (snapshot.stations.total === 0) {
     return (
@@ -42,7 +42,8 @@ export default async function DashboardPage() {
 
   const fleet = snapshot.connectors.reported + snapshot.connectors.absent;
   const heroRatio = outOfServiceRatio(snapshot.connectors.outOfService, fleet);
-  const historyCovers = daysOfHistory(history, historyDays);
+  const historySlots = buildHistoryWindow(history);
+  const historyCovers = historyWindowCoverage(historySlots);
   const reliabilityCovers = daysOfHistory(history, reliabilityDays);
 
   const heroColor =
@@ -152,7 +153,7 @@ export default async function DashboardPage() {
             Promedio diario de conectores fuera de servicio, ponderado por el tiempo que pasaron en
             cada estado.
           </p>
-          <HistoryChart series={history} />
+          <HistoryChart slots={historySlots} />
         </div>
       </section>
 

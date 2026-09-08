@@ -215,10 +215,13 @@ describe("the dashboard names the span it has, not the one it asked for", () => 
     expect(markup).not.toContain("Últimos 30 días");
   });
 
-  it("names the full window once the history reaches it", async () => {
+  it("caps the daily chart's own window at fifteen days, however much history there is", async () => {
     const markup = await renderDashboard(consecutiveDays(120));
 
-    expect(markup).toContain("Los últimos 90 días");
+    expect(markup).toContain("Los últimos 15 días");
+    expect(markup, "the chart window is capped, not the whole ninety-day fetch").not.toContain(
+      "Los últimos 90 días",
+    );
     expect(markup).toContain("Últimos 30 días, ponderado");
   });
 });
