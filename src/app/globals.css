@@ -725,6 +725,39 @@ a:focus-visible {
   overflow: hidden;
 }
 
+.feed-grid {
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+}
+
+.feed-cell {
+  padding: 20px;
+  background: var(--surface-page);
+}
+
+.feed-cell-label {
+  display: block;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.feed-cell-value {
+  display: block;
+  margin: 6px 0 0;
+  font-size: 22px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums lining-nums;
+  color: var(--text-primary);
+}
+
 .strip-bar-fill {
   display: block;
   height: 100%;
