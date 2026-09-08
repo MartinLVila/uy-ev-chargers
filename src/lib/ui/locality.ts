@@ -1,4 +1,5 @@
 import type { StationStatus } from "../metrics/queries";
+import { UNKNOWN_DEPARTMENT } from "../ute/normalize";
 
 export interface LocalityAggregate {
   name: string;
@@ -7,10 +8,9 @@ export interface LocalityAggregate {
   longitude: number;
   stations: number;
   connectors: number;
+  absent: number;
   outOfService: number;
 }
-
-const UNKNOWN_DEPARTMENT = "Desconocido";
 
 const LOCALITY_ALIASES: Record<string, string> = {
   "ciudad de": "ciudad de la costa",
@@ -97,15 +97,14 @@ export function aggregateByLocality(stations: StationStatus[]): LocalityAggregat
     }
   }
 
-  if (unnamed.length > 0) {
-    const key = "sin localidad";
-    const department = unnamed[0].department;
-    const mergedKey = `${key}|${department}`;
+  const key = "sin localidad";
+  for (const station of unnamed) {
+    const mergedKey = `${key}|${station.department}`;
     const existing = merged.get(mergedKey);
     if (existing) {
-      existing.stations.push(...unnamed);
+      existing.stations.push(station);
     } else {
-      merged.set(mergedKey, { key, department, stations: unnamed });
+      merged.set(mergedKey, { key, department: station.department, stations: [station] });
     }
   }
 
@@ -124,6 +123,7 @@ export function aggregateByLocality(stations: StationStatus[]): LocalityAggregat
         longitude: groupStations.reduce((sum, station) => sum + station.longitude, 0) / count,
         stations: count,
         connectors: groupStations.reduce((sum, station) => sum + station.connectors, 0),
+        absent: groupStations.reduce((sum, station) => sum + station.absent, 0),
         outOfService: groupStations.reduce((sum, station) => sum + station.outOfService, 0),
       };
     })

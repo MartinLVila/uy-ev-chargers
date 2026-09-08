@@ -28,7 +28,7 @@ export interface LocalityPoint {
   x: number;
   y: number;
   radius: number;
-  connectors: number;
+  fleet: number;
   outOfService: number;
   observed: boolean;
 }
@@ -73,26 +73,28 @@ export function buildLocalityPoints(
   return localities
     .map((locality): LocalityPoint | null => {
       const projected = projection([locality.longitude, locality.latitude]);
-      if (!projected) return null;
+      if (!projected || !Number.isFinite(projected[0]) || !Number.isFinite(projected[1])) return null;
+
+      const fleet = locality.connectors + locality.absent;
 
       return {
         name: locality.name,
         department: locality.department,
         x: projected[0],
         y: projected[1],
-        radius: localityRadius(locality.connectors),
-        connectors: locality.connectors,
+        radius: localityRadius(fleet),
+        fleet,
         outOfService: locality.outOfService,
-        observed: locality.connectors > 0,
+        observed: fleet > 0,
       };
     })
     .filter((point): point is LocalityPoint => point !== null);
 }
 
-export function localityTooltip(point: Pick<LocalityPoint, "name" | "connectors" | "outOfService" | "observed">): string {
+export function localityTooltip(point: Pick<LocalityPoint, "name" | "fleet" | "outOfService" | "observed">): string {
   if (!point.observed) return `${point.name}: sin datos recientes.`;
-  if (point.outOfService === 0) return `${point.name}: ${point.connectors} conectores, todos en servicio.`;
-  return `${point.name}: ${point.connectors} conectores, ${point.outOfService} fuera de servicio.`;
+  if (point.outOfService === 0) return `${point.name}: ${point.fleet} conectores, todos en servicio.`;
+  return `${point.name}: ${point.fleet} conectores, ${point.outOfService} fuera de servicio.`;
 }
 
 export type LocalityState = "good" | "bad" | "unknown";

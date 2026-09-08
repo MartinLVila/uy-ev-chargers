@@ -9,7 +9,7 @@ import {
   VIEW_HEIGHT,
   VIEW_WIDTH,
 } from "../src/lib/ui/hud-map";
-import { aggregateByLocality } from "../src/lib/ui/locality";
+import { aggregateByLocality, type LocalityAggregate } from "../src/lib/ui/locality";
 import type { StationStatus } from "../src/lib/metrics/queries";
 import type { Topology } from "topojson-specification";
 import geometry from "../public/map/uy-region.json";
@@ -45,15 +45,75 @@ describe("a locality with nothing observed is never drawn as healthy", () => {
   });
 
   it("says so in words, not just in colour", () => {
-    expect(localityTooltip({ name: "Ejemplo", connectors: 0, outOfService: 0, observed: false })).toBe(
+    expect(localityTooltip({ name: "Ejemplo", fleet: 0, outOfService: 0, observed: false })).toBe(
       "Ejemplo: sin datos recientes.",
     );
-    expect(localityTooltip({ name: "Ejemplo", connectors: 5, outOfService: 0, observed: true })).toBe(
+    expect(localityTooltip({ name: "Ejemplo", fleet: 5, outOfService: 0, observed: true })).toBe(
       "Ejemplo: 5 conectores, todos en servicio.",
     );
-    expect(localityTooltip({ name: "Ejemplo", connectors: 5, outOfService: 2, observed: true })).toBe(
+    expect(localityTooltip({ name: "Ejemplo", fleet: 5, outOfService: 2, observed: true })).toBe(
       "Ejemplo: 5 conectores, 2 fuera de servicio.",
     );
+  });
+});
+
+function locality(overrides: Partial<LocalityAggregate>): LocalityAggregate {
+  return {
+    name: "Ejemplo",
+    department: "Montevideo",
+    latitude: -34.9,
+    longitude: -56.2,
+    stations: 1,
+    connectors: 0,
+    absent: 0,
+    outOfService: 0,
+    ...overrides,
+  };
+}
+
+describe("a locality known only to be absent is still observed, not a blank", () => {
+  it("counts absent connectors into the fleet a circle is sized and coloured from", () => {
+    const { projection } = buildCountryPaths(topology);
+    const [point] = buildLocalityPoints(
+      [locality({ connectors: 0, absent: 4, outOfService: 4 })],
+      projection,
+    );
+
+    expect(point.observed).toBe(true);
+    expect(point.fleet).toBe(4);
+    expect(localityState(point)).toBe("bad");
+  });
+
+  it("stays unknown only when the locality has neither reported nor absent connectors", () => {
+    const { projection } = buildCountryPaths(topology);
+    const [point] = buildLocalityPoints(
+      [locality({ connectors: 0, absent: 0, outOfService: 0 })],
+      projection,
+    );
+
+    expect(point.observed).toBe(false);
+    expect(localityState(point)).toBe("unknown");
+  });
+});
+
+describe("out of service never outgrows the fleet it is drawn against", () => {
+  it("keeps outOfService within fleet even when absent connectors dominate a locality", () => {
+    const { projection } = buildCountryPaths(topology);
+    const [point] = buildLocalityPoints(
+      [locality({ connectors: 1, absent: 5, outOfService: 5 })],
+      projection,
+    );
+
+    expect(point.outOfService).toBeLessThanOrEqual(point.fleet);
+  });
+});
+
+describe("a locality whose coordinates project off the map is dropped, not drawn at NaN", () => {
+  it("skips a locality with an out-of-range latitude instead of emitting NaN geometry", () => {
+    const { projection } = buildCountryPaths(topology);
+    const points = buildLocalityPoints([locality({ latitude: 500, longitude: -56.2 })], projection);
+
+    expect(points).toEqual([]);
   });
 });
 
