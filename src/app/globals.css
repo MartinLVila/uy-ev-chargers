@@ -337,6 +337,11 @@ table {
     animation: uy-breathe 2s var(--ease) infinite;
   }
 
+  .history-bar-fill {
+    animation: uy-grow 700ms var(--ease) both;
+    animation-delay: calc(var(--index, 0) * 45ms);
+  }
+
   .row-wash {
     transition: background-color 200ms var(--ease);
   }
@@ -730,6 +735,65 @@ a:focus-visible {
   height: 100%;
   border-radius: inherit;
   transform-origin: left;
+}
+
+.history-bars {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  align-items: flex-end;
+  gap: clamp(4px, 1.2vw, 14px);
+  border-bottom: 1px solid var(--border);
+}
+
+.history-bar {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.history-bar-value {
+  display: block;
+  font-size: 10.5px;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.history-bar-track {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  width: 100%;
+  height: 220px;
+  margin-top: 6px;
+}
+
+.history-bar-fill {
+  display: block;
+  width: 100%;
+  background: var(--status-critical);
+  opacity: 0.78;
+  border-radius: 2px 2px 0 0;
+  transform-origin: bottom;
+}
+
+.history-bar-gap {
+  display: block;
+  width: 60%;
+  height: 0;
+  border-top: 1px dashed var(--border-strong);
+}
+
+.history-bar-date {
+  display: block;
+  margin-top: 6px;
+  font-size: 9.5px;
+  color: var(--text-muted);
+  white-space: nowrap;
 }
 
 .figure-row {

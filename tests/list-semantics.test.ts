@@ -76,6 +76,7 @@ describe("the list reset does not cost the lists their semantics", () => {
 
     expect(withLists).toContain("components/ConnectorStateStrip.tsx");
     expect(withLists).toContain("components/HudMapView.tsx");
+    expect(withLists).toContain("components/HistoryChart.tsx");
     expect(withLists).toContain("components/StationsIndex.tsx");
     expect(withLists).toContain("app/estaciones/[slug]/page.tsx");
   });
