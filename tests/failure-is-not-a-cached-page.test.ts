@@ -34,7 +34,7 @@ vi.mock("@/lib/metrics/queries", async () => {
   };
 });
 
-vi.mock("@/components/StationMapPanel", () => ({ StationMapPanel: () => null }));
+vi.mock("@/components/HudMap", () => ({ HudMap: () => null }));
 
 const DASHBOARD_COPY = "No pudimos leer los datos en este momento";
 const STATION_COPY = "No pudimos leer los datos de esta estación en este momento";

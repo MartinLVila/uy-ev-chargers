@@ -50,6 +50,13 @@ describe("the totals reconcile against the fixture, computed independently", () 
     expect(groupedTotal).toBe(networkTotal);
   });
 
+  it("sums locality absent connectors to the network total", () => {
+    const networkTotal = stations.reduce((sum, s) => sum + s.absent, 0);
+    const groupedTotal = aggregateByLocality(stations).reduce((sum, g) => sum + g.absent, 0);
+
+    expect(groupedTotal).toBe(networkTotal);
+  });
+
   it("accounts for every station exactly once", () => {
     const groupedStations = aggregateByLocality(stations).reduce((sum, g) => sum + g.stations, 0);
 
@@ -116,6 +123,18 @@ describe("a station with no city still gets counted", () => {
 
     expect(total).toBe(3);
     expect(groups.some((g) => g.stations === 2 && g.name !== "Montevideo")).toBe(true);
+  });
+
+  it("keeps cityless stations in different departments apart, rather than lending them the first one's", () => {
+    const withUnnamed = [
+      station({ slug: "a", city: null, department: "Montevideo" }),
+      station({ slug: "b", city: null, department: "Canelones" }),
+    ];
+
+    const groups = aggregateByLocality(withUnnamed).filter((g) => g.name === "Sin localidad");
+
+    expect(groups).toHaveLength(2);
+    expect(groups.map((g) => g.department).sort()).toEqual(["Canelones", "Montevideo"]);
   });
 });
 

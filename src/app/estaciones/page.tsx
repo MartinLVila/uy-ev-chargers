@@ -20,7 +20,7 @@ export default async function StationsPage() {
 
   return (
     <section className="band">
-      <div className="container stations-container">
+      <div className="container no-scroll-entrance">
         <h1 className="section-title">Toda la red</h1>
         <p className="support-text" style={{ marginTop: 12, marginBottom: 32 }}>
           Las {formatNumber(stations.length)} estaciones de la red pública de UTE, ordenadas por

@@ -1,11 +1,11 @@
+import Link from "next/link";
 import { DepartmentChart } from "@/components/DepartmentChart";
 import { ConnectorStateStrip } from "@/components/ConnectorStateStrip";
 import { HeroCount } from "@/components/HeroCount";
 import { HeroRing } from "@/components/HeroRing";
 import { HistoryChart } from "@/components/HistoryChart";
+import { HudMap } from "@/components/HudMap";
 import { ReliabilityTable } from "@/components/ReliabilityTable";
-import Link from "next/link";
-import { StationMapPanel } from "@/components/StationMapPanel";
 import { loadDashboard } from "@/lib/metrics/dashboard";
 import { daysOfHistory, lastDaysHeading, lastDaysSentence } from "@/lib/ui/coverage";
 import { formatDateTime, formatElapsed, formatNumber, formatPercent } from "@/lib/ui/format";
@@ -107,7 +107,7 @@ export default async function DashboardPage() {
       </section>
 
       <section className="band band-tinted">
-        <div className="container">
+        <div className="container no-scroll-entrance">
           <h2 className="section-title">
             {formatNumber(snapshot.stations.total)} estaciones en todo el país
           </h2>
@@ -116,7 +116,7 @@ export default async function DashboardPage() {
             {formatNumber(snapshot.stations.silent)} sin telemetría ·{" "}
             {formatNumber(snapshot.stations.delisted)} fuera.
           </p>
-          <StationMapPanel stations={stations} />
+          <HudMap stations={stations} />
           <Link href="/estaciones" style={{ display: "inline-block", marginTop: 24, fontSize: 14 }}>
             Ver las {formatNumber(stations.length)} estaciones en una lista
           </Link>

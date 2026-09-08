@@ -53,12 +53,6 @@ describe("a link is marked as a link without relying on colour", () => {
     expect(blockFor("a")).toMatch(/color:\s*var\(--accent\)/);
   });
 
-  it("carries the accent past the map, where Leaflet hardcodes a blue of its own", () => {
-    expect(blockFor(".leaflet-container .leaflet-popup-content a")).toMatch(
-      /color:\s*var\(--accent\)/,
-    );
-  });
-
   it("leaves the station names in the reliability table looking clickable", () => {
     const markup = renderToStaticMarkup(
       createElement(ReliabilityTable, { stations: [station()] }),

@@ -66,8 +66,8 @@ function transitioned(rule: Rule): string[] {
   return splitOutsideBrackets(declaration, ",").map((entry) => entry.split(/\s+/)[0]);
 }
 
-const everyElement = ruleAround("*:not(.leaflet-container");
-const everySvg = ruleAround("svg:not(.leaflet-container");
+const everyElement = ruleAround("\n  * {\n    transition:");
+const everySvg = ruleAround("\n  svg,\n  svg * {");
 
 describe("the theme swap tracks the properties that change, on the elements that have them", () => {
   it("moves ground, border and ink together on every element, and nothing else", () => {
@@ -79,17 +79,6 @@ describe("the theme swap tracks the properties that change, on the elements that
   });
 
   it("reaches the shapes inside an svg, which set their own fill rather than inheriting it", () => {
-    expect(everySvg.selectors).toEqual([
-      "svg:not(.leaflet-container svg)",
-      "svg:not(.leaflet-container svg) *",
-    ]);
-  });
-
-  it("leaves every selector clear of the map, since Leaflet paints its own tiles", () => {
-    for (const selector of [...everyElement.selectors, ...everySvg.selectors]) {
-      expect(selector, "this rule would fight Leaflet for its tiles").toMatch(
-        /:not\([^)]*leaflet-container/,
-      );
-    }
+    expect(everySvg.selectors).toEqual(["svg", "svg *"]);
   });
 });

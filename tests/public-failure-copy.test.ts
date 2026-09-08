@@ -8,7 +8,7 @@ import type { DashboardData } from "../src/lib/metrics/dashboard";
 const loadDashboard = vi.hoisted(() => vi.fn());
 
 vi.mock("@/lib/metrics/dashboard", () => ({ loadDashboard }));
-vi.mock("@/components/StationMapPanel", () => ({ StationMapPanel: () => null }));
+vi.mock("@/components/HudMap", () => ({ HudMap: () => null }));
 
 const { default: DashboardPage } = await import("../src/app/page");
 

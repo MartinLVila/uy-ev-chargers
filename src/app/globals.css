@@ -261,15 +261,15 @@ table {
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  *:not(.leaflet-container, .leaflet-container *) {
+  * {
     transition:
       background-color var(--theme-swap) var(--ease),
       border-color var(--theme-swap) var(--ease),
       color var(--theme-swap) var(--ease);
   }
 
-  svg:not(.leaflet-container svg),
-  svg:not(.leaflet-container svg) * {
+  svg,
+  svg * {
     transition:
       background-color var(--theme-swap) var(--ease),
       border-color var(--theme-swap) var(--ease),
@@ -329,12 +329,20 @@ table {
     animation: uy-widen 700ms var(--ease) both;
   }
 
+  .hud-scan-line {
+    animation: uy-scan 7s linear infinite;
+  }
+
+  .hud-locality-halo {
+    animation: uy-breathe 2s var(--ease) infinite;
+  }
+
   .row-wash {
     transition: background-color 200ms var(--ease);
   }
 
   @supports (animation-timeline: view()) {
-    main .band > .container:not(.stations-container) {
+    main .band > .container:not(.no-scroll-entrance) {
       animation: rise-in linear both;
       animation-timeline: view();
       animation-range: entry 15% cover 25%;
@@ -1017,6 +1025,107 @@ a:focus-visible {
   background: var(--status-critical);
 }
 
+.hud-map-wrap {
+  position: relative;
+}
+
+.hud-map-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 620px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.hud-map-ground {
+  fill: var(--surface-1);
+}
+
+.hud-country {
+  stroke-linejoin: round;
+}
+
+.hud-country-uruguay {
+  fill: oklch(0.225 0.016 250);
+  stroke: rgb(255 255 255 / 0.4);
+  stroke-width: 1.25px;
+}
+
+.hud-country-neighbor {
+  fill: oklch(0.185 0.012 250);
+  stroke: rgb(255 255 255 / 0.4);
+  stroke-width: 0.2px;
+}
+
+.hud-scan-line {
+  fill: rgb(255 255 255 / 0.12);
+}
+
+.hud-locality {
+  fill-opacity: 0.16;
+  stroke-width: 1.35px;
+  cursor: pointer;
+}
+
+.hud-locality:hover,
+.hud-locality:focus-visible,
+.hud-locality[data-active] {
+  fill-opacity: 0.42;
+}
+
+.hud-locality:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.hud-locality-good {
+  fill: var(--status-good);
+  stroke: var(--status-good);
+}
+
+.hud-locality-bad {
+  fill: var(--status-critical);
+  stroke: var(--status-critical);
+}
+
+.hud-locality-unknown {
+  fill: var(--chart-neutral);
+  stroke: var(--chart-neutral);
+}
+
+.hud-locality-halo {
+  fill: none;
+  stroke: var(--status-critical);
+  stroke-width: 2px;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.hud-tooltip {
+  position: absolute;
+  transform: translate(-50%, -120%);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-width: 220px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface-page);
+  box-shadow: 0 6px 24px rgb(0 0 0 / 0.18);
+  font-size: 12.5px;
+  line-height: 1.4;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.hud-map-fallback {
+  margin-top: 20px;
+  font-size: 14px;
+}
+
 summary:focus-visible {
   outline: 3px solid var(--accent);
   outline-offset: 2px;
@@ -1041,36 +1150,3 @@ summary:focus-visible {
   border: 0;
 }
 
-.leaflet-container.leaflet-container {
-  background: var(--surface-2);
-  font: inherit;
-}
-
-.leaflet-container.leaflet-container:focus-within {
-  outline: 3px solid var(--accent);
-  outline-offset: -3px;
-}
-
-.leaflet-popup-content-wrapper,
-.leaflet-popup-tip {
-  background: var(--surface-1);
-  color: var(--text-primary);
-  box-shadow: 0 6px 24px rgb(0 0 0 / 0.18);
-}
-
-.leaflet-popup-content {
-  margin: 12px 14px;
-}
-
-.leaflet-control-attribution {
-  background: var(--surface-1) !important;
-  color: var(--text-muted) !important;
-}
-
-.leaflet-control-attribution a {
-  color: var(--text-secondary) !important;
-}
-
-.leaflet-container .leaflet-popup-content a {
-  color: var(--accent);
-}
