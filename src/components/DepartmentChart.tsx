@@ -5,8 +5,11 @@ interface DepartmentChartProps {
   departments: DepartmentBreakdown[];
 }
 
+function fleetOf(row: DepartmentBreakdown): number {
+  return row.connectors + row.absent;
+}
+
 export function DepartmentChart({ departments }: DepartmentChartProps) {
-  const fleetOf = (row: DepartmentBreakdown) => row.connectors + row.absent;
   const rows = departments.filter((row) => fleetOf(row) > 0);
 
   if (rows.length === 0) {
@@ -17,44 +20,110 @@ export function DepartmentChart({ departments }: DepartmentChartProps) {
     );
   }
 
+  const largest = rows.reduce((biggest, row) => (fleetOf(row) > fleetOf(biggest) ? row : biggest));
+  const maxFleet = fleetOf(largest);
+
   return (
-    <dl className="hairline-grid">
-      {rows.map((row) => (
-        <div
-          key={row.department}
-          className="row-wash"
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "baseline",
-            gap: 16,
-            padding: "14px 0",
-            fontSize: 14.5,
-          }}
-        >
-          <dt style={{ color: "var(--text-secondary)", minWidth: 0 }}>{row.department}</dt>
-          <dd
-            style={{
-              margin: 0,
-              fontVariantNumeric: "tabular-nums",
-              whiteSpace: "nowrap",
-              fontWeight: 600,
-            }}
-          >
-            {formatNumber(fleetOf(row))}
-            <span className="visually-hidden"> conectores</span>
-            {row.outOfService > 0 && (
-              <span style={{ color: "var(--status-critical)" }}>
-                {" "}
-                <span aria-hidden>−{formatNumber(row.outOfService)}</span>
-                <span className="visually-hidden">
-                  , {formatNumber(row.outOfService)} fuera de servicio
-                </span>
-              </span>
-            )}
-          </dd>
-        </div>
-      ))}
-    </dl>
+    <div style={{ overflowX: "auto" }}>
+      <p className="support-text" style={{ marginTop: 0, marginBottom: 16, fontSize: 12.5 }}>
+        Barras a escala de {largest.department}, el departamento con más conectores (
+        {formatNumber(maxFleet)}). Un departamento a la mitad de la barra tiene la mitad de su
+        capacidad, no la mitad de sus conectores en servicio.
+      </p>
+      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14.5, minWidth: 340 }}>
+        <caption className="visually-hidden">
+          Una fila por departamento, con su capacidad instalada a escala de {largest.department} y
+          cuántos conectores tiene fuera de servicio
+        </caption>
+        <thead>
+          <tr>
+            <Th align="left">Departamento</Th>
+            <Th align="left">Capacidad</Th>
+            <Th align="right">Conectores</Th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row) => {
+            const fleet = fleetOf(row);
+            const working = fleet - row.outOfService;
+            const workingPercent = (working / maxFleet) * 100;
+            const badPercent = (row.outOfService / maxFleet) * 100;
+
+            return (
+              <tr key={row.department} className="row-wash" style={{ borderTop: "1px solid var(--border)" }}>
+                <th scope="row" style={{ padding: "10px 12px 10px 0", textAlign: "left", fontWeight: 400 }}>
+                  {row.department}
+                </th>
+                <td style={{ padding: "10px 12px 10px 0" }}>
+                  <span
+                    style={{
+                      display: "flex",
+                      height: 14,
+                      borderRadius: 3,
+                      background: "var(--surface-2)",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <span
+                      className="department-bar-fill"
+                      style={{
+                        width: `${workingPercent}%`,
+                        background: "var(--status-good)",
+                        opacity: 0.75,
+                      }}
+                    />
+                    {row.outOfService > 0 && (
+                      <span
+                        className="department-bar-fill"
+                        style={{ width: `${badPercent}%`, background: "var(--status-critical)" }}
+                      />
+                    )}
+                  </span>
+                </td>
+                <td
+                  style={{
+                    padding: "10px 0",
+                    textAlign: "right",
+                    fontVariantNumeric: "tabular-nums",
+                    fontWeight: 600,
+                  }}
+                >
+                  {formatNumber(fleet)}
+                  {row.outOfService > 0 && (
+                    <span style={{ color: "var(--status-critical)", fontWeight: 600 }}>
+                      {" "}
+                      <span aria-hidden>−{formatNumber(row.outOfService)}</span>
+                      <span className="visually-hidden">
+                        , {formatNumber(row.outOfService)} fuera de servicio
+                      </span>
+                    </span>
+                  )}
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function Th({ children, align }: { children: React.ReactNode; align: "left" | "right" }) {
+  return (
+    <th
+      scope="col"
+      style={{
+        textAlign: align,
+        padding: "0 12px 8px 0",
+        fontSize: 12,
+        fontWeight: 600,
+        textTransform: "uppercase",
+        letterSpacing: "0.08em",
+        color: "var(--text-muted)",
+        whiteSpace: "nowrap",
+      }}
+    >
+      {children}
+    </th>
   );
 }

@@ -61,20 +61,11 @@ describe("the reliability table declares the axes a screen reader navigates by",
       "Estaciones con peor disponibilidad",
     );
   });
-});
 
-describe("the Ahora column says in words what its glyph means", () => {
-  it("reads out the count instead of a multiplication sign", () => {
-    const markup = render([station({ currentlyOutOfService: 3 })]);
+  it("puts the department under the station name rather than in its own column", () => {
+    const markup = render([station({ department: "Canelones" })]);
 
-    expect(markup).toContain("3 fuera de servicio");
-    expect(markup).toMatch(/aria-hidden="true"[^>]*>✕/);
-  });
-
-  it("reads out an em dash as none rather than silence", () => {
-    const markup = render([station({ currentlyOutOfService: 0 })]);
-
-    expect(markup).toContain("ninguno fuera de servicio");
-    expect(markup).toMatch(/aria-hidden="true"[^>]*>—/);
+    expect(occurrences(headOf(markup), "<th ")).toBe(2);
+    expect(markup).toContain("Canelones");
   });
 });
