@@ -157,22 +157,24 @@ export default async function DashboardPage() {
         </div>
       </section>
 
-      <section className="band">
-        <div className="container">
-          <h2 className="section-title">Estaciones con peor disponibilidad</h2>
-          <p className="support-text" style={{ marginTop: 12, marginBottom: 32 }}>
-            {lastDaysSentence(reliabilityCovers)}, ponderado por cantidad de conectores y duración
-            de la caída.
-          </p>
-          <ReliabilityTable stations={reliability} />
-        </div>
-      </section>
-
       <section className="band band-tinted">
         <div className="container">
-          <h2 className="section-title">Capacidad por departamento</h2>
-          <div style={{ marginTop: 32 }}>
-            <DepartmentChart departments={departments} />
+          <div className="paired-panels">
+            <div>
+              <h2 className="section-title">Estaciones con peor disponibilidad</h2>
+              <p className="support-text" style={{ marginTop: 12, marginBottom: 32 }}>
+                {lastDaysSentence(reliabilityCovers)}, ponderado por cantidad de conectores y
+                duración de la caída.
+              </p>
+              <ReliabilityTable stations={reliability} />
+            </div>
+
+            <div>
+              <h2 className="section-title">Capacidad por departamento</h2>
+              <div style={{ marginTop: 32 }}>
+                <DepartmentChart departments={departments} />
+              </div>
+            </div>
           </div>
         </div>
       </section>

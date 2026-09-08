@@ -342,6 +342,11 @@ table {
     animation-delay: calc(var(--index, 0) * 45ms);
   }
 
+  .reliability-bar-fill,
+  .department-bar-fill {
+    animation: uy-widen 700ms var(--ease) both;
+  }
+
   .row-wash {
     transition: background-color 200ms var(--ease);
   }
@@ -794,6 +799,19 @@ a:focus-visible {
   font-size: 9.5px;
   color: var(--text-muted);
   white-space: nowrap;
+}
+
+.reliability-bar-fill,
+.department-bar-fill {
+  display: block;
+  height: 100%;
+  transform-origin: left;
+}
+
+.paired-panels {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 56px;
 }
 
 .figure-row {
