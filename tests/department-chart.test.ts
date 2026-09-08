@@ -50,6 +50,28 @@ describe("a department's bar is scaled to the largest department, not to 100%", 
       "width:2%",
     );
   });
+
+  it("floors a department too small to show at real scale, rather than drawing it invisible", () => {
+    const markup = render([
+      department({ department: "Montevideo", connectors: 2000, absent: 0, outOfService: 0 }),
+      department({ department: "Flores", connectors: 2, absent: 0, outOfService: 0 }),
+    ]);
+
+    expect(markup).toContain("width:1.5%");
+  });
+
+  it("never lets the floor push a stacked bar's two segments past what the row actually has", () => {
+    const markup = render([
+      department({ department: "Montevideo", connectors: 2000, absent: 0, outOfService: 0 }),
+      department({ department: "Flores", connectors: 1, absent: 0, outOfService: 1 }),
+    ]);
+
+    const floresRow = markup.slice(markup.indexOf(">Flores<"));
+    const workingWidth = Number(floresRow.match(/width:([\d.]+)%;background:var\(--status-good\)/)?.[1]);
+    const badWidth = Number(floresRow.match(/width:([\d.]+)%;background:var\(--status-critical\)/)?.[1]);
+
+    expect(workingWidth + badWidth).toBeCloseTo(1.5, 5);
+  });
 });
 
 describe("a department with no name UTE reported still gets a row", () => {

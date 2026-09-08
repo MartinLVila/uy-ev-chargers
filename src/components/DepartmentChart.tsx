@@ -1,9 +1,12 @@
 import type { DepartmentBreakdown } from "@/lib/metrics/queries";
+import { Th } from "@/components/TableHeading";
 import { formatNumber } from "@/lib/ui/format";
 
 interface DepartmentChartProps {
   departments: DepartmentBreakdown[];
 }
+
+const MIN_BAR_PERCENT = 1.5;
 
 function fleetOf(row: DepartmentBreakdown): number {
   return row.connectors + row.absent;
@@ -46,8 +49,10 @@ export function DepartmentChart({ departments }: DepartmentChartProps) {
           {rows.map((row) => {
             const fleet = fleetOf(row);
             const working = fleet - row.outOfService;
-            const workingPercent = (working / maxFleet) * 100;
-            const badPercent = (row.outOfService / maxFleet) * 100;
+            const fleetPercent = (fleet / maxFleet) * 100;
+            const scale = fleetPercent > 0 && fleetPercent < MIN_BAR_PERCENT ? MIN_BAR_PERCENT / fleetPercent : 1;
+            const workingPercent = (working / maxFleet) * 100 * scale;
+            const badPercent = (row.outOfService / maxFleet) * 100 * scale;
 
             return (
               <tr key={row.department} className="row-wash" style={{ borderTop: "1px solid var(--border)" }}>
@@ -105,25 +110,5 @@ export function DepartmentChart({ departments }: DepartmentChartProps) {
         </tbody>
       </table>
     </div>
-  );
-}
-
-function Th({ children, align }: { children: React.ReactNode; align: "left" | "right" }) {
-  return (
-    <th
-      scope="col"
-      style={{
-        textAlign: align,
-        padding: "0 12px 8px 0",
-        fontSize: 12,
-        fontWeight: 600,
-        textTransform: "uppercase",
-        letterSpacing: "0.08em",
-        color: "var(--text-muted)",
-        whiteSpace: "nowrap",
-      }}
-    >
-      {children}
-    </th>
   );
 }
