@@ -67,6 +67,7 @@ function locality(overrides: Partial<LocalityAggregate>): LocalityAggregate {
     connectors: 0,
     absent: 0,
     outOfService: 0,
+    memberStations: [],
     ...overrides,
   };
 }

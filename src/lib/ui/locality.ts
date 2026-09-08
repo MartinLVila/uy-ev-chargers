@@ -10,6 +10,7 @@ export interface LocalityAggregate {
   connectors: number;
   absent: number;
   outOfService: number;
+  memberStations: StationStatus[];
 }
 
 const LOCALITY_ALIASES: Record<string, string> = {
@@ -125,6 +126,7 @@ export function aggregateByLocality(stations: StationStatus[]): LocalityAggregat
         connectors: groupStations.reduce((sum, station) => sum + station.connectors, 0),
         absent: groupStations.reduce((sum, station) => sum + station.absent, 0),
         outOfService: groupStations.reduce((sum, station) => sum + station.outOfService, 0),
+        memberStations: groupStations,
       };
     })
     .sort((a, b) => a.name.localeCompare(b.name));

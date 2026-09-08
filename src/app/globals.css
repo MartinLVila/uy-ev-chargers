@@ -398,6 +398,10 @@ a:focus-visible {
   padding: 0 40px;
 }
 
+.container-narrow {
+  max-width: 1160px;
+}
+
 .app-header {
   position: sticky;
   top: 0;
@@ -583,6 +587,65 @@ a:focus-visible {
   font-weight: 600;
   letter-spacing: -0.035em;
   line-height: 1.04;
+}
+
+.near-me-pip-row {
+  display: flex;
+  gap: 4px;
+}
+
+.near-me-pip {
+  display: block;
+  width: 12px;
+  height: 44px;
+  border-radius: 2px;
+  flex: 0 0 auto;
+}
+
+.near-me-power {
+  margin: 0;
+  font-size: 44px;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  color: var(--status-good);
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.phone-tabbar {
+  display: none;
+}
+
+@media (max-width: 599px) {
+  .phone-tabbar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 20;
+    display: flex;
+    background: color-mix(in oklab, var(--surface-page) 94%, transparent);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-top: 1px solid var(--border-mid);
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+
+  .phone-tabbar-tab {
+    flex: 1 1 0;
+    padding: 10px 0 8px;
+    text-align: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+  }
+
+  .phone-tabbar-tab[data-active] {
+    color: var(--status-good);
+  }
+
+  body {
+    padding-bottom: calc(52px + env(safe-area-inset-bottom, 0px));
+  }
 }
 
 .figure-major {

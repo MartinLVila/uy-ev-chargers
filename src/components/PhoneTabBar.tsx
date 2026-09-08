@@ -5,23 +5,22 @@ import { usePathname } from "next/navigation";
 import { tabIsActive, type NavTab } from "@/lib/ui/nav-tabs";
 
 const TABS: NavTab[] = [
-  { href: "/", label: "Red" },
-  { href: "/estaciones", label: "Estaciones" },
   { href: "/cerca", label: "Cerca" },
+  { href: "/", label: "Mapa" },
 ];
 
-export function AppNav() {
+export function PhoneTabBar() {
   const pathname = usePathname();
 
   return (
-    <nav className="app-nav" aria-label="Secciones">
+    <nav className="phone-tabbar" aria-label="Navegación">
       {TABS.map((tab) => {
         const active = tabIsActive(pathname, tab.href);
         return (
           <Link
             key={tab.href}
             href={tab.href}
-            className="app-nav-tab link-unadorned"
+            className="phone-tabbar-tab link-unadorned"
             data-active={active || undefined}
             aria-current={active ? "page" : undefined}
           >

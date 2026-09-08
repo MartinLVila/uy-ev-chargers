@@ -198,21 +198,38 @@ export interface ConnectorsNow {
   unknown: number;
 }
 
-export function connectorsNow(timeline: StationTimelineEntry[]): ConnectorsNow {
+export interface ConnectorTallyByUsage {
+  free: number;
+  inUse: number;
+  broken: number;
+  absent: number;
+  unknown: number;
+  total: number;
+}
+
+export function connectorsNowByUsage(timeline: StationTimelineEntry[]): ConnectorTallyByUsage {
   const open = timeline.filter((entry) => entry.endedAt === null);
 
-  return open.reduce<ConnectorsNow>(
+  return open.reduce<ConnectorTallyByUsage>(
     (running, entry) => {
       const state = connectorUsageState(entry.health, entry.statusDetail);
-      const inService = state === "free" || state === "inUse";
-      const outOfService = state === "broken" || state === "absent";
       return {
+        ...running,
+        [state]: running[state] + entry.connectorCount,
         total: running.total + entry.connectorCount,
-        inService: running.inService + (inService ? entry.connectorCount : 0),
-        outOfService: running.outOfService + (outOfService ? entry.connectorCount : 0),
-        unknown: running.unknown + (inService || outOfService ? 0 : entry.connectorCount),
       };
     },
-    { total: 0, inService: 0, outOfService: 0, unknown: 0 },
+    { free: 0, inUse: 0, broken: 0, absent: 0, unknown: 0, total: 0 },
   );
+}
+
+export function connectorsNow(timeline: StationTimelineEntry[]): ConnectorsNow {
+  const tally = connectorsNowByUsage(timeline);
+
+  return {
+    total: tally.total,
+    inService: tally.free + tally.inUse,
+    outOfService: tally.broken + tally.absent,
+    unknown: tally.unknown,
+  };
 }
