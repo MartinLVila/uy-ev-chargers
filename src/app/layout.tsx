@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Chivo } from "next/font/google";
 import { AppHeader } from "@/components/AppHeader";
+import { PhoneTabBar } from "@/components/PhoneTabBar";
 import "./globals.css";
 
 const sans = Chivo({
@@ -41,6 +42,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             . Proyecto independiente, sin relación con UTE.
           </div>
         </footer>
+
+        <PhoneTabBar />
       </body>
     </html>
   );

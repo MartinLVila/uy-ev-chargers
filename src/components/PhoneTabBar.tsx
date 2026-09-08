@@ -9,27 +9,26 @@ interface Tab {
 }
 
 const TABS: Tab[] = [
-  { href: "/", label: "Red" },
-  { href: "/estaciones", label: "Estaciones" },
   { href: "/cerca", label: "Cerca" },
+  { href: "/", label: "Mapa" },
 ];
 
 function tabIsActive(pathname: string, href: string): boolean {
   return href === "/" ? pathname === href : pathname === href || pathname.startsWith(`${href}/`);
 }
 
-export function AppNav() {
+export function PhoneTabBar() {
   const pathname = usePathname();
 
   return (
-    <nav className="app-nav" aria-label="Secciones">
+    <nav className="phone-tabbar" aria-label="Navegación">
       {TABS.map((tab) => {
         const active = tabIsActive(pathname, tab.href);
         return (
           <Link
             key={tab.href}
             href={tab.href}
-            className="app-nav-tab link-unadorned"
+            className="phone-tabbar-tab link-unadorned"
             data-active={active || undefined}
             aria-current={active ? "page" : undefined}
           >
