@@ -181,4 +181,57 @@ describe("alternatives are ranked by real historical availability, not left to c
     expect(bIndex).toBeGreaterThan(-1);
     expect(cIndex).toBeLessThan(bIndex);
   });
+
+  it("still lists an alternative that has no reliability row, rather than dropping it", async () => {
+    stationStatuses.mockResolvedValue([
+      station({ slug: "a", name: "Estación A" }),
+      station({ slug: "b", name: "Estación B" }),
+    ]);
+    stationDetail.mockResolvedValue(detail({ slug: "a" }));
+    hourlyUsage.mockResolvedValue([]);
+    reliability.mockResolvedValue([]);
+
+    const markup = await render({ localidad: "Trinidad", estacion: "a" });
+
+    expect(markup).toContain("Estación B");
+    expect(markup).toContain("sin clasificar");
+  });
+});
+
+describe("the pip strip never lets a large healthy count crowd out a small fault count", () => {
+  it("keeps a broken pip visible even when truncating a station with many free connectors", async () => {
+    stationStatuses.mockResolvedValue([station()]);
+    stationDetail.mockResolvedValue(
+      detail({
+        timeline: [
+          ...Array.from({ length: 30 }, () => ({
+            connectorType: "CCS2",
+            powerKw: 50,
+            hasCable: true,
+            connectorCount: 1,
+            health: "operational",
+            statusDetail: "available",
+            startedAt: "2026-09-01T00:00:00.000Z",
+            endedAt: null,
+          })),
+          {
+            connectorType: "CCS2",
+            powerKw: 50,
+            hasCable: true,
+            connectorCount: 1,
+            health: "faulted",
+            statusDetail: "unavailable",
+            startedAt: "2026-09-01T00:00:00.000Z",
+            endedAt: null,
+          },
+        ],
+      }),
+    );
+    hourlyUsage.mockResolvedValue([]);
+    reliability.mockResolvedValue([]);
+
+    const markup = await render({ localidad: "Trinidad", estacion: "estacion-a" });
+
+    expect(markup).toContain("var(--status-critical)");
+  });
 });

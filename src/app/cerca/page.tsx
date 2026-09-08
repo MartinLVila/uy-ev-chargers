@@ -12,8 +12,8 @@ import {
 import { windowFromDays } from "@/lib/metrics/window";
 import { aggregateByLocality, type LocalityAggregate } from "@/lib/ui/locality";
 import { formatNumber, formatPercent } from "@/lib/ui/format";
-import { availabilityClaim, connectorsNowByUsage, type ConnectorTally } from "@/lib/ui/near-me";
-import { stationPresence } from "@/lib/ui/health";
+import { availabilityClaim } from "@/lib/ui/near-me";
+import { connectorsNowByUsage, stationPresence, type ConnectorTallyByUsage } from "@/lib/ui/health";
 import { buildUsageProfiles, usageProfileName } from "@/lib/ui/hourly-usage";
 import { describeUsagePattern, usagePattern } from "@/lib/ui/usage-windows";
 
@@ -151,31 +151,42 @@ export default async function NearMePage({
   );
 }
 
+interface Alternative {
+  slug: string;
+  name: string;
+  availability: number | null;
+}
+
 function pickAlternatives(
   locality: LocalityAggregate,
   currentSlug: string,
   reliability: StationReliability[],
-): StationReliability[] {
+): Alternative[] {
   const bySlug = new Map(reliability.map((row) => [row.slug, row]));
 
   return locality.memberStations
     .filter((station) => station.slug !== currentSlug)
-    .map((station) => bySlug.get(station.slug))
-    .filter((row): row is StationReliability => row !== undefined)
+    .map(
+      (station): Alternative => ({
+        slug: station.slug,
+        name: station.name,
+        availability: bySlug.get(station.slug)?.availability ?? null,
+      }),
+    )
     .sort((a, b) => (b.availability ?? -1) - (a.availability ?? -1))
     .slice(0, MAX_ALTERNATIVES);
 }
 
-function PipStrip({ tally }: { tally: ConnectorTally }) {
+function PipStrip({ tally }: { tally: ConnectorTallyByUsage }) {
   const pips: Array<"free" | "inUse" | "broken" | "absent" | "unknown"> = [];
   const push = (state: "free" | "inUse" | "broken" | "absent" | "unknown", count: number) => {
     for (let index = 0; index < count; index += 1) pips.push(state);
   };
-  push("free", tally.free);
-  push("inUse", tally.inUse);
   push("broken", tally.broken);
   push("absent", tally.absent);
   push("unknown", tally.unknown);
+  push("inUse", tally.inUse);
+  push("free", tally.free);
 
   const shown = pips.slice(0, MAX_PIPS);
   const truncated = pips.length > MAX_PIPS;

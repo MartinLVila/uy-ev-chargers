@@ -2,20 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { tabIsActive, type NavTab } from "@/lib/ui/nav-tabs";
 
-interface Tab {
-  href: string;
-  label: string;
-}
-
-const TABS: Tab[] = [
+const TABS: NavTab[] = [
   { href: "/cerca", label: "Cerca" },
   { href: "/", label: "Mapa" },
 ];
-
-function tabIsActive(pathname: string, href: string): boolean {
-  return href === "/" ? pathname === href : pathname === href || pathname.startsWith(`${href}/`);
-}
 
 export function PhoneTabBar() {
   const pathname = usePathname();
