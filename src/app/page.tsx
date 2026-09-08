@@ -219,6 +219,7 @@ function FeedWarning({ feed }: { feed: { identicalPayloadStreak: number; unchang
 
   return (
     <aside
+      role="alert"
       style={{
         borderBottom: "1px solid var(--status-warning)",
         background: "color-mix(in srgb, var(--status-warning) 10%, var(--surface-1))",
@@ -226,7 +227,8 @@ function FeedWarning({ feed }: { feed: { identicalPayloadStreak: number; unchang
     >
       <div className="container" style={{ paddingTop: 16, paddingBottom: 16, fontSize: 13.5, lineHeight: 1.55 }}>
         <strong style={{ display: "block", marginBottom: 4 }}>
-          ⚠ UTE viene publicando exactamente los mismos datos
+          <span aria-hidden="true">⚠ </span>
+          UTE viene publicando exactamente los mismos datos
         </strong>
         Las últimas {formatNumber(feed.identicalPayloadStreak)} lecturas devolvieron una respuesta
         byte a byte idéntica, desde el {formatDateTime(feed.unchangedSince)}. Mientras esto siga
@@ -254,9 +256,17 @@ function FeedStats({
   const rows = [
     { label: `Lecturas (${feed.windowDays} días)`, value: formatNumber(feed.polls) },
     { label: "Tasa de éxito", value: formatPercent(feed.successRate) },
-    { label: "Lecturas fallidas", value: formatNumber(feed.failures) },
+    {
+      label: "Lecturas fallidas",
+      value: formatNumber(feed.failures),
+      warn: feed.failures > 0,
+    },
     { label: "Respuestas distintas", value: formatNumber(feed.distinctPayloads) },
-    { label: "Racha sin cambios", value: formatNumber(feed.identicalPayloadStreak) },
+    {
+      label: "Racha sin cambios",
+      value: formatNumber(feed.identicalPayloadStreak),
+      warn: feed.identicalPayloadStreak >= 3,
+    },
     {
       label: "Última falla",
       value: feed.lastFailureAt ? formatDateTime(feed.lastFailureAt) : "ninguna",
@@ -264,27 +274,13 @@ function FeedStats({
   ];
 
   return (
-    <dl className="hairline-list" style={{ margin: 0 }}>
+    <dl className="feed-grid">
       {rows.map((row) => (
-        <div
-          key={row.label}
-          className="row-wash"
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            gap: 16,
-            fontSize: 14.5,
-            padding: "14px 0",
-          }}
-        >
-          <dt style={{ color: "var(--text-secondary)" }}>{row.label}</dt>
+        <div key={row.label} className="feed-cell">
+          <dt className="feed-cell-label">{row.label}</dt>
           <dd
-            style={{
-              margin: 0,
-              fontWeight: 600,
-              fontVariantNumeric: "tabular-nums",
-              textAlign: "right",
-            }}
+            className="feed-cell-value"
+            style={row.warn ? { color: "var(--status-warning)" } : undefined}
           >
             {row.value}
           </dd>
