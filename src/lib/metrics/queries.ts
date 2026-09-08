@@ -492,7 +492,7 @@ export async function getWorstOutageStation(
     JOIN connector_states cs ON cs.connector_group_id = cg.id
     WHERE ${overlapsWindow("cs", window)}
     GROUP BY st.id, st.slug
-    ORDER BY out_of_service_seconds DESC
+    ORDER BY out_of_service_seconds DESC, st.slug ASC
     LIMIT 1
   `);
 
