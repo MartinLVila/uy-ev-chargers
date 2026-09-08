@@ -4,6 +4,8 @@ import {
   buildUsageProfiles,
   describeUsageHour,
   describeUsageProfile,
+  hasUnreliableUsage,
+  unreliableUsageNote,
   usageProfileName,
 } from "../src/lib/ui/hourly-usage";
 
@@ -173,5 +175,38 @@ describe("connector group usage profiles", () => {
 
     expect(describeUsageHour(profile, profile.hours[10])).toContain("Sin datos");
     expect(describeUsageHour(profile, profile.hours[9])).toContain("En uso");
+  });
+});
+
+describe("a group broken for most of the period says its own usage pattern is not to be trusted", () => {
+  function withFaultShare(brokenHours: number): ReturnType<typeof buildUsageProfiles>[number] {
+    const hours = everyHour(60, 0.5, 0);
+    for (let hour = 0; hour < brokenHours; hour += 1) {
+      hours[hour] = { hour, utilization: 0.5, brokenShare: 0.3, observedHours: 60 };
+    }
+    const [profile] = buildUsageProfiles([group({ hours })]);
+    return profile;
+  }
+
+  it("flags a group that was broken for most of its observed hours", () => {
+    const profile = withFaultShare(15);
+
+    expect(hasUnreliableUsage(profile)).toBe(true);
+    expect(unreliableUsageNote(profile)).toContain("la banda roja de abajo es el tiempo caído");
+  });
+
+  it("leaves an ordinary group alone", () => {
+    const profile = withFaultShare(2);
+
+    expect(hasUnreliableUsage(profile)).toBe(false);
+    expect(unreliableUsageNote(profile)).toBeNull();
+  });
+
+  it("never divides by zero for a group with no observed hours at all", () => {
+    const [profile] = buildUsageProfiles([
+      group({ hours: [{ hour: 0, utilization: 0, brokenShare: 0, observedHours: 0 }] }),
+    ]);
+
+    expect(hasUnreliableUsage(profile)).toBe(false);
   });
 });
