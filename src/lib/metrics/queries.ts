@@ -472,6 +472,36 @@ export async function getStationReliability(
   }));
 }
 
+export interface WorstOutageStation {
+  slug: string;
+  outOfServiceSeconds: number;
+}
+
+export async function getWorstOutageStation(
+  db: SqlRunner,
+  window: TimeWindow,
+): Promise<WorstOutageStation | null> {
+  const { rows } = await db.execute<{ slug: string; out_of_service_seconds: number }>(sql`
+    SELECT st.slug,
+      COALESCE(
+        SUM(cs.connector_count * ${overlapSeconds("cs", window)}) FILTER (WHERE cs.health IN ${OUT_OF_SERVICE}),
+        0
+      ) AS out_of_service_seconds
+    FROM stations st
+    JOIN connector_groups cg ON cg.station_id = st.id
+    JOIN connector_states cs ON cs.connector_group_id = cg.id
+    WHERE ${overlapsWindow("cs", window)}
+    GROUP BY st.id, st.slug
+    ORDER BY out_of_service_seconds DESC, st.slug ASC
+    LIMIT 1
+  `);
+
+  const [row] = rows;
+  if (!row || toNumber(row.out_of_service_seconds) <= 0) return null;
+
+  return { slug: row.slug, outOfServiceSeconds: toNumber(row.out_of_service_seconds) };
+}
+
 export interface DailyPoint {
   day: string;
   connectorsTracked: number;

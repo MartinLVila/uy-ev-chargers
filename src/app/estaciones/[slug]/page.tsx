@@ -6,6 +6,7 @@ import {
   getStationDetail,
   getStationHourlyUsage,
   getStationStatuses,
+  getWorstOutageStation,
   type ConnectorGroupHourlyUsage,
   type StationTimelineEntry,
 } from "@/lib/metrics/queries";
@@ -13,6 +14,7 @@ import { windowFromDays } from "@/lib/metrics/window";
 import { daysOfRange, lastDaysPhrase, observedSince, observedSpan } from "@/lib/ui/coverage";
 import { formatDateTime, formatElapsed, formatNumber } from "@/lib/ui/format";
 import { connectorUsage, connectorsNow, stationPresence } from "@/lib/ui/health";
+import { RANKING_WINDOW_DAYS, outageSuperlative } from "@/lib/ui/station-ranking";
 
 export const revalidate = 60;
 
@@ -52,6 +54,19 @@ async function readHourlyUsage(
   }
 }
 
+async function readNationalOutageRank(
+  db: ReturnType<typeof getDb>,
+  slug: string,
+): Promise<number | null> {
+  try {
+    const worst = await getWorstOutageStation(db, windowFromDays(RANKING_WINDOW_DAYS));
+    return worst?.slug === slug ? worst.outOfServiceSeconds : null;
+  } catch (error) {
+    console.error(`Station page ${slug} could not read the national outage ranking`, error);
+    return null;
+  }
+}
+
 export default async function StationPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
 
@@ -59,11 +74,13 @@ export default async function StationPage({ params }: { params: Promise<{ slug: 
 
   let station: Awaited<ReturnType<typeof getStationDetail>>;
   let hourlyUsage: HourlyUsageRead;
+  let nationalOutageSeconds: number | null;
   try {
     const db = getDb();
-    const [detail, usage] = await Promise.allSettled([
+    const [detail, usage, rank] = await Promise.allSettled([
       getStationDetail(db, slug, timeWindow),
       getStationHourlyUsage(db, slug, timeWindow),
+      readNationalOutageRank(db, slug),
     ]);
 
     if (detail.status === "rejected") throw detail.reason;
@@ -71,6 +88,7 @@ export default async function StationPage({ params }: { params: Promise<{ slug: 
     hourlyUsage = await readHourlyUsage(slug, usage, () =>
       getStationHourlyUsage(db, slug, timeWindow),
     );
+    nationalOutageSeconds = rank.status === "fulfilled" ? rank.value : null;
   } catch (error) {
     console.error(`Station page ${slug} failed`, error);
     throw error;
@@ -86,46 +104,62 @@ export default async function StationPage({ params }: { params: Promise<{ slug: 
   const observed = observedSpan(
     daysOfRange(observedSince(station.firstSeenAt, timeWindow), WINDOW_DAYS),
   );
+  const superlative = outageSuperlative(
+    nationalOutageSeconds !== null,
+    nationalOutageSeconds ?? 0,
+    now.outOfService,
+    now.total,
+  );
 
   return (
     <>
       <section className="band band-hero">
-        <div className="container">
+        <div className="container container-narrow">
           <p style={{ margin: "0 0 18px", fontSize: 15 }}>
             <Link href="/">← Volver al mapa</Link>
           </p>
-          {where && <span className="label-caps">{where}</span>}
-          <h1 className="figure-name" style={{ marginTop: where ? 14 : 0 }}>
-            {station.name}
-          </h1>
-          <p className="support-text" style={{ marginTop: 16 }}>
-            <span aria-hidden style={{ color: presence.color }}>
-              {presence.symbol}
-            </span>{" "}
-            {presence.label} · vista por primera vez el {formatDateTime(station.firstSeenAt)}
-          </p>
-        </div>
-      </section>
 
-      <section className="band">
-        <div className="container">
-          <h2 className="visually-hidden">Los conectores de esta estación ahora mismo</h2>
-          <dl className="figure-row">
-            <StationFigure label="Conectores" value={formatNumber(now.total)} />
-            <StationFigure label="En servicio ahora" value={formatNumber(now.inService)} />
-            <StationFigure
-              label="Fuera de servicio ahora"
-              value={formatNumber(now.outOfService)}
-              color={now.outOfService > 0 ? "var(--status-critical)" : undefined}
-            />
-            {now.unknown > 0 && (
-              <StationFigure
-                label="Estado desconocido"
-                value={formatNumber(now.unknown)}
-                color="var(--chart-neutral)"
+          <div className="station-header-grid">
+            <div>
+              {where && <span className="label-caps">{where}</span>}
+              <h1 className="figure-name" style={{ marginTop: where ? 14 : 0 }}>
+                {station.name}
+              </h1>
+              <p className="support-text" style={{ marginTop: 16 }}>
+                <span aria-hidden style={{ color: presence.color }}>
+                  {presence.symbol}
+                </span>{" "}
+                {presence.label} · vista por primera vez el {formatDateTime(station.firstSeenAt)}
+              </p>
+              {superlative && (
+                <p className="support-text" style={{ marginTop: 12 }}>
+                  {superlative}
+                </p>
+              )}
+            </div>
+
+            <dl className="station-stats">
+              <StationStat label="Conectores" value={formatNumber(now.total)} />
+              <StationStat
+                label="En servicio ahora"
+                value={formatNumber(now.inService)}
+                color="var(--status-good)"
               />
-            )}
-          </dl>
+              <StationStat
+                label="Fuera de servicio ahora"
+                value={formatNumber(now.outOfService)}
+                color={now.outOfService > 0 ? "var(--status-critical)" : undefined}
+              />
+              {now.unknown > 0 && (
+                <StationStat
+                  label="Estado desconocido"
+                  value={formatNumber(now.unknown)}
+                  color="var(--chart-neutral)"
+                />
+              )}
+            </dl>
+          </div>
+
           <p style={{ margin: "24px 0 0", fontSize: 13.5, color: "var(--text-muted)" }}>
             Según la última vez que UTE reportó esta estación, {formatElapsed(station.lastSeenAt)},
             el {formatDateTime(station.lastSeenAt)}.
@@ -134,7 +168,7 @@ export default async function StationPage({ params }: { params: Promise<{ slug: 
       </section>
 
       <section className="band band-tinted">
-        <div className="container">
+        <div className="container container-narrow">
           <h2 className="section-title">A qué hora se ocupa</h2>
           <p className="support-text" style={{ marginTop: 12, marginBottom: 32 }}>
             Qué tan ocupado estuvo cada cargador en cada hora del día durante {observed}, medido
@@ -149,7 +183,7 @@ export default async function StationPage({ params }: { params: Promise<{ slug: 
       </section>
 
       <section className="band">
-        <div className="container">
+        <div className="container container-narrow">
           <h2 className="section-title">
             {changesHeading(showsWholeHistory, station.timelineTruncated)}
           </h2>
@@ -183,11 +217,11 @@ function UsageCouldNotBeRead() {
   );
 }
 
-function StationFigure({ label, value, color }: { label: string; value: string; color?: string }) {
+function StationStat({ label, value, color }: { label: string; value: string; color?: string }) {
   return (
-    <div>
+    <div className="station-stat">
       <dt className="label-caps">{label}</dt>
-      <dd className="figure-major" style={{ margin: "10px 0 0", color }}>
+      <dd className="station-stat-value" style={{ color }}>
         {value}
       </dd>
     </div>
@@ -230,8 +264,8 @@ function StateHistory({
                 alignItems: "baseline",
                 justifyContent: "space-between",
                 gap: "6px 24px",
-                padding: "14px 0",
-                fontSize: 14.5,
+                padding: "12px 0",
+                fontSize: 12,
               }}
             >
               <span style={{ fontWeight: 600, minWidth: 0 }}>

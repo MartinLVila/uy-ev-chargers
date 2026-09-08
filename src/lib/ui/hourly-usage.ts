@@ -134,6 +134,9 @@ export function describeUsageProfile(profile: ConnectorGroupUsageProfile): strin
     sentences.push("Ninguna hora tiene todavía observación suficiente para señalar un pico.");
   }
 
+  const unreliable = unreliableUsageNote(profile);
+  if (unreliable) sentences.push(unreliable);
+
   if (profile.observedDays > 0) {
     sentences.push(`Construido sobre unos ${formatNumber(profile.observedDays)} días de observación.`);
   }
@@ -155,6 +158,21 @@ export function describeUsageProfile(profile: ConnectorGroupUsageProfile): strin
   }
 
   return sentences.join(" ");
+}
+
+const UNRELIABLE_USAGE_FAULT_SHARE = 0.4;
+
+export function hasUnreliableUsage(profile: ConnectorGroupUsageProfile): boolean {
+  const observedHourCount = HOURS_IN_DAY - profile.hoursWithoutData;
+  if (observedHourCount === 0) return false;
+
+  return profile.hoursOutOfService / observedHourCount >= UNRELIABLE_USAGE_FAULT_SHARE;
+}
+
+export function unreliableUsageNote(profile: ConnectorGroupUsageProfile): string | null {
+  if (!hasUnreliableUsage(profile)) return null;
+
+  return "Estuvo con falla buena parte del período, así que el patrón horario dice poco: la banda roja de abajo es el tiempo caído.";
 }
 
 export function describeUsageHour(profile: ConnectorGroupUsageProfile, entry: UsageHour): string {

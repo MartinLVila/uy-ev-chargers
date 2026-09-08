@@ -8,6 +8,7 @@ import {
   formatObservedHours,
   hourLabel,
   hourRangeLabel,
+  unreliableUsageNote,
   usageProfileName,
   type ConnectorGroupUsageProfile,
   type UsageHour,
@@ -133,6 +134,18 @@ function WhenToCome({ profile }: { profile: ConnectorGroupUsageProfile }) {
   );
 }
 
+function UnreliableUsageNotice({ profile }: { profile: ConnectorGroupUsageProfile }) {
+  const note = unreliableUsageNote(profile);
+  if (!note) return null;
+
+  return (
+    <p style={{ margin: 0, fontSize: 13, color: "var(--status-critical)" }}>
+      <span aria-hidden="true">⚠ </span>
+      {note}
+    </p>
+  );
+}
+
 function GroupChart({ profile }: { profile: ConnectorGroupUsageProfile }) {
   const showsOutOfService = profile.hoursOutOfService > 0;
 
@@ -187,6 +200,8 @@ function GroupChart({ profile }: { profile: ConnectorGroupUsageProfile }) {
       </div>
 
       <WhenToCome profile={profile} />
+
+      <UnreliableUsageNotice profile={profile} />
 
       <div
         role="img"
