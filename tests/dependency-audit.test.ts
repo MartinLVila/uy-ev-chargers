@@ -1,9 +1,9 @@
-import { readFileSync } from "node:fs";
+import { readWithUnixLineEndings } from "./helpers/source-text";
 import { describe, expect, it } from "vitest";
 
-const CI = readFileSync(new URL("../.github/workflows/ci.yml", import.meta.url), "utf8");
-const POLL = readFileSync(new URL("../.github/workflows/poll.yml", import.meta.url), "utf8");
-const SNAPSHOT = readFileSync(new URL("../.github/workflows/snapshot.yml", import.meta.url), "utf8");
+const CI = readWithUnixLineEndings(new URL("../.github/workflows/ci.yml", import.meta.url));
+const POLL = readWithUnixLineEndings(new URL("../.github/workflows/poll.yml", import.meta.url));
+const SNAPSHOT = readWithUnixLineEndings(new URL("../.github/workflows/snapshot.yml", import.meta.url));
 
 const SEVERITY = ["low", "moderate", "high", "critical"];
 
