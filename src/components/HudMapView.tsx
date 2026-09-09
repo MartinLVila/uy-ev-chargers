@@ -41,6 +41,7 @@ export function HudMapView({
         hay la misma información en una lista.
       </p>
 
+      <div className="hud-map-canvas">
       <svg className="hud-map-svg" viewBox={`0 0 ${VIEW_WIDTH} ${VIEW_HEIGHT}`}>
         <rect className="hud-map-ground" x={0} y={0} width={VIEW_WIDTH} height={VIEW_HEIGHT} aria-hidden="true" />
 
@@ -142,6 +143,7 @@ export function HudMapView({
           <strong>{activeCorridor.name}</strong>
         </div>
       )}
+      </div>
 
       <details className="hud-map-fallback">
         <summary>Ver las {formatNumber(points.length)} localidades en una lista</summary>

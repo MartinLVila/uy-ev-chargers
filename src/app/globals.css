@@ -1246,6 +1246,10 @@ a:focus-visible {
   position: relative;
 }
 
+.hud-map-canvas {
+  position: relative;
+}
+
 .hud-map-svg {
   display: block;
   width: 100%;
@@ -1361,7 +1365,7 @@ a:focus-visible {
 
 .hud-tooltip {
   position: absolute;
-  transform: translate(-50%, -120%);
+  transform: translate(-50%, calc(-100% - 10px));
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -1375,6 +1379,20 @@ a:focus-visible {
   line-height: 1.4;
   pointer-events: none;
   z-index: 5;
+}
+
+.hud-tooltip::after {
+  content: "";
+  position: absolute;
+  top: calc(100% - 7px);
+  left: 50%;
+  width: 14px;
+  height: 14px;
+  background: var(--surface-page);
+  border-right: 2px solid var(--text-faint);
+  border-bottom: 2px solid var(--text-faint);
+  transform: translateX(-50%) rotate(45deg);
+  box-shadow: 2px 2px 4px rgb(0 0 0 / 0.25);
 }
 
 .hud-map-fallback {
