@@ -7,6 +7,7 @@ import { tabIsActive, type NavTab } from "@/lib/ui/nav-tabs";
 const TABS: NavTab[] = [
   { href: "/cerca", label: "Cerca" },
   { href: "/", label: "Mapa" },
+  { href: "/viaje", label: "Viaje" },
 ];
 
 export function PhoneTabBar() {
