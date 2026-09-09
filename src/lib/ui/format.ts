@@ -1,6 +1,7 @@
 import { REPORTING_TIME_ZONE } from "../reporting";
 
 const NUMBER = new Intl.NumberFormat("es-UY");
+const DISTANCE = new Intl.NumberFormat("es-UY", { maximumFractionDigits: 1 });
 const PERCENT = new Intl.NumberFormat("es-UY", {
   style: "percent",
   minimumFractionDigits: 1,
@@ -50,6 +51,11 @@ export function formatElapsed(iso: string | null): string {
 
   const days = Math.round(hours / 24);
   return `hace ${days} d`;
+}
+
+export function formatDistanceKm(km: number): string {
+  if (km < 1) return "menos de 1 km";
+  return `${DISTANCE.format(km)} km`;
 }
 
 export function formatConnectorHours(connectorSeconds: number): string {

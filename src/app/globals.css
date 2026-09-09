@@ -1121,8 +1121,7 @@ a:focus-visible {
   outline-offset: 2px;
 }
 
-.stations-fault-toggle {
-  flex-shrink: 0;
+.pill-button {
   padding: 7px 14px;
   border: 1px solid var(--border-strong);
   border-radius: 999px;
@@ -1134,15 +1133,25 @@ a:focus-visible {
   cursor: pointer;
 }
 
-.stations-fault-toggle[data-active] {
+.pill-button:disabled {
+  border-color: var(--border);
+  color: var(--text-muted);
+  cursor: default;
+}
+
+.pill-button:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.stations-controls .pill-button {
+  flex-shrink: 0;
+}
+
+.fault-pill[data-active] {
   border-color: var(--status-critical);
   background: color-mix(in oklab, var(--status-critical) 14%, var(--surface-page));
   color: var(--status-critical);
-}
-
-.stations-fault-toggle:focus-visible {
-  outline: 3px solid var(--accent);
-  outline-offset: 2px;
 }
 
 .stations-live-count {

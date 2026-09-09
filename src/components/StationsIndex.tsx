@@ -46,7 +46,7 @@ export function StationsIndex({ stations }: { stations: StationStatus[] }) {
         />
         <button
           type="button"
-          className="stations-fault-toggle"
+          className="pill-button fault-pill"
           data-active={faultsOnly || undefined}
           aria-pressed={faultsOnly}
           onClick={() => setFaultsOnly((current) => !current)}

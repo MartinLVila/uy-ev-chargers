@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { getDb } from "@/lib/db/client";
+import { NearMeLocator } from "@/components/NearMeLocator";
 import {
   getStationDetail,
   getStationHourlyUsage,
@@ -12,7 +13,7 @@ import {
 import { windowFromDays } from "@/lib/metrics/window";
 import { aggregateByLocality, type LocalityAggregate } from "@/lib/ui/locality";
 import { formatNumber, formatPercent } from "@/lib/ui/format";
-import { availabilityClaim } from "@/lib/ui/near-me";
+import { availabilityClaim, localityHref } from "@/lib/ui/near-me";
 import { connectorsNowByUsage, stationPresence, type ConnectorTallyByUsage } from "@/lib/ui/health";
 import { buildUsageProfiles, usageProfileName } from "@/lib/ui/hourly-usage";
 import { describeUsagePattern, usagePattern } from "@/lib/ui/usage-windows";
@@ -26,6 +27,7 @@ const MAX_ALTERNATIVES = 3;
 
 interface CercaSearchParams {
   localidad?: string;
+  departamento?: string;
   estacion?: string;
 }
 
@@ -34,7 +36,7 @@ export default async function NearMePage({
 }: {
   searchParams: Promise<CercaSearchParams>;
 }) {
-  const { localidad, estacion } = await searchParams;
+  const { localidad, departamento, estacion } = await searchParams;
   const db = getDb();
   const stations = await getStationStatuses(db);
   const localities = aggregateByLocality(stations);
@@ -43,16 +45,17 @@ export default async function NearMePage({
     return <LocalityPicker localities={localities} />;
   }
 
-  const locality = localities.find((candidate) => candidate.name === localidad);
+  const locality = localities.find(
+    (candidate) =>
+      candidate.name === localidad && (!departamento || candidate.department === departamento),
+  );
   if (!locality) {
     return <LocalityPicker localities={localities} notFoundFor={localidad} />;
   }
 
   if (!estacion) {
     if (locality.memberStations.length === 1) {
-      redirect(
-        `/cerca?localidad=${encodeURIComponent(locality.name)}&estacion=${locality.memberStations[0].slug}`,
-      );
+      redirect(localityHref(locality, { estacion: locality.memberStations[0].slug }));
     }
     return <StationPicker locality={locality} />;
   }
@@ -130,7 +133,7 @@ export default async function NearMePage({
           <ul role="list" className="hairline-list" style={{ marginTop: 12 }}>
             {alternatives.map((alt) => (
               <li key={alt.slug} className="row-wash" style={{ display: "flex", justifyContent: "space-between", padding: "12px 0", fontSize: 14.5 }}>
-                <Link href={`/cerca?localidad=${encodeURIComponent(locality.name)}&estacion=${alt.slug}`}>
+                <Link href={localityHref(locality, { estacion: alt.slug })}>
                   {alt.name}
                 </Link>
                 <span style={{ color: "var(--text-secondary)", fontVariantNumeric: "tabular-nums" }}>
@@ -143,9 +146,7 @@ export default async function NearMePage({
       )}
 
       <p style={{ margin: "24px 0 0" }}>
-        <Link href={`/cerca?localidad=${encodeURIComponent(locality.name)}`}>
-          ← Elegir otra estación en {locality.name}
-        </Link>
+        <Link href={localityHref(locality)}>← Elegir otra estación en {locality.name}</Link>
       </p>
     </NearMeShell>
   );
@@ -224,10 +225,17 @@ function LocalityPicker({
   return (
     <NearMeShell>
       <h1 className="section-title">¿Dónde estás?</h1>
-      <p className="support-text" style={{ marginTop: 12 }}>
-        Elegí una localidad para ver sus estaciones. Esto se calcula en tu navegador; no compartimos
-        tu ubicación.
+      <p className="support-text" style={{ marginTop: 12, marginBottom: 24 }}>
+        Usá tu ubicación para ordenar las localidades por distancia, o elegí una de la lista.
       </p>
+      <NearMeLocator
+        localities={localities.map((locality) => ({
+          name: locality.name,
+          department: locality.department,
+          latitude: locality.latitude,
+          longitude: locality.longitude,
+        }))}
+      />
       {notFoundFor && (
         <p style={{ marginTop: 12, fontSize: 13.5, color: "var(--status-warning)" }}>
           No encontramos «{notFoundFor}». Elegí una localidad de la lista.
@@ -237,7 +245,7 @@ function LocalityPicker({
         {localities.map((locality) => (
           <li key={`${locality.name}-${locality.department}`} className="row-wash">
             <Link
-              href={`/cerca?localidad=${encodeURIComponent(locality.name)}`}
+              href={localityHref(locality)}
               style={{ display: "flex", justifyContent: "space-between", padding: "12px 0", fontSize: 14.5 }}
             >
               <span>
@@ -289,7 +297,7 @@ function StationPickerRow({
   return (
     <li className="row-wash">
       <Link
-        href={`/cerca?localidad=${encodeURIComponent(locality.name)}&estacion=${station.slug}`}
+        href={localityHref(locality, { estacion: station.slug })}
         style={{ display: "flex", justifyContent: "space-between", padding: "12px 0", fontSize: 14.5 }}
       >
         <span>

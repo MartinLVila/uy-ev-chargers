@@ -73,10 +73,30 @@ function detail(overrides: Partial<StationDetail> = {}): StationDetail {
   };
 }
 
-async function render(params: { localidad?: string; estacion?: string }): Promise<string> {
+async function render(params: {
+  localidad?: string;
+  departamento?: string;
+  estacion?: string;
+}): Promise<string> {
   const { default: NearMePage } = await import("../src/app/cerca/page");
   const element = await NearMePage({ searchParams: Promise.resolve(params) });
   return renderToStaticMarkup(element);
+}
+
+async function redirectTarget(params: {
+  localidad?: string;
+  departamento?: string;
+  estacion?: string;
+}): Promise<string> {
+  try {
+    await render(params);
+  } catch (error) {
+    const [marker, , target] = ((error as { digest?: string }).digest ?? "").split(";");
+    if (marker === "NEXT_REDIRECT") return target;
+    throw error;
+  }
+
+  throw new Error("the page rendered a picker instead of redirecting");
 }
 
 beforeEach(() => {
@@ -102,12 +122,49 @@ describe("the near-me screen without a location falls back to a locality picker"
     expect(markup).not.toContain("geolocation");
   });
 
+  it("offers real geolocation instead of a false claim that location is already used", async () => {
+    stationStatuses.mockResolvedValue([station()]);
+
+    const markup = await render({});
+
+    expect(markup).toContain("Usar mi ubicación");
+    expect(markup).not.toContain("Esto se calcula en tu navegador");
+  });
+
   it("says a locality was not found rather than crashing on a bad param", async () => {
     stationStatuses.mockResolvedValue([station()]);
 
     const markup = await render({ localidad: "Una Ciudad Que No Existe" });
 
     expect(markup).toContain("No encontramos");
+  });
+});
+
+describe("a locality name that exists in more than one department is never ambiguous", () => {
+  it("resolves to the right department's station when both are given", async () => {
+    stationStatuses.mockResolvedValue([
+      station({ slug: "la-paloma-rocha", city: "La Paloma", department: "Rocha" }),
+      station({ slug: "la-paloma-durazno", city: "La Paloma", department: "Durazno" }),
+    ]);
+
+    await expect(redirectTarget({ localidad: "La Paloma", departamento: "Rocha" })).resolves.toBe(
+      "/cerca?localidad=La+Paloma&departamento=Rocha&estacion=la-paloma-rocha",
+    );
+    await expect(redirectTarget({ localidad: "La Paloma", departamento: "Durazno" })).resolves.toBe(
+      "/cerca?localidad=La+Paloma&departamento=Durazno&estacion=la-paloma-durazno",
+    );
+  });
+
+  it("links to both the name and the department, not the name alone", async () => {
+    stationStatuses.mockResolvedValue([
+      station({ slug: "la-paloma-rocha", city: "La Paloma", department: "Rocha" }),
+      station({ slug: "la-paloma-durazno", city: "La Paloma", department: "Durazno" }),
+    ]);
+
+    const markup = await render({});
+
+    expect(markup).toContain("departamento=Rocha");
+    expect(markup).toContain("departamento=Durazno");
   });
 });
 
