@@ -8,6 +8,7 @@ const TABS: NavTab[] = [
   { href: "/", label: "Red" },
   { href: "/estaciones", label: "Estaciones" },
   { href: "/cerca", label: "Cerca" },
+  { href: "/viaje", label: "Viaje" },
 ];
 
 export function AppNav() {
