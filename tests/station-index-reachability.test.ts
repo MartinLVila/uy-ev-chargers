@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { readWithUnixLineEndings } from "./helpers/source-text";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
@@ -165,7 +165,7 @@ describe("the list is navigable rather than a wall of links", () => {
 });
 
 describe("a station shows without a pointer, and reflows instead of scrolling sideways", () => {
-  const CSS = readFileSync(new URL("../src/app/globals.css", import.meta.url), "utf8");
+  const CSS = readWithUnixLineEndings(new URL("../src/app/globals.css", import.meta.url));
 
   function blockFor(selector: string): string {
     const start = CSS.indexOf(`\n${selector} {`);

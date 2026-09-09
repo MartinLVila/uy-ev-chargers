@@ -1,11 +1,11 @@
-import { readFileSync } from "node:fs";
+import { readWithUnixLineEndings } from "./helpers/source-text";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { ReliabilityTable } from "../src/components/ReliabilityTable";
 import type { StationReliability } from "../src/lib/metrics/queries";
 
-const CSS = readFileSync(new URL("../src/app/globals.css", import.meta.url), "utf8");
+const CSS = readWithUnixLineEndings(new URL("../src/app/globals.css", import.meta.url));
 
 const REMOVES_THE_UNDERLINE = /text-decoration(-line)?:\s*[^;]*none/;
 

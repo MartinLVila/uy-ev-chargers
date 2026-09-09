@@ -1,7 +1,7 @@
-import { readFileSync } from "node:fs";
+import { readWithUnixLineEndings } from "./helpers/source-text";
 import { describe, expect, it } from "vitest";
 
-const CSS = readFileSync(new URL("../src/app/globals.css", import.meta.url), "utf8");
+const CSS = readWithUnixLineEndings(new URL("../src/app/globals.css", import.meta.url));
 
 const GROUND_AND_INK = ["background-color", "border-color", "color"];
 const PAINT = ["fill", "stroke"];
