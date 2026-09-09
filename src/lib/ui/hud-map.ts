@@ -25,6 +25,7 @@ export interface CountryPath {
 export interface LocalityPoint {
   name: string;
   department: string;
+  stationDepartments: string[];
   x: number;
   y: number;
   radius: number;
@@ -32,6 +33,80 @@ export interface LocalityPoint {
   outOfService: number;
   observed: boolean;
 }
+
+export interface CorridorPath {
+  id: string;
+  name: string;
+  d: string;
+  x: number;
+  y: number;
+}
+
+interface Corridor {
+  id: string;
+  name: string;
+  coordinates: [number, number][];
+}
+
+const CORRIDORS: Corridor[] = [
+  {
+    id: "ruta-1-9",
+    name: "Ruta 1 / Ruta 9 · Montevideo–Chuy",
+    coordinates: [
+      [-56.16, -34.9],
+      [-55.76, -34.77],
+      [-55.28, -34.87],
+      [-54.95, -34.96],
+      [-54.33, -34.48],
+      [-54.17, -34.66],
+      [-53.46, -33.69],
+    ],
+  },
+  {
+    id: "ruta-1-litoral",
+    name: "Ruta 1 · Montevideo–Colonia",
+    coordinates: [
+      [-56.16, -34.9],
+      [-56.71, -34.34],
+      [-57.09, -34.36],
+      [-57.85, -34.47],
+      [-58.28, -34.0],
+    ],
+  },
+  {
+    id: "ruta-5",
+    name: "Ruta 5 · Montevideo–Rivera",
+    coordinates: [
+      [-56.16, -34.9],
+      [-56.21, -34.1],
+      [-56.52, -33.38],
+      [-56.51, -32.81],
+      [-55.98, -31.72],
+      [-55.55, -30.9],
+    ],
+  },
+  {
+    id: "litoral-norte",
+    name: "Litoral norte · Durazno–Salto",
+    coordinates: [
+      [-56.52, -33.38],
+      [-57.63, -32.7],
+      [-58.08, -32.32],
+      [-57.96, -31.39],
+      [-57.6, -30.26],
+    ],
+  },
+  {
+    id: "ruta-8",
+    name: "Ruta 8 · Montevideo–Melo",
+    coordinates: [
+      [-56.16, -34.9],
+      [-55.24, -34.37],
+      [-54.38, -33.23],
+      [-54.18, -32.37],
+    ],
+  },
+];
 
 function buildProjection(topology: Topology): GeoProjection {
   const uruguay = feature(topology, "858");
@@ -62,6 +137,22 @@ export function buildCountryPaths(topology: Topology): { paths: CountryPath[]; p
   return { paths, projection };
 }
 
+export function buildCorridorPaths(projection: GeoProjection): CorridorPath[] {
+  const path = geoPath(projection);
+
+  return CORRIDORS.map((corridor) => {
+    const mid = corridor.coordinates[Math.floor(corridor.coordinates.length / 2)];
+    const projected = projection(mid);
+    return {
+      id: corridor.id,
+      name: corridor.name,
+      d: path({ type: "LineString", coordinates: corridor.coordinates }) ?? "",
+      x: projected?.[0] ?? 0,
+      y: projected?.[1] ?? 0,
+    };
+  }).filter((corridor) => corridor.d !== "");
+}
+
 export function localityRadius(connectors: number): number {
   return 3.2 + Math.sqrt(Math.max(0, connectors)) * 1.45;
 }
@@ -80,6 +171,7 @@ export function buildLocalityPoints(
       return {
         name: locality.name,
         department: locality.department,
+        stationDepartments: [...new Set(locality.memberStations.map((station) => station.department))],
         x: projected[0],
         y: projected[1],
         radius: localityRadius(fleet),

@@ -4,7 +4,12 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import type { StationStatus } from "@/lib/metrics/queries";
 import { formatNumber } from "@/lib/ui/format";
-import { groupByDepartment, matchesStationQuery, pipCounts } from "@/lib/ui/station-list";
+import {
+  departmentAnchorId,
+  groupByDepartment,
+  matchesStationQuery,
+  pipCounts,
+} from "@/lib/ui/station-list";
 
 function connectorWording(count: number): string {
   return count === 1 ? "conector" : "conectores";
@@ -54,7 +59,11 @@ export function StationsIndex({ stations }: { stations: StationStatus[] }) {
       </div>
 
       {departments.map((group) => (
-        <section key={group.department} className="stations-department">
+        <section
+          key={group.department}
+          id={departmentAnchorId(group.department)}
+          className="stations-department"
+        >
           <h2 className="stations-department-heading">
             {group.department}
             <span className="stations-department-count">

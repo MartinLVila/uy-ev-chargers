@@ -1,4 +1,9 @@
 import type { StationStatus } from "../metrics/queries";
+import { slugify } from "../ute/normalize";
+
+export function departmentAnchorId(department: string): string {
+  return `departamento-${slugify(department)}`;
+}
 
 export interface PipCounts {
   good: number;

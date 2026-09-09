@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import {
+  buildCorridorPaths,
   buildCountryPaths,
   buildLocalityPoints,
   localityRadius,
@@ -71,6 +72,61 @@ function locality(overrides: Partial<LocalityAggregate>): LocalityAggregate {
     ...overrides,
   };
 }
+
+function station(overrides: Partial<StationStatus> = {}): StationStatus {
+  return {
+    slug: "ejemplo",
+    name: "Ejemplo",
+    address: null,
+    city: "Ejemplo",
+    department: "Montevideo",
+    latitude: -34.9,
+    longitude: -56.2,
+    presence: "listed",
+    connectors: 1,
+    operational: 1,
+    faulted: 0,
+    unknown: 0,
+    absent: 0,
+    outOfService: 0,
+    lastSeenAt: "2026-01-01T00:00:00.000Z",
+    ...overrides,
+  };
+}
+
+describe("a locality never promises a department its own stations don't agree on", () => {
+  it("names the single department its member stations share", () => {
+    const { projection } = buildCountryPaths(topology);
+    const [point] = buildLocalityPoints(
+      [
+        locality({
+          memberStations: [station({ department: "Canelones" }), station({ department: "Canelones" })],
+        }),
+      ],
+      projection,
+    );
+
+    expect(point.stationDepartments).toEqual(["Canelones"]);
+  });
+
+  it("keeps every department a locality's stations actually belong to, when they disagree", () => {
+    const { projection } = buildCountryPaths(topology);
+    const [point] = buildLocalityPoints(
+      [
+        locality({
+          department: "Canelones",
+          memberStations: [
+            station({ department: "Canelones" }),
+            station({ department: "Desconocido" }),
+          ],
+        }),
+      ],
+      projection,
+    );
+
+    expect(point.stationDepartments).toEqual(["Canelones", "Desconocido"]);
+  });
+});
 
 describe("a locality known only to be absent is still observed, not a blank", () => {
   it("counts absent connectors into the fleet a circle is sized and coloured from", () => {
@@ -168,9 +224,8 @@ describe("the static map does not capture the reader's wheel", () => {
     expect(SOURCE).not.toMatch(/onWheel|wheel/i);
   });
 
-  it("attaches no touchstart-only handling, so touch and keyboard get the same tooltip", () => {
+  it("attaches no touchstart-only handling, so touch and keyboard get the same interaction", () => {
     expect(SOURCE).not.toContain("touchstart");
-    expect(SOURCE).toContain("onClick");
     expect(SOURCE).toContain("onFocus");
   });
 });
@@ -178,9 +233,9 @@ describe("the static map does not capture the reader's wheel", () => {
 describe("every circle is reachable and its state is readable without a pointer", () => {
   const SOURCE = readFileSync(new URL("../src/components/HudMapView.tsx", import.meta.url), "utf8");
 
-  it("puts every locality in the tab order with its own accessible name", () => {
-    expect(SOURCE).toContain("tabIndex={0}");
-    expect(SOURCE).toContain("aria-label={localityTooltip(point)}");
+  it("puts every locality in the tab order via a real link with its own accessible name", () => {
+    expect(SOURCE).toContain("href={href}");
+    expect(SOURCE).toContain("aria-label={`${localityTooltip(point)}");
   });
 
   it("keeps a text alternative for the whole map, not just a per-circle label", () => {
@@ -189,9 +244,33 @@ describe("every circle is reachable and its state is readable without a pointer"
   });
 });
 
-describe("the drawn corridors are not shipped", () => {
-  it("names no route, since a hand-drawn line is a claim this app cannot back with data", () => {
-    const SOURCE = readFileSync(new URL("../src/components/HudMapView.tsx", import.meta.url), "utf8");
-    expect(SOURCE.toLowerCase()).not.toMatch(/corridor|corredor|ruta 1\b|ruta 5\b|ruta 9\b/);
+describe("clicking a locality opens its department in the station list, not a dead end", () => {
+  const SOURCE = readFileSync(new URL("../src/components/HudMapView.tsx", import.meta.url), "utf8");
+
+  it("links every locality to /estaciones anchored at its department", () => {
+    expect(SOURCE).toContain("departmentAnchorId");
+    expect(SOURCE).toContain("/estaciones#");
+  });
+
+  it("falls back to the plain station list when a locality spans more than one department", () => {
+    expect(SOURCE).toContain("stationDepartments.length !== 1");
+  });
+});
+
+describe("corridors are shown as static highway geography, not a reliability claim", () => {
+  const SOURCE = readFileSync(new URL("../src/lib/ui/hud-map.ts", import.meta.url), "utf8");
+
+  it("names the real highway routes drawn on the map", () => {
+    expect(SOURCE).toMatch(/Ruta 1/);
+    expect(SOURCE).toMatch(/Ruta 5/);
+  });
+
+  it("builds corridor paths from the same fixed coordinates every time, never from station data", () => {
+    const { projection } = buildCountryPaths(topology);
+    const first = buildCorridorPaths(projection);
+    const second = buildCorridorPaths(projection);
+
+    expect(first.length).toBeGreaterThan(0);
+    expect(first).toEqual(second);
   });
 });

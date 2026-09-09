@@ -1,8 +1,17 @@
-import { formatDay, formatNumber } from "@/lib/ui/format";
+import { formatDay, formatPercent } from "@/lib/ui/format";
 import type { HistorySlot } from "@/lib/ui/history-window";
 
 interface HistoryChartProps {
   slots: HistorySlot[];
+}
+
+const BAD_RATIO = 0.085;
+const WARN_RATIO = 0.075;
+
+function fillColor(ratio: number): string {
+  if (ratio >= BAD_RATIO) return "var(--status-critical)";
+  if (ratio >= WARN_RATIO) return "var(--status-warning)";
+  return "var(--status-good)";
 }
 
 export function HistoryChart({ slots }: HistoryChartProps) {
@@ -16,17 +25,17 @@ export function HistoryChart({ slots }: HistoryChartProps) {
     );
   }
 
-  const maxValue = Math.max(1, ...observedSlots.map((slot) => slot.point!.connectorsOutOfService));
+  const maxValue = Math.max(0.0001, ...observedSlots.map((slot) => slot.point!.outOfServiceRatio));
   const worst = observedSlots.reduce((worst, slot) =>
-    slot.point!.connectorsOutOfService > worst.point!.connectorsOutOfService ? slot : worst,
+    slot.point!.outOfServiceRatio > worst.point!.outOfServiceRatio ? slot : worst,
   );
 
   return (
     <div>
       <p className="visually-hidden">
-        Conectores fuera de servicio por día, del {formatDay(slots[0].day)} al{" "}
+        Porcentaje de conectores fuera de servicio por día, del {formatDay(slots[0].day)} al{" "}
         {formatDay(slots[slots.length - 1].day)}. El peor día fue el {formatDay(worst.day)} con{" "}
-        {formatNumber(worst.point!.connectorsOutOfService)}. Los días sin lectura se marcan como sin
+        {formatPercent(worst.point!.outOfServiceRatio)}. Los días sin lectura se marcan como sin
         datos.
       </p>
 
@@ -34,15 +43,16 @@ export function HistoryChart({ slots }: HistoryChartProps) {
         {slots.map((slot, index) => (
           <li key={slot.day} className="history-bar" style={{ "--index": index } as React.CSSProperties}>
             <span className="history-bar-value">
-              {slot.point ? formatNumber(slot.point.connectorsOutOfService) : "–"}
+              {slot.point ? formatPercent(slot.point.outOfServiceRatio) : "–"}
             </span>
             <span className="history-bar-track" aria-hidden="true">
               {slot.point ? (
                 <span
                   className="history-bar-fill"
                   style={{
-                    height: `${(slot.point.connectorsOutOfService / maxValue) * 100}%`,
-                    minHeight: slot.point.connectorsOutOfService > 0 ? 2 : 0,
+                    height: `${(slot.point.outOfServiceRatio / maxValue) * 100}%`,
+                    minHeight: slot.point.outOfServiceRatio > 0 ? 2 : 0,
+                    background: fillColor(slot.point.outOfServiceRatio),
                   }}
                 />
               ) : (
@@ -56,7 +66,7 @@ export function HistoryChart({ slots }: HistoryChartProps) {
 
       <div className="visually-hidden">
         <table>
-          <caption>Conectores fuera de servicio por día</caption>
+          <caption>Porcentaje de conectores fuera de servicio por día</caption>
           <thead>
             <tr>
               <th scope="col">Día</th>
@@ -67,9 +77,7 @@ export function HistoryChart({ slots }: HistoryChartProps) {
             {slots.map((slot) => (
               <tr key={slot.day}>
                 <th scope="row">{formatDay(slot.day)}</th>
-                <td>
-                  {slot.point ? formatNumber(slot.point.connectorsOutOfService) : "Sin datos"}
-                </td>
+                <td>{slot.point ? formatPercent(slot.point.outOfServiceRatio) : "Sin datos"}</td>
               </tr>
             ))}
           </tbody>
