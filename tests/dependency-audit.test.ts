@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 const CI = readWithUnixLineEndings(new URL("../.github/workflows/ci.yml", import.meta.url));
 const POLL = readWithUnixLineEndings(new URL("../.github/workflows/poll.yml", import.meta.url));
 const SNAPSHOT = readWithUnixLineEndings(new URL("../.github/workflows/snapshot.yml", import.meta.url));
+const AUDIT = readWithUnixLineEndings(new URL("../.github/workflows/audit.yml", import.meta.url));
 
 const SEVERITY = ["low", "moderate", "high", "critical"];
 
@@ -76,6 +77,72 @@ describe("the audit covers the packages that hold the credential", () => {
       expect(workflow, "npm ci here would not install the audited tree").not.toContain(
         "npm ci --omit=dev",
       );
+    }
+  });
+});
+
+function gatingAuditLines(workflow: string): string[] {
+  return [...workflow.matchAll(/npm audit[^\n]*/g)]
+    .map((match) => match[0].trim())
+    .filter((line) => line.includes("--audit-level="))
+    .sort();
+}
+
+function withoutRedirection(line: string): string {
+  return line.replace(/\s*\d?[<>].*$/, "").trim();
+}
+
+function jobThatInstallsDependencies(workflow: string): string {
+  const job = workflow.split(/^  [a-z-]+:$/m).find((block) => block.includes("npm ci"));
+  if (!job) throw new Error("no job in this workflow installs dependencies");
+  return job;
+}
+
+describe("something tells a person when the audit turns red on its own", () => {
+  it("runs on a schedule, since nothing else will notice a database that moved", () => {
+    expect(AUDIT).toMatch(/on:\n\s+schedule:\n\s+- cron:/);
+  });
+
+  it("watches exactly the gates CI enforces, so the alert cannot drift looser", () => {
+    const enforced = gatingAuditLines(CI).map(withoutRedirection);
+
+    expect(enforced.length, "CI enforces no audit gate at all").toBeGreaterThan(0);
+    expect(gatingAuditLines(AUDIT).map(withoutRedirection)).toEqual(enforced);
+  });
+
+  it("fails its own run rather than only filing a report", () => {
+    expect(AUDIT).toMatch(/failing == 'yes'\n\s+run: exit 1/);
+  });
+
+  it("never lets a gating audit swallow its own exit code", () => {
+    const lines = gatingAuditLines(AUDIT);
+
+    expect(lines.length, "the alert runs no gating audit at all").toBeGreaterThan(0);
+    for (const line of lines) {
+      expect(line, `${line} swallows its own exit code`).not.toMatch(/\|\|\s*(true|:)/);
+    }
+  });
+
+  it("takes the one write it needs and nothing else", () => {
+    expect(AUDIT).toMatch(/^permissions: \{\}$/m);
+    expect(AUDIT).toContain("issues: write");
+    expect(AUDIT).toContain("contents: read");
+    expect(AUDIT, "the alert can write to the repository").not.toContain("contents: write");
+  });
+
+  it("keeps the write token out of the job that installs dependencies", () => {
+    expect(
+      jobThatInstallsDependencies(AUDIT),
+      "the job running npm ci also holds a token that can write issues",
+    ).not.toContain("issues: write");
+  });
+
+  it("pins every action it runs to a commit, not a moving tag", () => {
+    const used = [...AUDIT.matchAll(/uses: (\S+)/g)].map((match) => match[1]);
+
+    expect(used.length, "the workflow runs no action, so nothing was checked").toBeGreaterThan(0);
+    for (const action of used) {
+      expect(action, `${action} is not pinned to a commit`).toMatch(/@[0-9a-f]{40}$/);
     }
   });
 });
