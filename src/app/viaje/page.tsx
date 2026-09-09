@@ -24,7 +24,14 @@ export default async function TripPage({
 }) {
   const { departamento } = await searchParams;
   const db = getDb();
-  const departments = await getDepartmentBreakdown(db);
+
+  let departments: Awaited<ReturnType<typeof getDepartmentBreakdown>>;
+  try {
+    departments = await getDepartmentBreakdown(db);
+  } catch (error) {
+    console.error("/viaje could not read department breakdown", error);
+    throw error;
+  }
 
   if (!departamento) {
     return <DepartmentPicker departments={departments} />;

@@ -64,6 +64,23 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
+describe("a failed department read rejects the render and leaves a trace", () => {
+  it("rejects rather than rendering a body Next would cache as a success", async () => {
+    departmentBreakdown.mockRejectedValue(new Error("Failed query"));
+
+    await expect(render({})).rejects.toThrow("Failed query");
+  });
+
+  it("logs the failure on the way out", async () => {
+    const logged = vi.spyOn(console, "error").mockImplementation(() => {});
+    departmentBreakdown.mockRejectedValue(new Error("Failed query"));
+
+    await expect(render({})).rejects.toThrow();
+
+    expect(logged).toHaveBeenCalled();
+  });
+});
+
 describe("the trip screen never promises whether you make it", () => {
   it("shows a department picker with no destination chosen", async () => {
     departmentBreakdown.mockResolvedValue([department()]);
