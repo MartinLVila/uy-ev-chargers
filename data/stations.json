@@ -8,11 +8,11 @@
     "latitude": -31.8678235,
     "longitude": -54.1667246,
     "presence": "listed",
-    "connectors": 3,
+    "connectors": 1,
     "operational": 1,
-    "faulted": 2,
+    "faulted": 0,
     "unknown": 0,
-    "absent": 0,
+    "absent": 2,
     "outOfService": 2
   },
   {
@@ -247,13 +247,13 @@
     "department": "Rocha",
     "latitude": -33.694694,
     "longitude": -53.455267,
-    "presence": "listed",
-    "connectors": 1,
-    "operational": 1,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "ancap-ciudad-del-plata",
@@ -505,11 +505,11 @@
     "longitude": -56.744655,
     "presence": "listed",
     "connectors": 3,
-    "operational": 2,
-    "faulted": 1,
+    "operational": 3,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "ancap-los-cerrillos",
@@ -1193,11 +1193,11 @@
     "longitude": -57.960458,
     "presence": "listed",
     "connectors": 2,
-    "operational": 0,
-    "faulted": 2,
+    "operational": 2,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 2
+    "outOfService": 0
   },
   {
     "slug": "batovi",
@@ -1760,6 +1760,22 @@
     "outOfService": 0
   },
   {
+    "slug": "estacion-cno-carrasco-montevideo-proximamente",
+    "name": "Estación Cno. Carrasco Montevideo (Proximamente)",
+    "address": "Camino Carrasco 4298, Montevideo",
+    "city": "Montevideo",
+    "department": "Montevideo",
+    "latitude": -34.873274,
+    "longitude": -56.125726,
+    "presence": "listed",
+    "connectors": 2,
+    "operational": 2,
+    "faulted": 0,
+    "unknown": 0,
+    "absent": 0,
+    "outOfService": 0
+  },
+  {
     "slug": "estacion-mercedes",
     "name": "Estación Mercedes",
     "address": "Ituzaingó 347 Bis Soriano",
@@ -2009,11 +2025,11 @@
     "longitude": -56.161484,
     "presence": "listed",
     "connectors": 5,
-    "operational": 5,
-    "faulted": 0,
+    "operational": 4,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "gremial-del-taxi-cpatu",
@@ -2439,13 +2455,13 @@
     "department": "Montevideo",
     "latitude": -34.903968,
     "longitude": -56.136669,
-    "presence": "listed",
-    "connectors": 1,
-    "operational": 1,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "moreira-automoviles-atlantida",
@@ -2632,12 +2648,12 @@
     "latitude": -32.5823359,
     "longitude": -53.3785893,
     "presence": "listed",
-    "connectors": 2,
-    "operational": 2,
-    "faulted": 0,
+    "connectors": 4,
+    "operational": 0,
+    "faulted": 4,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 4
   },
   {
     "slug": "parador-fito",
@@ -2776,12 +2792,12 @@
     "latitude": -34.880137,
     "longitude": -54.951178,
     "presence": "listed",
-    "connectors": 1,
-    "operational": 1,
+    "connectors": 2,
+    "operational": 2,
     "faulted": 0,
     "unknown": 0,
-    "absent": 1,
-    "outOfService": 1
+    "absent": 0,
+    "outOfService": 0
   },
   {
     "slug": "paseo-del-este-2",
@@ -3065,11 +3081,11 @@
     "longitude": -55.957135,
     "presence": "listed",
     "connectors": 2,
-    "operational": 1,
-    "faulted": 1,
+    "operational": 2,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "plaza-de-la-familia-carmelo",
@@ -3832,8 +3848,8 @@
     "latitude": -34.86203,
     "longitude": -55.274783,
     "presence": "listed",
-    "connectors": 4,
-    "operational": 4,
+    "connectors": 8,
+    "operational": 8,
     "faulted": 0,
     "unknown": 0,
     "absent": 3,
@@ -3945,11 +3961,11 @@
     "longitude": -56.615782,
     "presence": "listed",
     "connectors": 3,
-    "operational": 3,
-    "faulted": 0,
+    "operational": 2,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "utec-durazno",
