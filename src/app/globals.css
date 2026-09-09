@@ -351,6 +351,10 @@ table {
     transition: background-color 200ms var(--ease);
   }
 
+  .hud-corridor-flow {
+    animation: uy-corridor-flow 1.4s linear infinite;
+  }
+
   @supports (animation-timeline: view()) {
     main .band > .container:not(.no-scroll-entrance) {
       animation: rise-in linear both;
@@ -912,7 +916,6 @@ a:focus-visible {
 .history-bar-fill {
   display: block;
   width: 100%;
-  background: var(--status-critical);
   opacity: 0.78;
   border-radius: 2px 2px 0 0;
   transform-origin: bottom;
@@ -1283,15 +1286,54 @@ a:focus-visible {
   cursor: pointer;
 }
 
-.hud-locality:hover,
-.hud-locality:focus-visible,
+.hud-locality-link:hover .hud-locality,
+.hud-locality-link:focus-visible .hud-locality,
 .hud-locality[data-active] {
   fill-opacity: 0.42;
 }
 
-.hud-locality:focus-visible {
+.hud-locality-link {
+  outline: none;
+}
+
+.hud-locality-link:focus-visible .hud-locality {
   outline: 3px solid var(--accent);
   outline-offset: 2px;
+}
+
+.hud-corridors {
+  pointer-events: none;
+}
+
+.hud-corridor-glow,
+.hud-corridor-flow {
+  fill: none;
+  stroke: var(--status-good);
+}
+
+.hud-corridor-glow {
+  stroke-opacity: 0.16;
+  stroke-width: 1.6px;
+}
+
+.hud-corridor-flow {
+  stroke-opacity: 0.75;
+  stroke-width: 1.8px;
+  stroke-linecap: round;
+  stroke-dasharray: 2.5 10;
+}
+
+.hud-corridor-hit {
+  fill: none;
+  stroke: transparent;
+  stroke-width: 14px;
+  pointer-events: stroke;
+}
+
+@keyframes uy-corridor-flow {
+  to {
+    stroke-dashoffset: -25;
+  }
 }
 
 .hud-locality-good {

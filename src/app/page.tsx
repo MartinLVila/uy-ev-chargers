@@ -100,8 +100,8 @@ export default async function DashboardPage() {
             segments={[
               { health: "operational", count: snapshot.connectors.operational },
               { health: "faulted", count: snapshot.connectors.faulted },
-              { health: "unknown", count: snapshot.connectors.unknown },
               { health: "absent", count: snapshot.connectors.absent },
+              { health: "unknown", count: snapshot.connectors.unknown },
             ]}
           />
         </div>
@@ -110,9 +110,13 @@ export default async function DashboardPage() {
       <section className="band band-tinted">
         <div className="container no-scroll-entrance">
           <h2 className="section-title">
-            {formatNumber(snapshot.stations.total)} estaciones en todo el país
+            {formatNumber(snapshot.stations.total)} estaciones, cinco corredores
           </h2>
-          <p className="support-text" style={{ marginTop: 12, marginBottom: 32 }}>
+          <p className="support-text" style={{ marginTop: 12, marginBottom: 8 }}>
+            Rutas 1, 5, 8, 9 y el litoral norte: los ejes por donde la red permite cruzar el país.
+            Los halos marcan localidades con conectores caídos hoy.
+          </p>
+          <p className="support-text" style={{ marginTop: 0, marginBottom: 32, fontSize: 13 }}>
             {formatNumber(snapshot.stations.listed)} en el feed ·{" "}
             {formatNumber(snapshot.stations.silent)} sin telemetría ·{" "}
             {formatNumber(snapshot.stations.delisted)} fuera.

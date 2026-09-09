@@ -3,23 +3,33 @@
 import { useId, useState } from "react";
 import Link from "next/link";
 import { formatNumber } from "@/lib/ui/format";
+import { departmentAnchorId } from "@/lib/ui/station-list";
 import {
   localityState,
   localityTooltip,
   VIEW_HEIGHT,
   VIEW_WIDTH,
+  type CorridorPath,
   type CountryPath,
   type LocalityPoint,
 } from "@/lib/ui/hud-map";
 
+function departmentHref(point: LocalityPoint): string {
+  if (point.stationDepartments.length !== 1) return "/estaciones";
+  return `/estaciones#${departmentAnchorId(point.stationDepartments[0])}`;
+}
+
 export function HudMapView({
   paths,
   points,
+  corridors,
 }: {
   paths: CountryPath[];
   points: LocalityPoint[];
+  corridors: CorridorPath[];
 }) {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const [activeCorridor, setActiveCorridor] = useState<CorridorPath | null>(null);
   const tooltipId = useId();
   const active = activeIndex !== null ? points[activeIndex] : null;
 
@@ -52,8 +62,25 @@ export function HudMapView({
           />
         ))}
 
+        <g className="hud-corridors" aria-hidden="true">
+          {corridors.map((corridor) => (
+            <g
+              key={corridor.id}
+              onMouseEnter={() => setActiveCorridor(corridor)}
+              onMouseLeave={() =>
+                setActiveCorridor((current) => (current?.id === corridor.id ? null : current))
+              }
+            >
+              <path d={corridor.d} className="hud-corridor-glow" />
+              <path d={corridor.d} className="hud-corridor-flow" />
+              <path d={corridor.d} className="hud-corridor-hit" />
+            </g>
+          ))}
+        </g>
+
         {points.map((point, index) => {
           const state = localityState(point);
+          const href = departmentHref(point);
           return (
             <g key={`${point.name}-${point.department}`}>
               {state === "bad" && (
@@ -65,22 +92,24 @@ export function HudMapView({
                   aria-hidden="true"
                 />
               )}
-              <circle
-                className={`hud-locality hud-locality-${state}`}
-                data-active={activeIndex === index || undefined}
-                cx={point.x}
-                cy={point.y}
-                r={point.radius}
-                tabIndex={0}
-                role="button"
-                aria-label={localityTooltip(point)}
+              <a
+                href={href}
+                className="hud-locality-link"
+                aria-label={`${localityTooltip(point)} Ver las estaciones de ${point.department}.`}
                 aria-describedby={activeIndex === index ? tooltipId : undefined}
                 onMouseEnter={() => setActiveIndex(index)}
                 onMouseLeave={() => setActiveIndex((current) => (current === index ? null : current))}
                 onFocus={() => setActiveIndex(index)}
                 onBlur={() => setActiveIndex((current) => (current === index ? null : current))}
-                onClick={() => setActiveIndex((current) => (current === index ? null : index))}
-              />
+              >
+                <circle
+                  className={`hud-locality hud-locality-${state}`}
+                  data-active={activeIndex === index || undefined}
+                  cx={point.x}
+                  cy={point.y}
+                  r={point.radius}
+                />
+              </a>
             </g>
           );
         })}
@@ -98,6 +127,19 @@ export function HudMapView({
         >
           <strong>{active.name}</strong>
           <span>{localityTooltip(active)}</span>
+        </div>
+      )}
+
+      {activeCorridor && (
+        <div
+          role="tooltip"
+          className="hud-tooltip"
+          style={{
+            left: `${(activeCorridor.x / VIEW_WIDTH) * 100}%`,
+            top: `${(activeCorridor.y / VIEW_HEIGHT) * 100}%`,
+          }}
+        >
+          <strong>{activeCorridor.name}</strong>
         </div>
       )}
 
