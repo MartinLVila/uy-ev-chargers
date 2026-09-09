@@ -1,6 +1,8 @@
 import type { StationStatus } from "../metrics/queries";
 import { UNKNOWN_DEPARTMENT } from "../ute/normalize";
 
+export const UNNAMED_LOCALITY = "Sin localidad";
+
 export interface LocalityAggregate {
   name: string;
   department: string;
@@ -117,7 +119,7 @@ export function aggregateByLocality(stations: StationStatus[]): LocalityAggregat
       return {
         name:
           group.key === "sin localidad"
-            ? "Sin localidad"
+            ? UNNAMED_LOCALITY
             : displayName(groupStations.map((station) => (station.city as string).trim())),
         department,
         latitude: groupStations.reduce((sum, station) => sum + station.latitude, 0) / count,
