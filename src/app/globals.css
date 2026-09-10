@@ -1063,7 +1063,7 @@ a:focus-visible {
   padding: 12px 0;
 }
 
-.station-row > span {
+.station-row > * {
   min-width: 0;
 }
 
@@ -1292,6 +1292,13 @@ a:focus-visible {
 .hud-locality {
   fill-opacity: 0.16;
   stroke-width: 1.35px;
+  cursor: pointer;
+}
+
+.hud-locality-hit {
+  fill: transparent;
+  stroke: none;
+  pointer-events: fill;
   cursor: pointer;
 }
 

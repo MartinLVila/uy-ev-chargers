@@ -5,6 +5,7 @@ import Link from "next/link";
 import { formatNumber } from "@/lib/ui/format";
 import { departmentAnchorId } from "@/lib/ui/station-list";
 import {
+  hitRadius,
   localityState,
   localityTooltip,
   tooltipSitsBelow,
@@ -111,6 +112,12 @@ export function HudMapView({
                     cy={point.y}
                     r={point.radius}
                   />
+                  <circle
+                    className="hud-locality-hit"
+                    cx={point.x}
+                    cy={point.y}
+                    r={hitRadius(point, points)}
+                  />
                 </a>
               </g>
             );
@@ -153,10 +160,10 @@ export function HudMapView({
         <ul role="list" className="hairline-list" style={{ marginTop: 10 }}>
           {points.map((point) => (
             <li key={`${point.name}-${point.department}`} className="row-wash station-row">
-              <span>
+              <Link href={departmentHref(point)} className="link-unadorned">
                 <span className="station-row-name">{point.name}</span>
                 <span className="station-row-city"> · {point.department}</span>
-              </span>
+              </Link>
               <span className="station-row-meta">{localityTooltip(point)}</span>
             </li>
           ))}
