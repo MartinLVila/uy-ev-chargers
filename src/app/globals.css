@@ -12,6 +12,7 @@
   --focus-ring-width: 3px;
   --focus-ring-offset: 2px;
   --focus-ring-space: calc(var(--focus-ring-width) + var(--focus-ring-offset));
+  --measure: 65ch;
 
   --surface-page: #f8fafd;
   --surface-1: #f1f4f6;
@@ -128,6 +129,7 @@ h5,
 h6 {
   font-size: inherit;
   font-weight: inherit;
+  text-wrap: balance;
 }
 
 ol,
@@ -750,9 +752,11 @@ a:focus-visible {
 
 .support-text {
   margin: 0;
+  max-width: var(--measure);
   font-size: 17px;
   line-height: 1.5;
   color: var(--text-secondary);
+  text-wrap: pretty;
 }
 
 .hero-ring-wrap {
