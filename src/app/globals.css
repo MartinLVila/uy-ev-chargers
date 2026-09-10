@@ -1251,7 +1251,7 @@ a:focus-visible {
   background: var(--status-critical);
 }
 
-.hud-map-wrap {
+.hud-map-canvas {
   position: relative;
 }
 
@@ -1370,7 +1370,7 @@ a:focus-visible {
 
 .hud-tooltip {
   position: absolute;
-  transform: translate(-50%, -120%);
+  transform: translate(-50%, calc(-100% - 10px));
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -1384,6 +1384,29 @@ a:focus-visible {
   line-height: 1.4;
   pointer-events: none;
   z-index: 5;
+}
+
+.hud-tooltip::after {
+  content: "";
+  position: absolute;
+  top: calc(100% - 6px);
+  left: 50%;
+  width: 11px;
+  height: 11px;
+  background: var(--surface-page);
+  border-right: 1px solid var(--border-strong);
+  border-bottom: 1px solid var(--border-strong);
+  transform: translateX(-50%) rotate(45deg);
+}
+
+.hud-tooltip[data-below] {
+  transform: translate(-50%, 10px);
+}
+
+.hud-tooltip[data-below]::after {
+  top: auto;
+  bottom: calc(100% - 6px);
+  transform: translateX(-50%) rotate(225deg);
 }
 
 .hud-map-fallback {

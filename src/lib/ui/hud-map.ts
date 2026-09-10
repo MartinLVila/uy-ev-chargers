@@ -197,3 +197,7 @@ export function localityState(
   if (!point.observed) return "unknown";
   return point.outOfService > 0 ? "bad" : "good";
 }
+
+export function tooltipSitsBelow(y: number): boolean {
+  return y < VIEW_HEIGHT / 2;
+}
