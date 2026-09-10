@@ -5,6 +5,10 @@
   --entrance: 620ms;
   --theme-swap: 300ms;
   --header-height: 65px;
+  --controls-height: 76px;
+  --focus-ring-width: 3px;
+  --focus-ring-offset: 2px;
+  --focus-ring-space: calc(var(--focus-ring-width) + var(--focus-ring-offset));
 
   --surface-page: #f8fafd;
   --surface-1: #f1f4f6;
@@ -95,6 +99,13 @@
 html {
   -webkit-text-size-adjust: 100%;
   -webkit-tap-highlight-color: transparent;
+  scroll-padding-top: calc(var(--header-height) + var(--focus-ring-space));
+}
+
+html:has(.stations-controls) {
+  scroll-padding-top: calc(
+    var(--header-height) + var(--controls-height) + var(--focus-ring-space)
+  );
 }
 
 *,
@@ -386,8 +397,8 @@ a:hover {
 }
 
 a:focus-visible {
-  outline: 3px solid var(--accent);
-  outline-offset: 2px;
+  outline: var(--focus-ring-width) solid var(--accent);
+  outline-offset: var(--focus-ring-offset);
   border-radius: 2px;
 }
 
@@ -485,8 +496,8 @@ a:focus-visible {
 }
 
 .app-nav-tab:focus-visible {
-  outline: 3px solid var(--accent);
-  outline-offset: 2px;
+  outline: var(--focus-ring-width) solid var(--accent);
+  outline-offset: var(--focus-ring-offset);
 }
 
 .app-header-status {
@@ -1024,8 +1035,8 @@ a:focus-visible {
 }
 
 .theme-toggle:focus-visible {
-  outline: 3px solid var(--accent);
-  outline-offset: 2px;
+  outline: var(--focus-ring-width) solid var(--accent);
+  outline-offset: var(--focus-ring-offset);
 }
 
 .theme-toggle-on-light {
@@ -1117,8 +1128,8 @@ a:focus-visible {
 }
 
 .stations-search:focus-visible {
-  outline: 3px solid var(--accent);
-  outline-offset: 2px;
+  outline: var(--focus-ring-width) solid var(--accent);
+  outline-offset: var(--focus-ring-offset);
 }
 
 .pill-button {
@@ -1140,8 +1151,8 @@ a:focus-visible {
 }
 
 .pill-button:focus-visible {
-  outline: 3px solid var(--accent);
-  outline-offset: 2px;
+  outline: var(--focus-ring-width) solid var(--accent);
+  outline-offset: var(--focus-ring-offset);
 }
 
 .stations-controls .pill-button {
@@ -1306,8 +1317,8 @@ a:focus-visible {
 }
 
 .hud-locality-link:focus-visible .hud-locality {
-  outline: 3px solid var(--accent);
-  outline-offset: 2px;
+  outline: var(--focus-ring-width) solid var(--accent);
+  outline-offset: var(--focus-ring-offset);
 }
 
 .hud-corridors {
@@ -1415,14 +1426,14 @@ a:focus-visible {
 }
 
 summary:focus-visible {
-  outline: 3px solid var(--accent);
-  outline-offset: 2px;
+  outline: var(--focus-ring-width) solid var(--accent);
+  outline-offset: var(--focus-ring-offset);
   border-radius: 2px;
 }
 
 .focusable-chart:focus-visible {
-  outline: 3px solid var(--accent);
-  outline-offset: 2px;
+  outline: var(--focus-ring-width) solid var(--accent);
+  outline-offset: var(--focus-ring-offset);
   border-radius: 4px;
 }
 
