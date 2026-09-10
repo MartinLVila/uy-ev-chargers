@@ -298,7 +298,7 @@ function Notice({ title, children }: { title: string; children: React.ReactNode 
   return (
     <div className="container" style={{ paddingTop: 58, paddingBottom: 58 }}>
       <h1 className="section-title">{title}</h1>
-      <p className="support-text" style={{ marginTop: 12, maxWidth: 640 }}>
+      <p className="support-text" style={{ marginTop: 12 }}>
         {children}
       </p>
     </div>
