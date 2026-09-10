@@ -4,6 +4,9 @@
   --ease: cubic-bezier(0.32, 0.72, 0, 1);
   --entrance: 620ms;
   --theme-swap: 300ms;
+  --interaction: 140ms;
+  --swap: var(--theme-swap) var(--ease);
+  --feedback: var(--interaction) var(--ease);
   --header-height: 65px;
 
   --surface-page: #f8fafd;
@@ -263,19 +266,36 @@ table {
 @media (prefers-reduced-motion: no-preference) {
   * {
     transition:
-      background-color var(--theme-swap) var(--ease),
-      border-color var(--theme-swap) var(--ease),
-      color var(--theme-swap) var(--ease);
+      background-color var(--swap),
+      border-color var(--swap),
+      color var(--swap);
   }
 
   svg,
   svg * {
     transition:
-      background-color var(--theme-swap) var(--ease),
-      border-color var(--theme-swap) var(--ease),
-      color var(--theme-swap) var(--ease),
-      fill var(--theme-swap) var(--ease),
-      stroke var(--theme-swap) var(--ease);
+      background-color var(--swap),
+      border-color var(--swap),
+      color var(--swap),
+      fill var(--swap),
+      stroke var(--swap);
+  }
+
+  a {
+    transition:
+      background-color var(--swap),
+      border-color var(--swap),
+      color var(--swap),
+      fill var(--swap),
+      stroke var(--swap),
+      text-decoration-thickness var(--feedback);
+  }
+
+  .hud-locality {
+    transition:
+      fill var(--swap),
+      stroke var(--swap),
+      fill-opacity var(--feedback);
   }
 
   header > .container > * {
@@ -348,7 +368,10 @@ table {
   }
 
   .row-wash {
-    transition: background-color 200ms var(--ease);
+    transition:
+      background-color var(--feedback),
+      border-color var(--swap),
+      color var(--swap);
   }
 
   .hud-corridor-flow {
