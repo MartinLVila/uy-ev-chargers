@@ -5,6 +5,7 @@
   --entrance: 620ms;
   --theme-swap: 300ms;
   --header-height: 65px;
+  --measure: 65ch;
 
   --surface-page: #f8fafd;
   --surface-1: #f1f4f6;
@@ -114,6 +115,7 @@ h5,
 h6 {
   font-size: inherit;
   font-weight: inherit;
+  text-wrap: balance;
 }
 
 ol,
@@ -716,9 +718,11 @@ a:focus-visible {
 
 .support-text {
   margin: 0;
+  max-width: var(--measure);
   font-size: 17px;
   line-height: 1.5;
   color: var(--text-secondary);
+  text-wrap: pretty;
 }
 
 .hero-ring-wrap {

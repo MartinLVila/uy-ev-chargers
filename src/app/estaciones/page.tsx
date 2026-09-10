@@ -11,7 +11,7 @@ export default async function StationsPage() {
     return (
       <div className="container" style={{ paddingTop: 58, paddingBottom: 58 }}>
         <h1 className="section-title">Toda la red</h1>
-        <p className="support-text" style={{ marginTop: 12, maxWidth: 640 }}>
+        <p className="support-text" style={{ marginTop: 12 }}>
           No hay datos para mostrar en este momento. Volvé a intentar más tarde.
         </p>
       </div>
