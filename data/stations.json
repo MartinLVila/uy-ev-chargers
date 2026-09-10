@@ -247,13 +247,13 @@
     "department": "Rocha",
     "latitude": -33.694694,
     "longitude": -53.455267,
-    "presence": "delisted",
-    "connectors": 0,
-    "operational": 0,
+    "presence": "listed",
+    "connectors": 1,
+    "operational": 1,
     "faulted": 0,
     "unknown": 0,
-    "absent": 1,
-    "outOfService": 1
+    "absent": 0,
+    "outOfService": 0
   },
   {
     "slug": "ancap-ciudad-del-plata",
@@ -359,13 +359,13 @@
     "department": "Florida",
     "latitude": -34.096919,
     "longitude": -56.196372,
-    "presence": "listed",
-    "connectors": 2,
-    "operational": 2,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 2,
+    "outOfService": 2
   },
   {
     "slug": "ancap-francolino-paysandu",
@@ -473,11 +473,11 @@
     "longitude": -54.527432,
     "presence": "listed",
     "connectors": 1,
-    "operational": 0,
-    "faulted": 1,
+    "operational": 1,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "ancap-la-paz",
@@ -716,8 +716,8 @@
     "operational": 1,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "ancap-rosario",
@@ -1688,12 +1688,12 @@
     "latitude": -34.896317,
     "longitude": -56.140618,
     "presence": "listed",
-    "connectors": 14,
-    "operational": 12,
-    "faulted": 2,
+    "connectors": 22,
+    "operational": 22,
+    "faulted": 0,
     "unknown": 0,
-    "absent": 6,
-    "outOfService": 8
+    "absent": 0,
+    "outOfService": 0
   },
   {
     "slug": "electrolinera-malvin",
@@ -2025,11 +2025,11 @@
     "longitude": -56.161484,
     "presence": "listed",
     "connectors": 5,
-    "operational": 4,
-    "faulted": 1,
+    "operational": 5,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "gremial-del-taxi-cpatu",
@@ -2153,11 +2153,11 @@
     "longitude": -56.148899,
     "presence": "listed",
     "connectors": 4,
-    "operational": 4,
-    "faulted": 0,
+    "operational": 3,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "junta-local-centenario",
@@ -2455,13 +2455,13 @@
     "department": "Montevideo",
     "latitude": -34.903968,
     "longitude": -56.136669,
-    "presence": "delisted",
-    "connectors": 0,
-    "operational": 0,
+    "presence": "listed",
+    "connectors": 1,
+    "operational": 1,
     "faulted": 0,
     "unknown": 0,
-    "absent": 1,
-    "outOfService": 1
+    "absent": 0,
+    "outOfService": 0
   },
   {
     "slug": "moreira-automoviles-atlantida",
@@ -3385,11 +3385,11 @@
     "longitude": -54.937023,
     "presence": "listed",
     "connectors": 5,
-    "operational": 5,
-    "faulted": 0,
+    "operational": 4,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "punta-del-este-parada-5",
@@ -3497,11 +3497,11 @@
     "longitude": -55.958338,
     "presence": "listed",
     "connectors": 2,
-    "operational": 2,
-    "faulted": 0,
+    "operational": 1,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "shopping-las-piedras",
@@ -3961,11 +3961,11 @@
     "longitude": -56.615782,
     "presence": "listed",
     "connectors": 3,
-    "operational": 2,
-    "faulted": 1,
+    "operational": 3,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "utec-durazno",
@@ -3993,11 +3993,11 @@
     "longitude": -55.5476072,
     "presence": "listed",
     "connectors": 1,
-    "operational": 0,
-    "faulted": 1,
+    "operational": 1,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "vieja-usina-ute-treinta-y-tres",
