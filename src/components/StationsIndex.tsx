@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useMeasuredStickyHeight } from "@/lib/ui/use-measured-sticky-height";
 import Link from "next/link";
 import type { StationStatus } from "@/lib/metrics/queries";
 import { formatNumber } from "@/lib/ui/format";
@@ -22,6 +23,7 @@ function stationWording(count: number): string {
 export function StationsIndex({ stations }: { stations: StationStatus[] }) {
   const [query, setQuery] = useState("");
   const [faultsOnly, setFaultsOnly] = useState(false);
+  const controls = useMeasuredStickyHeight("--controls-height");
 
   const visible = useMemo(() => {
     return stations.filter((station) => {
@@ -35,7 +37,7 @@ export function StationsIndex({ stations }: { stations: StationStatus[] }) {
 
   return (
     <>
-      <div className="stations-controls">
+      <div className="stations-controls" ref={controls}>
         <input
           type="search"
           className="stations-search"
