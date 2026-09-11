@@ -30,6 +30,24 @@ function keyframeNames(): string[] {
   return [...CSS.matchAll(/@keyframes\s+([\w-]+)\s*\{/g)].map((match) => match[1]);
 }
 
+function topLevelParts(declaration: string): string[] {
+  const parts: string[] = [];
+  let depth = 0;
+  let current = "";
+  for (const character of declaration) {
+    if (character === "(") depth += 1;
+    if (character === ")") depth -= 1;
+    if (character === "," && depth === 0) {
+      parts.push(current.trim());
+      current = "";
+      continue;
+    }
+    current += character;
+  }
+  if (current.trim()) parts.push(current.trim());
+  return parts;
+}
+
 function keyframeDeclarations(): string[] {
   return [...CSS.matchAll(/@keyframes\s+[\w-]+\s*\{/g)].map(
     (match) => match[0] + blockAfter(match[0]) + "}",
@@ -97,15 +115,32 @@ describe("one easing curve carries every movement", () => {
     expect(curves).toHaveLength(1);
   });
 
+  it("resolves every shorthand token back to that curve", () => {
+    const shorthands = [...CSS.matchAll(/--(swap|feedback):\s*([^;]+);/g)];
+
+    expect(shorthands.length, "no timing shorthand to resolve").toBeGreaterThan(0);
+    for (const [, name, value] of shorthands) {
+      expect(value, `--${name} times movement off some other curve`).toContain("var(--ease)");
+    }
+  });
+
   it("times every animation and transition off that curve", () => {
+    const throughShorthand = [...CSS.matchAll(/--(swap|feedback):\s*[^;]*var\(--ease\)[^;]*;/g)].map(
+      (match) => `var(--${match[1]})`,
+    );
     const timed = [...motion.matchAll(/(animation|transition):\s*([^;]+);/g)].map(
       (match) => match[2],
     );
 
     expect(timed.length).toBeGreaterThan(0);
-    for (const declaration of timed) {
-      if (declaration.includes("linear")) continue;
-      expect(declaration, `${declaration} does not use the shared curve`).toContain("var(--ease)");
+    const parts = timed.flatMap(topLevelParts);
+    expect(parts.length, "no timed part was examined, so this proves nothing").toBeGreaterThan(0);
+
+    for (const part of parts) {
+      if (part.includes("linear")) continue;
+      const carriesCurve =
+        part.includes("var(--ease)") || throughShorthand.some((token) => part.includes(token));
+      expect(carriesCurve, `${part} does not use the shared curve`).toBe(true);
     }
   });
 });
