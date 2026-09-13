@@ -25,11 +25,11 @@
     "longitude": -56.15184,
     "presence": "listed",
     "connectors": 8,
-    "operational": 8,
-    "faulted": 0,
+    "operational": 7,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "almenara-mall",
@@ -247,13 +247,13 @@
     "department": "Rocha",
     "latitude": -33.694694,
     "longitude": -53.455267,
-    "presence": "listed",
-    "connectors": 1,
-    "operational": 1,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "ancap-ciudad-del-plata",
@@ -1256,8 +1256,8 @@
     "latitude": -34.707086,
     "longitude": -55.92769,
     "presence": "listed",
-    "connectors": 2,
-    "operational": 2,
+    "connectors": 1,
+    "operational": 1,
     "faulted": 0,
     "unknown": 0,
     "absent": 0,
@@ -1447,13 +1447,13 @@
     "department": "Tacuarembó",
     "latitude": -32.813112,
     "longitude": -56.503748,
-    "presence": "delisted",
-    "connectors": 0,
-    "operational": 0,
+    "presence": "listed",
+    "connectors": 2,
+    "operational": 2,
     "faulted": 0,
     "unknown": 0,
-    "absent": 2,
-    "outOfService": 2
+    "absent": 0,
+    "outOfService": 0
   },
   {
     "slug": "chuy-dfa",
@@ -1513,11 +1513,11 @@
     "longitude": -57.835495,
     "presence": "listed",
     "connectors": 7,
-    "operational": 6,
-    "faulted": 1,
+    "operational": 7,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "colonia-valdense",
@@ -1527,13 +1527,13 @@
     "department": "Colonia",
     "latitude": -34.3371311,
     "longitude": -57.2530074,
-    "presence": "delisted",
-    "connectors": 0,
-    "operational": 0,
+    "presence": "listed",
+    "connectors": 1,
+    "operational": 1,
     "faulted": 0,
     "unknown": 0,
-    "absent": 1,
-    "outOfService": 1
+    "absent": 0,
+    "outOfService": 0
   },
   {
     "slug": "disco-8-de-octubre-y-garibaldi",
@@ -1705,11 +1705,11 @@
     "longitude": -56.140618,
     "presence": "listed",
     "connectors": 22,
-    "operational": 21,
-    "faulted": 1,
+    "operational": 20,
+    "faulted": 2,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 2
   },
   {
     "slug": "electrolinera-malvin",
@@ -1849,11 +1849,11 @@
     "longitude": -54.951832,
     "presence": "listed",
     "connectors": 2,
-    "operational": 1,
-    "faulted": 1,
+    "operational": 2,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "estacion-punta-del-este-club-ituzaingo",
@@ -2233,11 +2233,11 @@
     "longitude": -56.1833816,
     "presence": "listed",
     "connectors": 4,
-    "operational": 2,
-    "faulted": 2,
+    "operational": 4,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 2
+    "outOfService": 0
   },
   {
     "slug": "la-paloma",
@@ -2265,11 +2265,11 @@
     "longitude": -55.576405,
     "presence": "listed",
     "connectors": 1,
-    "operational": 1,
-    "faulted": 0,
+    "operational": 0,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "la-pedrera",
@@ -2345,11 +2345,11 @@
     "longitude": -54.940704,
     "presence": "listed",
     "connectors": 8,
-    "operational": 8,
-    "faulted": 0,
+    "operational": 6,
+    "faulted": 2,
     "unknown": 0,
     "absent": 2,
-    "outOfService": 2
+    "outOfService": 4
   },
   {
     "slug": "liv-district-carrasco-1",
@@ -2551,13 +2551,13 @@
     "department": "Montevideo",
     "latitude": -34.9277636,
     "longitude": -56.1598697,
-    "presence": "listed",
-    "connectors": 2,
-    "operational": 2,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 2,
+    "outOfService": 2
   },
   {
     "slug": "novillo-alegre-punta",
@@ -2903,13 +2903,13 @@
     "department": "Soriano",
     "latitude": -33.2565621,
     "longitude": -58.0277748,
-    "presence": "listed",
-    "connectors": 2,
-    "operational": 2,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 2,
+    "outOfService": 2
   },
   {
     "slug": "plaza-artigas-rivera",
@@ -3432,8 +3432,8 @@
     "latitude": -34.939691,
     "longitude": -54.934102,
     "presence": "listed",
-    "connectors": 4,
-    "operational": 4,
+    "connectors": 3,
+    "operational": 3,
     "faulted": 0,
     "unknown": 0,
     "absent": 0,
@@ -3463,13 +3463,13 @@
     "department": "Rocha",
     "latitude": -34.488761,
     "longitude": -54.320398,
-    "presence": "delisted",
-    "connectors": 0,
-    "operational": 0,
+    "presence": "listed",
+    "connectors": 1,
+    "operational": 1,
     "faulted": 0,
     "unknown": 0,
-    "absent": 1,
-    "outOfService": 1
+    "absent": 0,
+    "outOfService": 0
   },
   {
     "slug": "san-jose-dc-1",
@@ -3575,13 +3575,13 @@
     "department": "Desconocido",
     "latitude": -33.508548,
     "longitude": -56.9300983,
-    "presence": "listed",
-    "connectors": 2,
-    "operational": 2,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 2,
+    "outOfService": 2
   },
   {
     "slug": "tambores",
@@ -4039,12 +4039,12 @@
     "department": "Desconocido",
     "latitude": -34.634662,
     "longitude": -56.2504042,
-    "presence": "listed",
-    "connectors": 1,
-    "operational": 1,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   }
 ]
