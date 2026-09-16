@@ -201,3 +201,15 @@ export function localityState(
 export function tooltipSitsBelow(y: number): boolean {
   return y < VIEW_HEIGHT / 2;
 }
+
+export const TARGET_RADIUS = 12;
+
+export function hitRadius(point: LocalityPoint, others: LocalityPoint[]): number {
+  let nearest = Infinity;
+  for (const other of others) {
+    if (other === point) continue;
+    const gap = Math.hypot(other.x - point.x, other.y - point.y);
+    if (gap < nearest) nearest = gap;
+  }
+  return Math.max(point.radius, Math.min(TARGET_RADIUS, nearest / 2));
+}
