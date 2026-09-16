@@ -185,11 +185,11 @@
     "longitude": -54.966438,
     "presence": "listed",
     "connectors": 1,
-    "operational": 0,
-    "faulted": 1,
+    "operational": 1,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "ancap-cardona",
@@ -279,13 +279,13 @@
     "department": "Colonia",
     "latitude": -34.471664,
     "longitude": -57.841764,
-    "presence": "delisted",
-    "connectors": 0,
-    "operational": 0,
+    "presence": "listed",
+    "connectors": 2,
+    "operational": 2,
     "faulted": 0,
     "unknown": 0,
-    "absent": 2,
-    "outOfService": 2
+    "absent": 0,
+    "outOfService": 0
   },
   {
     "slug": "ancap-conchillas",
@@ -457,11 +457,11 @@
     "longitude": -54.644789,
     "presence": "listed",
     "connectors": 4,
-    "operational": 2,
-    "faulted": 2,
+    "operational": 4,
+    "faulted": 0,
     "unknown": 0,
     "absent": 1,
-    "outOfService": 3
+    "outOfService": 1
   },
   {
     "slug": "ancap-jose-pedro-varela",
@@ -1017,11 +1017,11 @@
     "longitude": -54.687176,
     "presence": "listed",
     "connectors": 1,
-    "operational": 0,
-    "faulted": 1,
+    "operational": 1,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "ancap-young",
@@ -1320,8 +1320,8 @@
     "latitude": -34.817924,
     "longitude": -55.9820255,
     "presence": "listed",
-    "connectors": 1,
-    "operational": 1,
+    "connectors": 2,
+    "operational": 2,
     "faulted": 0,
     "unknown": 0,
     "absent": 0,
@@ -1639,13 +1639,13 @@
     "department": "Río Negro",
     "latitude": -33.113267,
     "longitude": -58.24494,
-    "presence": "listed",
-    "connectors": 4,
-    "operational": 4,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 4,
+    "outOfService": 4
   },
   {
     "slug": "ecilda-paullier",
@@ -2521,11 +2521,11 @@
     "longitude": -54.9400916,
     "presence": "listed",
     "connectors": 3,
-    "operational": 1,
-    "faulted": 2,
+    "operational": 2,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 2
+    "outOfService": 1
   },
   {
     "slug": "municipio-vergara",
@@ -2553,11 +2553,11 @@
     "longitude": -56.1598697,
     "presence": "listed",
     "connectors": 2,
-    "operational": 1,
-    "faulted": 1,
+    "operational": 2,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "novillo-alegre-punta",
@@ -2633,11 +2633,11 @@
     "longitude": -56.194744,
     "presence": "listed",
     "connectors": 1,
-    "operational": 1,
-    "faulted": 0,
+    "operational": 0,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "palacio-legislativo-dc",
@@ -2663,13 +2663,13 @@
     "department": "Cerro Largo",
     "latitude": -32.5823359,
     "longitude": -53.3785893,
-    "presence": "listed",
-    "connectors": 2,
-    "operational": 2,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 2,
+    "outOfService": 2
   },
   {
     "slug": "parador-fito",
@@ -3047,13 +3047,13 @@
     "department": "Paysandú",
     "latitude": -32.316711,
     "longitude": -58.081011,
-    "presence": "delisted",
-    "connectors": 0,
-    "operational": 0,
+    "presence": "listed",
+    "connectors": 1,
+    "operational": 1,
     "faulted": 0,
     "unknown": 0,
-    "absent": 1,
-    "outOfService": 1
+    "absent": 0,
+    "outOfService": 0
   },
   {
     "slug": "plaza-constitucion-trinidad",
@@ -3241,11 +3241,11 @@
     "longitude": -56.0377477,
     "presence": "listed",
     "connectors": 8,
-    "operational": 6,
-    "faulted": 2,
+    "operational": 7,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 2
+    "outOfService": 1
   },
   {
     "slug": "plaza-rivera-fray-bentos",
@@ -3529,11 +3529,11 @@
     "longitude": -56.2027049,
     "presence": "listed",
     "connectors": 2,
-    "operational": 2,
-    "faulted": 0,
+    "operational": 1,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "shopping-nuevocentro",
@@ -3797,8 +3797,8 @@
     "address": "19 de Abril Esquina Avenida Brasil",
     "city": "Castillos",
     "department": "Rocha",
-    "latitude": -34.196687,
-    "longitude": -53.849727,
+    "latitude": -34.196818,
+    "longitude": -53.849058,
     "presence": "listed",
     "connectors": 2,
     "operational": 2,
@@ -3977,11 +3977,11 @@
     "longitude": -56.615782,
     "presence": "listed",
     "connectors": 3,
-    "operational": 2,
-    "faulted": 1,
+    "operational": 1,
+    "faulted": 2,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 2
   },
   {
     "slug": "utec-durazno",
