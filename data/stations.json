@@ -505,11 +505,11 @@
     "longitude": -56.744655,
     "presence": "listed",
     "connectors": 3,
-    "operational": 3,
-    "faulted": 0,
+    "operational": 2,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "ancap-los-cerrillos",
@@ -1001,11 +1001,11 @@
     "longitude": -54.280123,
     "presence": "listed",
     "connectors": 1,
-    "operational": 0,
-    "faulted": 1,
+    "operational": 1,
+    "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 1
+    "absent": 2,
+    "outOfService": 2
   },
   {
     "slug": "ancap-vichadero",
@@ -1241,11 +1241,11 @@
     "longitude": -56.132189,
     "presence": "listed",
     "connectors": 4,
-    "operational": 4,
-    "faulted": 0,
+    "operational": 3,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "campera-almacen-1",
@@ -1513,11 +1513,11 @@
     "longitude": -57.835495,
     "presence": "listed",
     "connectors": 7,
-    "operational": 7,
-    "faulted": 0,
+    "operational": 6,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "colonia-valdense",
@@ -1639,13 +1639,13 @@
     "department": "Río Negro",
     "latitude": -33.113267,
     "longitude": -58.24494,
-    "presence": "delisted",
-    "connectors": 0,
-    "operational": 0,
+    "presence": "listed",
+    "connectors": 4,
+    "operational": 4,
     "faulted": 0,
     "unknown": 0,
-    "absent": 4,
-    "outOfService": 4
+    "absent": 0,
+    "outOfService": 0
   },
   {
     "slug": "ecilda-paullier",
@@ -1735,13 +1735,13 @@
     "department": "Montevideo",
     "latitude": -34.737227,
     "longitude": -55.767286,
-    "presence": "listed",
-    "connectors": 4,
-    "operational": 4,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 2,
+    "outOfService": 2
   },
   {
     "slug": "estacion-cantegril",
@@ -2169,11 +2169,11 @@
     "longitude": -56.148899,
     "presence": "listed",
     "connectors": 4,
-    "operational": 4,
-    "faulted": 0,
+    "operational": 2,
+    "faulted": 2,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 2
   },
   {
     "slug": "junta-local-centenario",
@@ -2345,11 +2345,11 @@
     "longitude": -54.940704,
     "presence": "listed",
     "connectors": 8,
-    "operational": 6,
-    "faulted": 2,
+    "operational": 8,
+    "faulted": 0,
     "unknown": 0,
     "absent": 2,
-    "outOfService": 4
+    "outOfService": 2
   },
   {
     "slug": "liv-district-carrasco-1",
@@ -2473,11 +2473,11 @@
     "longitude": -56.136669,
     "presence": "listed",
     "connectors": 2,
-    "operational": 1,
-    "faulted": 1,
+    "operational": 2,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "moreira-automoviles-atlantida",
@@ -3241,11 +3241,11 @@
     "longitude": -56.0377477,
     "presence": "listed",
     "connectors": 8,
-    "operational": 7,
-    "faulted": 1,
+    "operational": 6,
+    "faulted": 2,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 2
   },
   {
     "slug": "plaza-rivera-fray-bentos",
@@ -3529,11 +3529,11 @@
     "longitude": -56.2027049,
     "presence": "listed",
     "connectors": 2,
-    "operational": 1,
-    "faulted": 1,
+    "operational": 2,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "shopping-nuevocentro",
@@ -3545,11 +3545,11 @@
     "longitude": -56.169246,
     "presence": "listed",
     "connectors": 2,
-    "operational": 2,
-    "faulted": 0,
+    "operational": 1,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "skatepark-carrasco",
