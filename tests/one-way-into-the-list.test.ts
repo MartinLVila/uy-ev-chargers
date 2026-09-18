@@ -22,31 +22,55 @@ function point(overrides: Partial<LocalityPoint> = {}): LocalityPoint {
   };
 }
 
-function linksTo(markup: string, href: string): number {
-  return [...markup.matchAll(/href="([^"]*)"/g)].filter((match) => match[1] === href).length;
+const POINTS = [
+  point(),
+  point({
+    name: "Ciudad de la Costa",
+    department: "Canelones",
+    stationDepartments: ["Canelones", "Desconocido"],
+  }),
+  point({ name: "Sin localidad", department: "Rocha", stationDepartments: [] }),
+];
+
+function render(points: LocalityPoint[]): string {
+  return renderToStaticMarkup(createElement(HudMapView, { points, paths: [], corridors: [] }));
 }
 
-describe("the map offers one way into the station list, not two", () => {
-  const markup = renderToStaticMarkup(
-    createElement(HudMapView, {
-      points: [point(), point({ name: "Durazno", department: "Durazno", stationDepartments: ["Durazno"] })],
-      paths: [],
-      corridors: [],
-    }),
-  );
-  const anchors = [...markup.matchAll(/href="([^"]*)"/g)].map((match) => match[1]);
+function hrefs(markup: string): string[] {
+  return [...markup.matchAll(/href="([^"]*)"/g)].map((match) => match[1]);
+}
 
-  it("renders the localities it was given, rather than nothing at all", () => {
-    expect(anchors.length, `${anchors.length} links rendered`).toBeGreaterThanOrEqual(2);
+describe("the map names the station list only through the localities it draws", () => {
+  it("renders a link for every locality it was given, rather than nothing at all", () => {
+    const links = hrefs(render(POINTS));
+
+    expect(links.length, `${POINTS.length} localities, ${links.length} links`).toBeGreaterThanOrEqual(
+      POINTS.length,
+    );
   });
 
-  it("sends every locality to its own department, never to the bare list", () => {
-    expect(linksTo(markup, "/estaciones"), `${anchors.length} links rendered`).toBe(0);
+  it("anchors a locality that belongs to one department at that department", () => {
+    const links = hrefs(render([point()]));
+
+    expect(links).toContain("/estaciones#departamento-flores");
   });
 
-  it("leaves the home page holding exactly one link to the list", () => {
-    const fromHome = [...HOME.matchAll(/href="\/estaciones"/g)].length;
+  it("adds no bare link of its own beyond the localities that have no single department", () => {
+    const links = hrefs(render(POINTS));
+    const perLocality = links.length / POINTS.length;
+    const spanning = POINTS.filter((locality) => locality.stationDepartments.length !== 1);
+    const bare = links.filter((href) => href === "/estaciones");
+    const examined = `${POINTS.length} localities, ${links.length} links, ${spanning.length} without one department`;
 
-    expect(fromHome, "the map section names the list more than once, or not at all").toBe(1);
+    expect(Number.isInteger(perLocality), examined).toBe(true);
+    expect(bare.length, examined).toBe(spanning.length * perLocality);
+  });
+});
+
+describe("the home page names the station list once", () => {
+  it("links to it exactly once across the page", () => {
+    const links = [...HOME.matchAll(/href="\/estaciones"/g)].length;
+
+    expect(links, "the home page names the list more than once, or not at all").toBe(1);
   });
 });
