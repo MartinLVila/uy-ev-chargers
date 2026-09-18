@@ -7,7 +7,7 @@ const STATION_PAGE = readWithUnixLineEndings(
 );
 
 function stationStatCalls(): string[] {
-  return [...STATION_PAGE.matchAll(/<StationStat\b([\s\S]*?)\/>/g)].map((match) => match[1]);
+  return [...STATION_PAGE.matchAll(/<StationStat\b([^>]*?)\/?>/g)].map((match) => match[1]);
 }
 
 describe("a status colour reports the count it sits on, rather than labelling the row", () => {
