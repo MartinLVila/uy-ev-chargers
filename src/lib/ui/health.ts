@@ -233,3 +233,7 @@ export function connectorsNow(timeline: StationTimelineEntry[]): ConnectorsNow {
     unknown: tally.unknown,
   };
 }
+
+export function colourWhenPresent(count: number, colour: string): string | undefined {
+  return count > 0 ? colour : undefined;
+}
