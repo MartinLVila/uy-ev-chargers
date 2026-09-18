@@ -38,6 +38,11 @@
   --chart-neutral: #757b81;
   --state-neutral: #55585b;
   --stripe: rgb(255 255 255 / 0.85);
+
+  --map-land: #dfe4e8;
+  --map-neighbor: #eaeef0;
+  --map-outline: rgb(0 0 0 / 0.5);
+  --map-scan: rgb(0 0 0 / 0.14);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -68,6 +73,11 @@
     --chart-neutral: oklch(0.62 0.012 245);
     --state-neutral: oklch(0.74 0.005 245);
     --stripe: rgb(0 0 0 / 0.65);
+
+    --map-land: oklch(0.225 0.016 250);
+    --map-neighbor: oklch(0.185 0.012 250);
+    --map-outline: rgb(255 255 255 / 0.4);
+    --map-scan: rgb(255 255 255 / 0.12);
   }
 }
 
@@ -98,6 +108,11 @@
   --chart-neutral: oklch(0.62 0.012 245);
   --state-neutral: oklch(0.74 0.005 245);
   --stripe: rgb(0 0 0 / 0.65);
+
+  --map-land: oklch(0.225 0.016 250);
+  --map-neighbor: oklch(0.185 0.012 250);
+  --map-outline: rgb(255 255 255 / 0.4);
+  --map-scan: rgb(255 255 255 / 0.12);
 }
 
 html {
@@ -1312,19 +1327,19 @@ a:focus-visible {
 }
 
 .hud-country-uruguay {
-  fill: oklch(0.225 0.016 250);
-  stroke: rgb(255 255 255 / 0.4);
+  fill: var(--map-land);
+  stroke: var(--map-outline);
   stroke-width: 1.25px;
 }
 
 .hud-country-neighbor {
-  fill: oklch(0.185 0.012 250);
-  stroke: rgb(255 255 255 / 0.4);
+  fill: var(--map-neighbor);
+  stroke: var(--map-outline);
   stroke-width: 0.2px;
 }
 
 .hud-scan-line {
-  fill: rgb(255 255 255 / 0.12);
+  fill: var(--map-scan);
 }
 
 .hud-locality {
