@@ -122,9 +122,13 @@ export default async function DashboardPage() {
             {formatNumber(snapshot.stations.delisted)} fuera.
           </p>
           <HudMap stations={stations} />
-          <Link href="/estaciones" style={{ display: "inline-block", marginTop: 24, fontSize: 14 }}>
-            Ver las {formatNumber(stations.length)} estaciones en una lista
-          </Link>
+          <p className="support-text" style={{ marginTop: 24, fontSize: 13 }}>
+            El mapa agrupa las estaciones por localidad.{" "}
+            <Link href="/estaciones">
+              Ver las {formatNumber(stations.length)} estaciones en una lista
+            </Link>
+            .
+          </p>
         </div>
       </section>
 

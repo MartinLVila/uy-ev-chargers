@@ -169,11 +169,6 @@ export function HudMapView({
           ))}
         </ul>
       </details>
-
-      <p className="support-text" style={{ marginTop: 16, fontSize: 13 }}>
-        El mapa agrupa las estaciones por localidad.{" "}
-        <Link href="/estaciones">Ver cada estación en una lista</Link>.
-      </p>
     </div>
   );
 }
