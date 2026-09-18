@@ -108,7 +108,7 @@ export default async function DashboardPage() {
       </section>
 
       <section className="band band-tinted">
-        <div className="container no-scroll-entrance">
+        <div className="container">
           <h2 className="section-title">
             {formatNumber(snapshot.stations.total)} estaciones, cinco corredores
           </h2>

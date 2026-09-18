@@ -4,7 +4,6 @@ import { describe, expect, it } from "vitest";
 const CSS = readFileSync(new URL("../src/app/globals.css", import.meta.url), "utf8");
 
 const REDUCED_MOTION_GUARD = "@media (prefers-reduced-motion: no-preference)";
-const VIEW_TIMELINE_GUARD = "@supports (animation-timeline: view())";
 
 function blockAfter(marker: string): string {
   const start = CSS.indexOf(marker);
@@ -54,6 +53,21 @@ function keyframeDeclarations(): string[] {
   );
 }
 
+function animationDeclarations(): string[] {
+  return [...CSS.matchAll(/(?<![\w-])animation\s*:\s*([^;]+);/g)].map((match) => match[1].trim());
+}
+
+const TOKEN_VALUES = new Map(
+  [...CSS.matchAll(/--([\w-]+):\s*([^;]+);/g)].map((match) => [match[1], match[2].trim()]),
+);
+
+function withTokensResolved(declaration: string): string {
+  return declaration.replace(
+    /var\(--([\w-]+)\)/g,
+    (whole, name: string) => TOKEN_VALUES.get(name) ?? whole,
+  );
+}
+
 const motion = blockAfter(REDUCED_MOTION_GUARD);
 const outsideMotion = keyframeBodies().reduce(
   (css, body) => css.replace(body, ""),
@@ -92,14 +106,22 @@ describe("reduced motion removes the motion rather than shortening it", () => {
 });
 
 describe("the page is never left invisible waiting for motion that may not arrive", () => {
-  it("keeps the scroll-linked entrance behind a support query", () => {
-    const supported = blockAfter(VIEW_TIMELINE_GUARD);
-    expect(supported).toMatch(/animation-timeline:\s*view\(\)/);
+  it("paces no entrance off the scroll position, which a tall section never finishes", () => {
+    const timelines = [...CSS.matchAll(/animation-timeline\s*:\s*([^;]+);/g)].map((match) =>
+      match[1].trim(),
+    );
 
-    const declarations = CSS.split(VIEW_TIMELINE_GUARD).join("");
-    const timelineUses = [...declarations.matchAll(/animation-timeline\s*:/g)].length;
-    const insideSupport = [...supported.matchAll(/animation-timeline\s*:/g)].length;
-    expect(timelineUses, "a view timeline is set outside the support query").toBe(insideSupport);
+    expect(timelines, `${animationDeclarations().length} animations examined`).toEqual([]);
+  });
+
+  it("gives every animation a duration of its own", () => {
+    const declarations = animationDeclarations();
+    const timeless = declarations.filter(
+      (declaration) => !/[\d.]+m?s\b/.test(withTokensResolved(declaration)),
+    );
+
+    expect(declarations.length, "no animation was examined").toBeGreaterThan(0);
+    expect(timeless, "an animation runs for however long something else decides").toEqual([]);
   });
 
   it("never hides an element outside a keyframe", () => {

@@ -390,14 +390,6 @@ table {
   .hud-corridor-flow {
     animation: uy-corridor-flow 1.4s linear infinite;
   }
-
-  @supports (animation-timeline: view()) {
-    main .band > .container:not(.no-scroll-entrance) {
-      animation: rise-in linear both;
-      animation-timeline: view();
-      animation-range: entry 15% cover 25%;
-    }
-  }
 }
 
 body {
