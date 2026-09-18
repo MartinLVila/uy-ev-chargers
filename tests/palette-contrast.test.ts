@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { readWithUnixLineEndings } from "./helpers/source-text";
 import { describe, expect, it } from "vitest";
 import {
   CONNECTOR_HEALTH,
@@ -6,11 +6,11 @@ import {
   STATION_PRESENCE,
   USAGE_PRESENTATION,
 } from "../src/lib/ui/health";
-import { contrast, toRgb255, tokensInBlock } from "./helpers/colour";
+import { contrast, toRgb255, tokenValue, tokensInBlock } from "./helpers/colour";
 
 const OPENSTREETMAP_LAND = "#f2efe9";
 
-const CSS = readFileSync(new URL("../src/app/globals.css", import.meta.url), "utf8");
+const CSS = readWithUnixLineEndings(new URL("../src/app/globals.css", import.meta.url));
 
 const TEXT_CONTRAST = 4.5;
 const GRAPHIC_CONTRAST = 3;
@@ -18,12 +18,6 @@ const GRAPHIC_CONTRAST = 3;
 const light = tokensInBlock(CSS, ":root {");
 const dark = tokensInBlock(CSS, ':root[data-theme="dark"] {');
 const darkByPreference = tokensInBlock(CSS, ':root:not([data-theme="light"]) {');
-
-function tokenValue(tokens: Record<string, string>, name: string): string {
-  const value = tokens[name];
-  if (!value) throw new Error(`--${name} is not declared`);
-  return value;
-}
 
 function resolveColour(colour: string, tokens: Record<string, string>): string {
   const named = colour.match(/^var\(--([\w-]+)\)$/);

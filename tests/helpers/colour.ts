@@ -55,6 +55,43 @@ export function toRgb255(colour: string): [number, number, number] {
   throw new Error(`not a recognised colour (expected hex or oklch): ${colour}`);
 }
 
+export function toRgba(colour: string): { rgb: [number, number, number]; alpha: number } {
+  const translucent = colour.match(
+    /^rgba?\(\s*(\d+)[\s,]+(\d+)[\s,]+(\d+)\s*\/\s*([\d.]+)\s*\)$/,
+  );
+  if (translucent) {
+    return {
+      rgb: [Number(translucent[1]), Number(translucent[2]), Number(translucent[3])],
+      alpha: Number(translucent[4]),
+    };
+  }
+
+  return { rgb: toRgb255(colour), alpha: 1 };
+}
+
+export function composite(over: string, under: string): [number, number, number] {
+  const top = toRgba(over);
+  const bottom = toRgb255(under);
+
+  return top.rgb.map((channelValue, index) =>
+    Math.round(top.alpha * channelValue + (1 - top.alpha) * bottom[index]),
+  ) as [number, number, number];
+}
+
+function toHex([r, g, b]: [number, number, number]): string {
+  return `#${[r, g, b].map((value) => value.toString(16).padStart(2, "0")).join("")}`;
+}
+
+export function contrastWhenPaintedOn(over: string, under: string): number {
+  return contrast(toHex(composite(over, under)), under);
+}
+
+export function tokenValue(tokens: Record<string, string>, name: string): string {
+  const value = tokens[name];
+  if (!value) throw new Error(`--${name} is not declared`);
+  return value;
+}
+
 function channel(value: number): number {
   const scaled = value / 255;
   return scaled <= 0.03928 ? scaled / 12.92 : ((scaled + 0.055) / 1.055) ** 2.4;

@@ -41,8 +41,8 @@
 
   --map-land: #dfe4e8;
   --map-neighbor: #eaeef0;
-  --map-outline: rgb(0 0 0 / 0.3);
-  --map-scan: rgb(0 0 0 / 0.07);
+  --map-outline: rgb(0 0 0 / 0.5);
+  --map-scan: rgb(0 0 0 / 0.14);
 }
 
 @media (prefers-color-scheme: dark) {

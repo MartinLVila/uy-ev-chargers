@@ -1,10 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { readWithUnixLineEndings } from "./helpers/source-text";
-import { contrast, tokensInBlock } from "./helpers/colour";
+import { contrastWhenPaintedOn, tokenValue, tokensInBlock } from "./helpers/colour";
 
 const CSS = readWithUnixLineEndings(new URL("../src/app/globals.css", import.meta.url));
 
-const GRAPHIC_CONTRAST = 3;
+const SEPARATION = 3;
+const DRAWS_SOMETHING = 1.25;
 
 const light = tokensInBlock(CSS, ":root {");
 const dark = tokensInBlock(CSS, ':root[data-theme="dark"] {');
@@ -12,45 +13,40 @@ const darkByPreference = tokensInBlock(CSS, ':root:not([data-theme="light"]) {')
 
 const MAP_TOKENS = ["map-land", "map-neighbor", "map-outline", "map-scan"];
 
-const MAP_RULES = [
-  ".hud-map-ground",
-  ".hud-country-uruguay",
-  ".hud-country-neighbor",
-  ".hud-scan-line",
-];
-
-const TOP_LEVEL_RULES = new Map<string, string>();
-for (const rule of CSS.matchAll(/(?:^|\n)([.#][\w-]+)\s*\{([^}]*)\}/g)) {
-  TOP_LEVEL_RULES.set(rule[1], (TOP_LEVEL_RULES.get(rule[1]) ?? "") + rule[2]);
+interface Paint {
+  selector: string;
+  property: string;
+  value: string;
 }
 
-function paintedValues(selector: string): string[] {
-  const body = TOP_LEVEL_RULES.get(selector);
-  if (body === undefined) throw new Error(`no rule for ${selector}`);
-
-  return [...body.matchAll(/\b(?:fill|stroke):\s*([^;]+);/g)].map((match) => match[1].trim());
+function mapPaints(): Paint[] {
+  const paints: Paint[] = [];
+  for (const rule of CSS.matchAll(/([^{}]*\.hud-[\w-]+[^{}]*)\{([^{}]*)\}/g)) {
+    const selector = rule[1].trim().replace(/\s+/g, " ");
+    for (const declaration of rule[2].matchAll(/\b(fill|stroke):\s*([^;]+);/g)) {
+      paints.push({ selector, property: declaration[1], value: declaration[2].trim() });
+    }
+  }
+  return paints;
 }
 
-function tokenValue(tokens: Record<string, string>, name: string): string {
-  const value = tokens[name];
-  if (!value) throw new Error(`--${name} is not declared`);
-  return value;
-}
+const paints = mapPaints();
+const selectors = new Set(paints.map((paint) => paint.selector));
+const examined = `${selectors.size} map rules, ${paints.length} fills and strokes`;
 
 describe("the map is painted from tokens, so it swaps with the rest of the page", () => {
-  const painted = MAP_RULES.flatMap((selector) =>
-    paintedValues(selector).map((value) => `${selector}: ${value}`),
-  );
-  const examined = `${MAP_RULES.length} rules, ${painted.length} fills and strokes, ${MAP_TOKENS.length} tokens`;
-
-  it("paints every map surface through a token rather than a literal colour", () => {
-    const literals = painted.filter((entry) => !/var\(--[\w-]+\)$/.test(entry));
-
-    expect(literals, examined).toEqual([]);
+  it("sweeps a map rule at all, rather than reporting clean on nothing", () => {
+    expect(selectors.size, examined).toBeGreaterThanOrEqual(8);
+    expect([...selectors]).toContain(".hud-country-uruguay");
+    expect([...selectors]).toContain(".hud-scan-line");
   });
 
-  it("finds at least one paint on every map rule, rather than sweeping nothing", () => {
-    expect(painted.length, examined).toBeGreaterThanOrEqual(MAP_RULES.length);
+  it("paints every map surface through a token rather than a literal colour", () => {
+    const literals = paints
+      .filter((paint) => !/^(var\(--[\w-]+\)|none|transparent|inherit|currentColor)$/.test(paint.value))
+      .map((paint) => `${paint.selector} { ${paint.property}: ${paint.value} }`);
+
+    expect(literals, examined).toEqual([]);
   });
 
   for (const token of MAP_TOKENS) {
@@ -63,16 +59,28 @@ describe("the map is painted from tokens, so it swaps with the rest of the page"
   }
 });
 
-describe("a locality circle stays visible against the land it sits on", () => {
+describe("the country is separated from the water it floats on, in either theme", () => {
   for (const [theme, tokens] of [
     ["light", light],
     ["dark", dark],
   ] as const) {
+    it(`${theme}: the coastline reads against the land it encloses`, () => {
+      expect(
+        contrastWhenPaintedOn(tokenValue(tokens, "map-outline"), tokenValue(tokens, "map-land")),
+      ).toBeGreaterThanOrEqual(SEPARATION);
+    });
+
+    it(`${theme}: the scan line draws something rather than nothing`, () => {
+      expect(
+        contrastWhenPaintedOn(tokenValue(tokens, "map-scan"), tokenValue(tokens, "map-land")),
+      ).toBeGreaterThanOrEqual(DRAWS_SOMETHING);
+    });
+
     for (const marker of ["status-good", "status-critical", "chart-neutral"]) {
-      it(`${theme}: --${marker} reads against --map-land`, () => {
+      it(`${theme}: a locality's --${marker} ring reads against --map-land`, () => {
         expect(
-          contrast(tokenValue(tokens, marker), tokenValue(tokens, "map-land")),
-        ).toBeGreaterThanOrEqual(GRAPHIC_CONTRAST);
+          contrastWhenPaintedOn(tokenValue(tokens, marker), tokenValue(tokens, "map-land")),
+        ).toBeGreaterThanOrEqual(SEPARATION);
       });
     }
   }
