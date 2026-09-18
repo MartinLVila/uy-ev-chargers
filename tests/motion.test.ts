@@ -54,7 +54,15 @@ function keyframeDeclarations(): string[] {
 }
 
 function animationDeclarations(): string[] {
-  return [...CSS.matchAll(/(?<![\w-])animation\s*:\s*([^;]+);/g)].map((match) => match[1].trim());
+  return [...CSS.matchAll(/(?<![\w-])animation\s*:\s*([^;}]+)[;}]/g)].map((match) =>
+    match[1].trim(),
+  );
+}
+
+function timelineDeclarations(): string[] {
+  return [...CSS.matchAll(/animation-timeline\s*:\s*([^;}]+)[;}]/g)].map((match) =>
+    match[1].trim(),
+  );
 }
 
 const TOKEN_VALUES = new Map(
@@ -107,11 +115,10 @@ describe("reduced motion removes the motion rather than shortening it", () => {
 
 describe("the page is never left invisible waiting for motion that may not arrive", () => {
   it("paces no entrance off the scroll position, which a tall section never finishes", () => {
-    const timelines = [...CSS.matchAll(/animation-timeline\s*:\s*([^;]+);/g)].map((match) =>
-      match[1].trim(),
-    );
+    const examined = animationDeclarations();
 
-    expect(timelines, `${animationDeclarations().length} animations examined`).toEqual([]);
+    expect(examined.length, "no animation was examined").toBeGreaterThan(0);
+    expect(timelineDeclarations(), `${examined.length} animations examined`).toEqual([]);
   });
 
   it("gives every animation a duration of its own", () => {
