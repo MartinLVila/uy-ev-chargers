@@ -24,7 +24,7 @@ function stripAccents(value: string): string {
   return value.normalize("NFD").replace(/[̀-ͯ]/g, "");
 }
 
-function stripDepartmentSuffix(value: string): string {
+export function stripDepartmentSuffix(value: string): string {
   return value.replace(/\s+departamento\s+de\s+.*$/i, "");
 }
 

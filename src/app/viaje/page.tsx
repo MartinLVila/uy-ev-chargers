@@ -7,6 +7,8 @@ import {
 } from "@/lib/metrics/queries";
 import { windowFromDays } from "@/lib/metrics/window";
 import { formatNumber, formatPercent } from "@/lib/ui/format";
+import { fold, UNKNOWN_DEPARTMENT } from "@/lib/ute/normalize";
+import { stripDepartmentSuffix } from "@/lib/ui/locality";
 
 export const revalidate = 60;
 
@@ -61,6 +63,11 @@ export default async function TripPage({
         <Link href="/viaje">← Elegir otro departamento</Link>
       </p>
       <h1 className="section-title">{department.department}</h1>
+      {department.department === UNKNOWN_DEPARTMENT && (
+        <p style={{ margin: "8px 0 0", fontSize: 13.5, color: "var(--text-muted)" }}>
+          Estaciones que UTE no ubicó en ningún departamento.
+        </p>
+      )}
       <p className="support-text" style={{ marginTop: 12 }}>
         {stations.length === 0
           ? "Todavía no hay suficiente historial para ordenar estas estaciones por confiabilidad."
@@ -74,7 +81,11 @@ export default async function TripPage({
       {stations.length > 0 && (
         <ul role="list" className="hairline-list" style={{ marginTop: 20 }}>
           {stations.map((station) => (
-            <TripStationRow key={station.slug} station={station} />
+            <TripStationRow
+              key={station.slug}
+              station={station}
+              department={department.department}
+            />
           ))}
         </ul>
       )}
@@ -82,7 +93,28 @@ export default async function TripPage({
   );
 }
 
-function TripStationRow({ station }: { station: StationReliability }) {
+function namesAnotherPlace(city: string | null, department: string): city is string {
+  if (city === null || city.trim().length === 0) return false;
+  return fold(stripDepartmentSuffix(city)) !== fold(department);
+}
+
+function sortUnknownLast(
+  a: { department: string },
+  b: { department: string },
+): number {
+  if (a.department === UNKNOWN_DEPARTMENT) return b.department === UNKNOWN_DEPARTMENT ? 0 : 1;
+  if (b.department === UNKNOWN_DEPARTMENT) return -1;
+  return a.department.localeCompare(b.department, "es");
+}
+
+function TripStationRow({
+  station,
+  department,
+}: {
+  station: StationReliability;
+  department: string;
+}) {
+  const locality = namesAnotherPlace(station.city, department) ? station.city : null;
   const color =
     station.availability === null
       ? "var(--text-muted)"
@@ -100,7 +132,7 @@ function TripStationRow({ station }: { station: StationReliability }) {
       >
         <span>
           {station.name}
-          {station.city && <span style={{ color: "var(--text-muted)" }}> · {station.city}</span>}
+          {locality && <span style={{ color: "var(--text-muted)" }}> · {locality}</span>}
         </span>
         <span style={{ color, fontWeight: 600, fontVariantNumeric: "tabular-nums" }}>
           {station.availability === null ? "sin clasificar" : formatPercent(station.availability)}
@@ -117,7 +149,7 @@ function DepartmentPicker({
   departments: { department: string; stations: number }[];
   notFoundFor?: string;
 }) {
-  const sorted = [...departments].sort((a, b) => a.department.localeCompare(b.department, "es"));
+  const sorted = [...departments].sort(sortUnknownLast);
 
   return (
     <TripShell>
@@ -139,7 +171,15 @@ function DepartmentPicker({
               href={`/viaje?departamento=${encodeURIComponent(row.department)}`}
               style={{ display: "flex", justifyContent: "space-between", padding: "12px 0", fontSize: 14.5 }}
             >
-              <span>{row.department}</span>
+              <span>
+                {row.department}
+                {row.department === UNKNOWN_DEPARTMENT && (
+                  <span style={{ color: "var(--text-muted)" }}>
+                    {" "}
+                    · sin departamento en el feed
+                  </span>
+                )}
+              </span>
               <span style={{ color: "var(--text-secondary)" }}>
                 {formatNumber(row.stations)} {row.stations === 1 ? "estación" : "estaciones"}
               </span>
