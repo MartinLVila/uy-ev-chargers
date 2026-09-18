@@ -5,26 +5,31 @@ import Link from "next/link";
 import { formatDistanceKm } from "@/lib/ui/format";
 import {
   localityHref,
+  locatorAdvice,
+  locatorFailureFor,
+  pageMayLocate,
   rankNearestLocalities,
   type LocalityPosition,
+  type LocatorFailure,
   type NearestLocalities,
+  type PolicyView,
 } from "@/lib/ui/near-me";
 
 type LocatorState =
   | { status: "idle" }
   | { status: "locating" }
-  | { status: "unsupported" }
-  | { status: "denied" }
-  | { status: "unavailable" }
-  | { status: "timed-out" }
+  | { status: "failed"; failure: LocatorFailure }
   | { status: "located"; nearest: NearestLocalities };
 
 const FIX_TIMEOUT_MS = 10_000;
 
-function failureFor(error: GeolocationPositionError): LocatorState {
-  if (error.code === error.PERMISSION_DENIED) return { status: "denied" };
-  if (error.code === error.TIMEOUT) return { status: "timed-out" };
-  return { status: "unavailable" };
+function declaredPolicy(): PolicyView | undefined {
+  const document_ = document as Document & {
+    permissionsPolicy?: PolicyView;
+    featurePolicy?: PolicyView;
+  };
+
+  return document_.permissionsPolicy ?? document_.featurePolicy;
 }
 
 function buttonLabel(state: LocatorState): string {
@@ -38,7 +43,7 @@ export function NearMeLocator({ localities }: { localities: LocalityPosition[] }
 
   function locate() {
     if (typeof navigator === "undefined" || !navigator.geolocation) {
-      setState({ status: "unsupported" });
+      setState({ status: "failed", failure: "unsupported" });
       return;
     }
 
@@ -59,7 +64,7 @@ export function NearMeLocator({ localities }: { localities: LocalityPosition[] }
       },
       (error) => {
         console.error("geolocation failed", { code: error.code, message: error.message });
-        setState(failureFor(error));
+        setState({ status: "failed", failure: locatorFailureFor(error.code, pageMayLocate(declaredPolicy())) });
       },
       { timeout: FIX_TIMEOUT_MS, maximumAge: 0, enableHighAccuracy: true },
     );
@@ -88,20 +93,7 @@ function LocatorStatus({ state }: { state: LocatorState }) {
 
   if (state.status === "located") return <NearestResult nearest={state.nearest} />;
 
-  return <Advice>{failureAdvice(state.status)}</Advice>;
-}
-
-function failureAdvice(status: "unsupported" | "denied" | "unavailable" | "timed-out"): string {
-  if (status === "unsupported") {
-    return "Tu navegador no admite geolocalización. Elegí una localidad de la lista de abajo.";
-  }
-  if (status === "denied") {
-    return "No nos diste permiso para usar tu ubicación. Elegí una localidad de la lista de abajo.";
-  }
-  if (status === "timed-out") {
-    return "Tardamos demasiado en ubicarte. Probá otra vez o elegí una localidad de la lista de abajo.";
-  }
-  return "Tu dispositivo no pudo determinar dónde estás. Elegí una localidad de la lista de abajo.";
+  return <Advice>{locatorAdvice(state.failure)}</Advice>;
 }
 
 function NearestResult({ nearest }: { nearest: NearestLocalities }) {

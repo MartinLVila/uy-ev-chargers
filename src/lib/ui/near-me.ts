@@ -82,3 +82,46 @@ export function availabilityClaim(presence: string, tally: ConnectorTallyByUsage
 
   return tally.free > 0 ? "Ahora hay lugar." : "Ahora no hay lugar libre.";
 }
+
+export type LocatorFailure =
+  | "unsupported"
+  | "blocked-by-this-page"
+  | "not-granted"
+  | "unavailable"
+  | "timed-out";
+
+export interface PolicyView {
+  allowsFeature(feature: string): boolean;
+}
+
+const PERMISSION_DENIED = 1;
+const TIMEOUT = 3;
+
+export function pageMayLocate(policy: PolicyView | undefined): boolean {
+  return policy ? policy.allowsFeature("geolocation") : true;
+}
+
+export function locatorFailureFor(errorCode: number, thisPageMayLocate: boolean): LocatorFailure {
+  if (errorCode === PERMISSION_DENIED) {
+    return thisPageMayLocate ? "not-granted" : "blocked-by-this-page";
+  }
+
+  return errorCode === TIMEOUT ? "timed-out" : "unavailable";
+}
+
+export function locatorAdvice(failure: LocatorFailure): string {
+  if (failure === "unsupported") {
+    return "Tu navegador no admite geolocalización. Elegí una localidad de la lista de abajo.";
+  }
+  if (failure === "blocked-by-this-page") {
+    return "Esta página tiene bloqueado el acceso a la ubicación, así que no llegamos a pedírtela. Elegí una localidad de la lista de abajo.";
+  }
+  if (failure === "not-granted") {
+    return "Tu navegador no nos dio acceso a tu ubicación. Podés permitirlo desde el candado de la barra de direcciones, o elegir una localidad de la lista de abajo.";
+  }
+  if (failure === "timed-out") {
+    return "Tardamos demasiado en ubicarte. Probá otra vez o elegí una localidad de la lista de abajo.";
+  }
+
+  return "Tu dispositivo no pudo determinar dónde estás. Elegí una localidad de la lista de abajo.";
+}
