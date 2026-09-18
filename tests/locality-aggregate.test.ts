@@ -29,9 +29,35 @@ function station(overrides: Partial<StationStatus>): StationStatus {
 
 const stations = fixtureStations as StationStatus[];
 
-describe("the locality count is asserted against the committed snapshot", () => {
-  it("derives exactly this many localities from the current fixture", () => {
-    expect(aggregateByLocality(stations)).toHaveLength(100);
+const departmentCount = new Set(stations.map((s) => s.department)).size;
+
+function fold(value: string): string {
+  return value
+    .normalize("NFD")
+    .replace(/\p{M}/gu, "")
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+describe("the grouping's granularity is anchored to the fixture, not to a number someone has to bump", () => {
+  const localities = aggregateByLocality(stations);
+  const examined = `${stations.length} stations, ${departmentCount} departments, ${localities.length} localities`;
+
+  it("stays finer-grained than the departments it would collapse into", () => {
+    expect(localities.length, examined).toBeGreaterThan(departmentCount);
+  });
+
+  it("leaves no two localities in one department spelling the same name", () => {
+    const seen = new Set<string>();
+    const collisions: string[] = [];
+    for (const group of localities) {
+      const key = `${fold(group.name)}|${group.department}`;
+      if (seen.has(key)) collisions.push(key);
+      seen.add(key);
+    }
+
+    expect(collisions, examined).toEqual([]);
   });
 });
 
