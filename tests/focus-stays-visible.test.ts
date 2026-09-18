@@ -61,10 +61,14 @@ describe("nothing sticky is allowed to sit on top of the focused element", () =>
 
 describe("the focus ring is reserved for, not just the element it surrounds", () => {
   it("draws every ring from the same two tokens", () => {
-    const declared = [...CSS.matchAll(/outline:\s*([^;]+);/g)].map((match) => match[1].trim());
+    const declared = [...CSS.matchAll(/(?<![\w-])outline:\s*([^;]+);/g)].map((match) =>
+      match[1].trim(),
+    );
     const drawn = declared.filter((outline) => !/^(none|0)$/.test(outline));
     const removed = declared.filter((outline) => /^(none|0)$/.test(outline));
-    const offsets = [...CSS.matchAll(/outline-offset:\s*([^;]+);/g)].map((match) => match[1].trim());
+    const offsets = [...CSS.matchAll(/(?<![\w-])outline-offset:\s*([^;]+);/g)].map((match) =>
+      match[1].trim(),
+    );
 
     expect(drawn.length, "no focus ring was examined").toBeGreaterThan(0);
     expect(offsets.length, "a drawn ring has no offset, or an offset has no ring").toBe(drawn.length);
