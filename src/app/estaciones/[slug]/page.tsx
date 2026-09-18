@@ -13,7 +13,12 @@ import {
 import { windowFromDays } from "@/lib/metrics/window";
 import { daysOfRange, lastDaysPhrase, observedSince, observedSpan } from "@/lib/ui/coverage";
 import { formatDateTime, formatElapsed, formatNumber } from "@/lib/ui/format";
-import { connectorUsage, connectorsNow, stationPresence } from "@/lib/ui/health";
+import {
+  colourWhenPresent,
+  connectorUsage,
+  connectorsNow,
+  stationPresence,
+} from "@/lib/ui/health";
 import { RANKING_WINDOW_DAYS, outageSuperlative } from "@/lib/ui/station-ranking";
 
 export const revalidate = 60;
@@ -143,18 +148,18 @@ export default async function StationPage({ params }: { params: Promise<{ slug: 
               <StationStat
                 label="En servicio ahora"
                 value={formatNumber(now.inService)}
-                color="var(--status-good)"
+                color={colourWhenPresent(now.inService, "var(--status-good)")}
               />
               <StationStat
                 label="Fuera de servicio ahora"
                 value={formatNumber(now.outOfService)}
-                color={now.outOfService > 0 ? "var(--status-critical)" : undefined}
+                color={colourWhenPresent(now.outOfService, "var(--status-critical)")}
               />
               {now.unknown > 0 && (
                 <StationStat
                   label="Estado desconocido"
                   value={formatNumber(now.unknown)}
-                  color="var(--chart-neutral)"
+                  color={colourWhenPresent(now.unknown, "var(--chart-neutral)")}
                 />
               )}
             </dl>
