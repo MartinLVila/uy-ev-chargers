@@ -214,7 +214,7 @@ describe("the bucket for stations with no department is not offered as a destina
     expect(order.filter((index) => index === -1), "a department is missing from the picker").toEqual(
       [],
     );
-    expect(order, `3 departments examined`).toEqual([...order].sort((a, b) => a - b));
+    expect(order, `${order.length} departments examined`).toEqual([...order].sort((a, b) => a - b));
   });
 
   it("says what it is rather than passing it off as a place", async () => {
@@ -223,5 +223,47 @@ describe("the bucket for stations with no department is not offered as a destina
     const markup = await render({});
 
     expect(markup).toContain("sin departamento en el feed");
+  });
+});
+
+describe("the department UTE appends to a locality is not a different place", () => {
+  it("drops a locality whose only difference is the department spelled out after it", async () => {
+    departmentBreakdown.mockResolvedValue([department({ department: "Montevideo" })]);
+    stationReliability.mockResolvedValue([
+      reliability({
+        department: "Montevideo",
+        city: "Montevideo Departamento de Montevideo",
+        name: "Electrolinera Malvín",
+      }),
+    ]);
+
+    const markup = await render({ departamento: "Montevideo" });
+
+    expect(markup).toContain("Electrolinera Malvín");
+    expect(markup).not.toContain("Departamento de");
+  });
+
+  it("keeps a locality that is a real town inside the department", async () => {
+    departmentBreakdown.mockResolvedValue([department({ department: "Colonia" })]);
+    stationReliability.mockResolvedValue([
+      reliability({
+        department: "Colonia",
+        city: "Colonia del Sacramento",
+        name: "ANCAP Colonia del Sacramento",
+      }),
+    ]);
+
+    const markup = await render({ departamento: "Colonia" });
+
+    expect(markup).toContain("· Colonia del Sacramento");
+  });
+
+  it("says what the unplaced bucket is on its own page, not only in the picker", async () => {
+    departmentBreakdown.mockResolvedValue([department({ department: "Desconocido" })]);
+    stationReliability.mockResolvedValue([reliability({ department: "Desconocido" })]);
+
+    const markup = await render({ departamento: "Desconocido" });
+
+    expect(markup).toContain("no ubicó en ningún departamento");
   });
 });

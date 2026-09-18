@@ -8,6 +8,7 @@ import {
 import { windowFromDays } from "@/lib/metrics/window";
 import { formatNumber, formatPercent } from "@/lib/ui/format";
 import { fold, UNKNOWN_DEPARTMENT } from "@/lib/ute/normalize";
+import { stripDepartmentSuffix } from "@/lib/ui/locality";
 
 export const revalidate = 60;
 
@@ -62,6 +63,11 @@ export default async function TripPage({
         <Link href="/viaje">← Elegir otro departamento</Link>
       </p>
       <h1 className="section-title">{department.department}</h1>
+      {department.department === UNKNOWN_DEPARTMENT && (
+        <p style={{ margin: "8px 0 0", fontSize: 13.5, color: "var(--text-muted)" }}>
+          Estaciones que UTE no ubicó en ningún departamento.
+        </p>
+      )}
       <p className="support-text" style={{ marginTop: 12 }}>
         {stations.length === 0
           ? "Todavía no hay suficiente historial para ordenar estas estaciones por confiabilidad."
@@ -88,7 +94,8 @@ export default async function TripPage({
 }
 
 function namesAnotherPlace(city: string | null, department: string): city is string {
-  return city !== null && city.trim().length > 0 && fold(city) !== fold(department);
+  if (city === null || city.trim().length === 0) return false;
+  return fold(stripDepartmentSuffix(city)) !== fold(department);
 }
 
 function sortUnknownLast(
