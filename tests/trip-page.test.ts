@@ -163,3 +163,65 @@ describe("stations for a chosen department are ranked by real historical availab
     expect(markup).toContain("Todavía no hay suficiente historial");
   });
 });
+
+describe("a row never restates the department the page is already filtered by", () => {
+  it("drops the locality when it names the same place as the heading", async () => {
+    departmentBreakdown.mockResolvedValue([department({ department: "Montevideo" })]);
+    stationReliability.mockResolvedValue([
+      reliability({ department: "Montevideo", city: "Montevideo", name: "Axion Carrasco" }),
+    ]);
+
+    const markup = await render({ departamento: "Montevideo" });
+
+    expect(markup).toContain("Axion Carrasco");
+    expect(markup).not.toContain("· Montevideo");
+  });
+
+  it("keeps it when it names a different one", async () => {
+    departmentBreakdown.mockResolvedValue([department({ department: "Canelones" })]);
+    stationReliability.mockResolvedValue([
+      reliability({ department: "Canelones", city: "Ciudad de la Costa", name: "Almenara Mall" }),
+    ]);
+
+    const markup = await render({ departamento: "Canelones" });
+
+    expect(markup).toContain("· Ciudad de la Costa");
+  });
+
+  it("treats an accent as the same place rather than a different one", async () => {
+    departmentBreakdown.mockResolvedValue([department({ department: "Río Negro" })]);
+    stationReliability.mockResolvedValue([
+      reliability({ department: "Río Negro", city: "Rio Negro", name: "Plaza Romay" }),
+    ]);
+
+    const markup = await render({ departamento: "Río Negro" });
+
+    expect(markup).not.toContain("· Rio Negro");
+  });
+});
+
+describe("the bucket for stations with no department is not offered as a destination", () => {
+  it("sorts it last however the breakdown arrives", async () => {
+    departmentBreakdown.mockResolvedValue([
+      department({ department: "Rocha" }),
+      department({ department: "Desconocido" }),
+      department({ department: "Artigas" }),
+    ]);
+
+    const markup = await render({});
+    const order = ["Artigas", "Rocha", "Desconocido"].map((name) => markup.indexOf(name));
+
+    expect(order.filter((index) => index === -1), "a department is missing from the picker").toEqual(
+      [],
+    );
+    expect(order, `3 departments examined`).toEqual([...order].sort((a, b) => a - b));
+  });
+
+  it("says what it is rather than passing it off as a place", async () => {
+    departmentBreakdown.mockResolvedValue([department({ department: "Desconocido" })]);
+
+    const markup = await render({});
+
+    expect(markup).toContain("sin departamento en el feed");
+  });
+});
