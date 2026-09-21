@@ -9,11 +9,11 @@
     "longitude": -54.1667246,
     "presence": "listed",
     "connectors": 1,
-    "operational": 1,
-    "faulted": 0,
+    "operational": 0,
+    "faulted": 1,
     "unknown": 0,
     "absent": 2,
-    "outOfService": 2
+    "outOfService": 3
   },
   {
     "slug": "acceso-emergencia-hospital-de-clinicas",
@@ -105,11 +105,11 @@
     "longitude": -57.406569,
     "presence": "listed",
     "connectors": 1,
-    "operational": 1,
-    "faulted": 0,
+    "operational": 0,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "ancap-bella-union",
@@ -247,13 +247,13 @@
     "department": "Rocha",
     "latitude": -33.694694,
     "longitude": -53.455267,
-    "presence": "listed",
-    "connectors": 1,
-    "operational": 1,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "ancap-ciudad-del-plata",
@@ -393,11 +393,11 @@
     "longitude": -58.181172,
     "presence": "listed",
     "connectors": 1,
-    "operational": 0,
-    "faulted": 1,
+    "operational": 1,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "ancap-guichon",
@@ -647,13 +647,13 @@
     "department": "Canelones",
     "latitude": -34.694035,
     "longitude": -55.856194,
-    "presence": "listed",
-    "connectors": 1,
-    "operational": 1,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "ancap-rio-branco",
@@ -857,11 +857,11 @@
     "longitude": -55.628443,
     "presence": "listed",
     "connectors": 1,
-    "operational": 1,
-    "faulted": 0,
+    "operational": 0,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "ancap-sarandi-grande",
@@ -937,11 +937,11 @@
     "longitude": -54.39778,
     "presence": "listed",
     "connectors": 1,
-    "operational": 1,
-    "faulted": 0,
+    "operational": 0,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "ancap-trinidad",
@@ -1897,11 +1897,11 @@
     "longitude": -56.1543685,
     "presence": "listed",
     "connectors": 2,
-    "operational": 2,
-    "faulted": 0,
+    "operational": 1,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "estadio-martinez-monegal",
@@ -2345,11 +2345,11 @@
     "longitude": -54.940704,
     "presence": "listed",
     "connectors": 8,
-    "operational": 8,
-    "faulted": 0,
+    "operational": 6,
+    "faulted": 2,
     "unknown": 0,
     "absent": 2,
-    "outOfService": 2
+    "outOfService": 4
   },
   {
     "slug": "liv-district-carrasco-1",
@@ -2473,11 +2473,11 @@
     "longitude": -56.136669,
     "presence": "listed",
     "connectors": 2,
-    "operational": 1,
-    "faulted": 1,
+    "operational": 2,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "moreira-automoviles-atlantida",
@@ -3241,11 +3241,11 @@
     "longitude": -56.0377477,
     "presence": "listed",
     "connectors": 8,
-    "operational": 7,
-    "faulted": 1,
+    "operational": 6,
+    "faulted": 2,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 2
   },
   {
     "slug": "plaza-rivera-fray-bentos",
@@ -3417,11 +3417,11 @@
     "longitude": -54.932418,
     "presence": "listed",
     "connectors": 4,
-    "operational": 4,
-    "faulted": 0,
+    "operational": 2,
+    "faulted": 2,
     "unknown": 0,
     "absent": 2,
-    "outOfService": 2
+    "outOfService": 4
   },
   {
     "slug": "punta-shopping",
@@ -3479,13 +3479,13 @@
     "department": "San José",
     "latitude": -34.342544,
     "longitude": -56.70298,
-    "presence": "delisted",
-    "connectors": 0,
-    "operational": 0,
+    "presence": "listed",
+    "connectors": 1,
+    "operational": 1,
     "faulted": 0,
     "unknown": 0,
-    "absent": 1,
-    "outOfService": 1
+    "absent": 0,
+    "outOfService": 0
   },
   {
     "slug": "san-rafael",
@@ -3497,11 +3497,11 @@
     "longitude": -54.9162997,
     "presence": "listed",
     "connectors": 4,
-    "operational": 2,
-    "faulted": 2,
+    "operational": 4,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 2
+    "outOfService": 0
   },
   {
     "slug": "san-ramon",
@@ -3545,11 +3545,11 @@
     "longitude": -56.169246,
     "presence": "listed",
     "connectors": 2,
-    "operational": 2,
-    "faulted": 0,
+    "operational": 1,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "skatepark-carrasco",
@@ -3575,13 +3575,13 @@
     "department": "Desconocido",
     "latitude": -33.508548,
     "longitude": -56.9300983,
-    "presence": "listed",
-    "connectors": 2,
-    "operational": 2,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 2,
+    "outOfService": 2
   },
   {
     "slug": "tambores",
@@ -3928,8 +3928,8 @@
     "latitude": -34.883584,
     "longitude": -56.0816265,
     "presence": "listed",
-    "connectors": 4,
-    "operational": 4,
+    "connectors": 3,
+    "operational": 3,
     "faulted": 0,
     "unknown": 0,
     "absent": 0,
