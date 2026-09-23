@@ -569,11 +569,11 @@
     "longitude": -58.017944,
     "presence": "listed",
     "connectors": 1,
-    "operational": 1,
-    "faulted": 0,
+    "operational": 0,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "ancap-minas",
@@ -647,13 +647,13 @@
     "department": "Canelones",
     "latitude": -34.694035,
     "longitude": -55.856194,
-    "presence": "delisted",
-    "connectors": 0,
-    "operational": 0,
+    "presence": "listed",
+    "connectors": 1,
+    "operational": 1,
     "faulted": 0,
     "unknown": 0,
-    "absent": 1,
-    "outOfService": 1
+    "absent": 0,
+    "outOfService": 0
   },
   {
     "slug": "ancap-rio-branco",
@@ -825,11 +825,11 @@
     "longitude": -55.576509,
     "presence": "listed",
     "connectors": 2,
-    "operational": 1,
-    "faulted": 1,
+    "operational": 2,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "ancap-santa-lucia",
@@ -903,13 +903,13 @@
     "department": "Maldonado",
     "latitude": -34.8779691,
     "longitude": -55.0527856,
-    "presence": "listed",
-    "connectors": 2,
-    "operational": 2,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 2,
+    "outOfService": 2
   },
   {
     "slug": "ancap-tala",
@@ -1401,11 +1401,11 @@
     "longitude": -54.154971,
     "presence": "listed",
     "connectors": 2,
-    "operational": 1,
-    "faulted": 1,
+    "operational": 2,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "centro-de-atencion-turistica-atlantida",
@@ -1705,11 +1705,11 @@
     "longitude": -56.140618,
     "presence": "listed",
     "connectors": 22,
-    "operational": 22,
-    "faulted": 0,
+    "operational": 21,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "electrolinera-malvin",
@@ -2169,11 +2169,11 @@
     "longitude": -56.148899,
     "presence": "listed",
     "connectors": 4,
-    "operational": 4,
-    "faulted": 0,
+    "operational": 3,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "junta-local-centenario",
@@ -2345,11 +2345,11 @@
     "longitude": -54.940704,
     "presence": "listed",
     "connectors": 8,
-    "operational": 6,
-    "faulted": 2,
+    "operational": 8,
+    "faulted": 0,
     "unknown": 0,
     "absent": 2,
-    "outOfService": 4
+    "outOfService": 2
   },
   {
     "slug": "liv-district-carrasco-1",
@@ -2473,11 +2473,11 @@
     "longitude": -56.136669,
     "presence": "listed",
     "connectors": 2,
-    "operational": 2,
-    "faulted": 0,
+    "operational": 1,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "moreira-automoviles-atlantida",
@@ -2600,12 +2600,12 @@
     "latitude": -34.885144,
     "longitude": -56.195179,
     "presence": "listed",
-    "connectors": 2,
+    "connectors": 6,
     "operational": 2,
-    "faulted": 0,
+    "faulted": 4,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 4
   },
   {
     "slug": "palacio-de-la-luz-dc-mendoza",
@@ -3497,11 +3497,11 @@
     "longitude": -54.9162997,
     "presence": "listed",
     "connectors": 4,
-    "operational": 2,
-    "faulted": 2,
+    "operational": 3,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 2
+    "outOfService": 1
   },
   {
     "slug": "san-ramon",
@@ -3529,11 +3529,11 @@
     "longitude": -56.2027049,
     "presence": "listed",
     "connectors": 2,
-    "operational": 1,
-    "faulted": 1,
+    "operational": 2,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "shopping-nuevocentro",
@@ -3865,11 +3865,11 @@
     "longitude": -55.274783,
     "presence": "listed",
     "connectors": 8,
-    "operational": 6,
-    "faulted": 2,
+    "operational": 8,
+    "faulted": 0,
     "unknown": 0,
     "absent": 3,
-    "outOfService": 5
+    "outOfService": 3
   },
   {
     "slug": "terminal-punta-del-diablo",
@@ -3977,11 +3977,11 @@
     "longitude": -56.615782,
     "presence": "listed",
     "connectors": 3,
-    "operational": 2,
-    "faulted": 1,
+    "operational": 3,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "utec-durazno",
