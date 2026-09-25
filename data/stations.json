@@ -25,11 +25,11 @@
     "longitude": -56.15184,
     "presence": "listed",
     "connectors": 8,
-    "operational": 6,
-    "faulted": 2,
+    "operational": 8,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 2
+    "outOfService": 0
   },
   {
     "slug": "almenara-mall",
@@ -215,13 +215,13 @@
     "department": "Colonia",
     "latitude": -33.986462,
     "longitude": -58.282765,
-    "presence": "listed",
-    "connectors": 1,
-    "operational": 1,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "ancap-cerro-colorado",
@@ -697,11 +697,11 @@
     "longitude": -54.327217,
     "presence": "listed",
     "connectors": 4,
-    "operational": 4,
-    "faulted": 0,
+    "operational": 2,
+    "faulted": 2,
     "unknown": 0,
     "absent": 2,
-    "outOfService": 2
+    "outOfService": 4
   },
   {
     "slug": "ancap-roosevelt-punta-del-este",
@@ -857,11 +857,11 @@
     "longitude": -55.628443,
     "presence": "listed",
     "connectors": 1,
-    "operational": 0,
-    "faulted": 1,
+    "operational": 1,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "ancap-sarandi-grande",
@@ -1160,8 +1160,8 @@
     "latitude": -34.336191,
     "longitude": -57.2594725,
     "presence": "listed",
-    "connectors": 1,
-    "operational": 1,
+    "connectors": 2,
+    "operational": 2,
     "faulted": 0,
     "unknown": 0,
     "absent": 0,
@@ -1705,11 +1705,11 @@
     "longitude": -56.140618,
     "presence": "listed",
     "connectors": 22,
-    "operational": 21,
-    "faulted": 1,
+    "operational": 22,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "electrolinera-malvin",
@@ -1849,11 +1849,11 @@
     "longitude": -54.951832,
     "presence": "listed",
     "connectors": 2,
-    "operational": 2,
-    "faulted": 0,
+    "operational": 1,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "estacion-punta-del-este-club-ituzaingo",
@@ -2551,13 +2551,13 @@
     "department": "Montevideo",
     "latitude": -34.9277636,
     "longitude": -56.1598697,
-    "presence": "listed",
-    "connectors": 2,
-    "operational": 2,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 2,
+    "outOfService": 2
   },
   {
     "slug": "novillo-alegre-punta",
@@ -2601,11 +2601,11 @@
     "longitude": -56.195179,
     "presence": "listed",
     "connectors": 6,
-    "operational": 2,
-    "faulted": 4,
+    "operational": 6,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 4
+    "outOfService": 0
   },
   {
     "slug": "palacio-de-la-luz-dc-mendoza",
@@ -2695,13 +2695,13 @@
     "department": "Montevideo",
     "latitude": -34.908805,
     "longitude": -56.20082,
-    "presence": "delisted",
-    "connectors": 0,
-    "operational": 0,
+    "presence": "listed",
+    "connectors": 1,
+    "operational": 1,
     "faulted": 0,
     "unknown": 0,
-    "absent": 1,
-    "outOfService": 1
+    "absent": 0,
+    "outOfService": 0
   },
   {
     "slug": "parque-de-la-amistad",
@@ -2761,11 +2761,11 @@
     "longitude": -55.704017,
     "presence": "listed",
     "connectors": 2,
-    "operational": 1,
-    "faulted": 1,
+    "operational": 2,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "parque-lineal-young",
@@ -3241,11 +3241,11 @@
     "longitude": -56.0377477,
     "presence": "listed",
     "connectors": 8,
-    "operational": 6,
-    "faulted": 2,
+    "operational": 7,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 2
+    "outOfService": 1
   },
   {
     "slug": "plaza-rivera-fray-bentos",
@@ -3624,12 +3624,12 @@
     "latitude": -34.095979,
     "longitude": -56.214462,
     "presence": "listed",
-    "connectors": 1,
+    "connectors": 2,
     "operational": 1,
-    "faulted": 0,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "tata-maldonado",
@@ -3752,8 +3752,8 @@
     "latitude": -34.861207,
     "longitude": -56.0733388,
     "presence": "listed",
-    "connectors": 2,
-    "operational": 2,
+    "connectors": 1,
+    "operational": 1,
     "faulted": 0,
     "unknown": 0,
     "absent": 0,
@@ -3865,11 +3865,11 @@
     "longitude": -55.274783,
     "presence": "listed",
     "connectors": 8,
-    "operational": 6,
-    "faulted": 2,
+    "operational": 8,
+    "faulted": 0,
     "unknown": 0,
     "absent": 3,
-    "outOfService": 5
+    "outOfService": 3
   },
   {
     "slug": "terminal-punta-del-diablo",
@@ -3977,11 +3977,11 @@
     "longitude": -56.615782,
     "presence": "listed",
     "connectors": 3,
-    "operational": 1,
-    "faulted": 2,
+    "operational": 2,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 2
+    "outOfService": 1
   },
   {
     "slug": "utec-durazno",
