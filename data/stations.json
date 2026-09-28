@@ -391,13 +391,13 @@
     "department": "Río Negro",
     "latitude": -33.169447,
     "longitude": -58.181172,
-    "presence": "listed",
-    "connectors": 1,
-    "operational": 1,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "ancap-guichon",
@@ -647,13 +647,13 @@
     "department": "Canelones",
     "latitude": -34.694035,
     "longitude": -55.856194,
-    "presence": "listed",
-    "connectors": 1,
-    "operational": 1,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "ancap-rio-branco",
@@ -681,11 +681,11 @@
     "longitude": -55.539302,
     "presence": "listed",
     "connectors": 2,
-    "operational": 2,
-    "faulted": 0,
+    "operational": 0,
+    "faulted": 2,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 2
   },
   {
     "slug": "ancap-rocha",
@@ -1081,11 +1081,11 @@
     "longitude": -56.153853,
     "presence": "listed",
     "connectors": 4,
-    "operational": 4,
-    "faulted": 0,
+    "operational": 2,
+    "faulted": 2,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 2
   },
   {
     "slug": "axion-carrasco",
@@ -1369,11 +1369,11 @@
     "longitude": -56.47604,
     "presence": "listed",
     "connectors": 1,
-    "operational": 1,
-    "faulted": 0,
+    "operational": 0,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "casino-parque-hotel",
@@ -1417,11 +1417,11 @@
     "longitude": -55.7644038,
     "presence": "listed",
     "connectors": 2,
-    "operational": 2,
-    "faulted": 0,
+    "operational": 1,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "centro-de-eventos-latu",
@@ -1673,11 +1673,11 @@
     "longitude": -56.937011,
     "presence": "listed",
     "connectors": 2,
-    "operational": 2,
-    "faulted": 0,
+    "operational": 1,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "el-eucalipto",
@@ -1849,11 +1849,11 @@
     "longitude": -54.951832,
     "presence": "listed",
     "connectors": 2,
-    "operational": 2,
-    "faulted": 0,
+    "operational": 1,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "estacion-punta-del-este-club-ituzaingo",
@@ -2233,11 +2233,11 @@
     "longitude": -56.1833816,
     "presence": "listed",
     "connectors": 4,
-    "operational": 4,
-    "faulted": 0,
+    "operational": 2,
+    "faulted": 2,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 2
   },
   {
     "slug": "la-paloma",
@@ -2360,8 +2360,8 @@
     "latitude": -34.87371,
     "longitude": -56.03831,
     "presence": "listed",
-    "connectors": 1,
-    "operational": 1,
+    "connectors": 2,
+    "operational": 2,
     "faulted": 0,
     "unknown": 0,
     "absent": 2,
@@ -2473,11 +2473,11 @@
     "longitude": -56.136669,
     "presence": "listed",
     "connectors": 2,
-    "operational": 2,
-    "faulted": 0,
+    "operational": 1,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "moreira-automoviles-atlantida",
@@ -2793,11 +2793,11 @@
     "longitude": -53.552156,
     "presence": "listed",
     "connectors": 4,
-    "operational": 2,
-    "faulted": 2,
+    "operational": 4,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 2
+    "outOfService": 0
   },
   {
     "slug": "paseo-del-este-1",
@@ -3047,13 +3047,13 @@
     "department": "Paysandú",
     "latitude": -32.316711,
     "longitude": -58.081011,
-    "presence": "listed",
-    "connectors": 1,
-    "operational": 1,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "plaza-constitucion-trinidad",
@@ -3097,11 +3097,11 @@
     "longitude": -55.957135,
     "presence": "listed",
     "connectors": 2,
-    "operational": 2,
-    "faulted": 0,
+    "operational": 1,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "plaza-de-la-familia-carmelo",
@@ -3241,11 +3241,11 @@
     "longitude": -56.0377477,
     "presence": "listed",
     "connectors": 8,
-    "operational": 8,
-    "faulted": 0,
+    "operational": 7,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "plaza-rivera-fray-bentos",
@@ -3417,11 +3417,11 @@
     "longitude": -54.932418,
     "presence": "listed",
     "connectors": 4,
-    "operational": 2,
-    "faulted": 2,
+    "operational": 4,
+    "faulted": 0,
     "unknown": 0,
     "absent": 2,
-    "outOfService": 4
+    "outOfService": 2
   },
   {
     "slug": "punta-shopping",
@@ -3479,13 +3479,13 @@
     "department": "San José",
     "latitude": -34.342544,
     "longitude": -56.70298,
-    "presence": "delisted",
-    "connectors": 0,
-    "operational": 0,
+    "presence": "listed",
+    "connectors": 1,
+    "operational": 1,
     "faulted": 0,
     "unknown": 0,
-    "absent": 1,
-    "outOfService": 1
+    "absent": 0,
+    "outOfService": 0
   },
   {
     "slug": "san-rafael",
@@ -3833,11 +3833,11 @@
     "longitude": -56.249964,
     "presence": "listed",
     "connectors": 2,
-    "operational": 1,
-    "faulted": 1,
+    "operational": 2,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "terminal-fray-bentos",
