@@ -121,11 +121,11 @@
     "longitude": -57.585944,
     "presence": "listed",
     "connectors": 1,
-    "operational": 0,
-    "faulted": 1,
+    "operational": 1,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "ancap-buena-union",
@@ -873,11 +873,11 @@
     "longitude": -56.32209,
     "presence": "listed",
     "connectors": 2,
-    "operational": 2,
-    "faulted": 0,
+    "operational": 1,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "ancap-sauce-dc",
@@ -937,11 +937,11 @@
     "longitude": -54.39778,
     "presence": "listed",
     "connectors": 1,
-    "operational": 0,
-    "faulted": 1,
+    "operational": 1,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "ancap-trinidad",
@@ -1369,11 +1369,11 @@
     "longitude": -56.47604,
     "presence": "listed",
     "connectors": 1,
-    "operational": 0,
-    "faulted": 1,
+    "operational": 1,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "casino-parque-hotel",
@@ -2041,11 +2041,11 @@
     "longitude": -56.161484,
     "presence": "listed",
     "connectors": 5,
-    "operational": 3,
-    "faulted": 2,
+    "operational": 4,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 2
+    "outOfService": 1
   },
   {
     "slug": "gremial-del-taxi-cpatu",
@@ -2457,11 +2457,11 @@
     "longitude": -55.4714895,
     "presence": "listed",
     "connectors": 2,
-    "operational": 2,
-    "faulted": 0,
+    "operational": 0,
+    "faulted": 2,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 2
   },
   {
     "slug": "montevideo-shopping",
@@ -2473,11 +2473,11 @@
     "longitude": -56.136669,
     "presence": "listed",
     "connectors": 2,
-    "operational": 1,
-    "faulted": 1,
+    "operational": 2,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "moreira-automoviles-atlantida",
@@ -2521,11 +2521,11 @@
     "longitude": -54.9400916,
     "presence": "listed",
     "connectors": 3,
-    "operational": 0,
-    "faulted": 3,
+    "operational": 2,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 3
+    "outOfService": 1
   },
   {
     "slug": "municipio-vergara",
@@ -3031,13 +3031,13 @@
     "department": "Río Negro",
     "latitude": -33.116197,
     "longitude": -58.313329,
-    "presence": "delisted",
-    "connectors": 0,
-    "operational": 0,
+    "presence": "listed",
+    "connectors": 2,
+    "operational": 2,
     "faulted": 0,
     "unknown": 0,
-    "absent": 2,
-    "outOfService": 2
+    "absent": 0,
+    "outOfService": 0
   },
   {
     "slug": "plaza-constitucion-paysandu",
@@ -3417,11 +3417,11 @@
     "longitude": -54.932418,
     "presence": "listed",
     "connectors": 4,
-    "operational": 4,
-    "faulted": 0,
+    "operational": 2,
+    "faulted": 2,
     "unknown": 0,
     "absent": 2,
-    "outOfService": 2
+    "outOfService": 4
   },
   {
     "slug": "punta-shopping",
@@ -3497,11 +3497,11 @@
     "longitude": -54.9162997,
     "presence": "listed",
     "connectors": 4,
-    "operational": 4,
-    "faulted": 0,
+    "operational": 2,
+    "faulted": 2,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 2
   },
   {
     "slug": "san-ramon",
@@ -3545,11 +3545,11 @@
     "longitude": -56.169246,
     "presence": "listed",
     "connectors": 2,
-    "operational": 2,
-    "faulted": 0,
+    "operational": 1,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "skatepark-carrasco",
@@ -3962,6 +3962,22 @@
     "presence": "listed",
     "connectors": 3,
     "operational": 3,
+    "faulted": 0,
+    "unknown": 0,
+    "absent": 0,
+    "outOfService": 0
+  },
+  {
+    "slug": "ute-bella-union",
+    "name": "UTE Bella Unión",
+    "address": "Joaquin Suarez esq. Gral. Fructuoso Rivera",
+    "city": "Bella Unión",
+    "department": "Artigas",
+    "latitude": -30.259375,
+    "longitude": -57.599202,
+    "presence": "listed",
+    "connectors": 2,
+    "operational": 2,
     "faulted": 0,
     "unknown": 0,
     "absent": 0,
