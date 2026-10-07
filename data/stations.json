@@ -537,11 +537,11 @@
     "longitude": -54.782152,
     "presence": "listed",
     "connectors": 3,
-    "operational": 3,
-    "faulted": 0,
+    "operational": 1,
+    "faulted": 2,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 2
   },
   {
     "slug": "ancap-melo",
@@ -937,11 +937,11 @@
     "longitude": -54.39778,
     "presence": "listed",
     "connectors": 1,
-    "operational": 1,
-    "faulted": 0,
+    "operational": 0,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "ancap-trinidad",
@@ -999,13 +999,13 @@
     "department": "Rocha",
     "latitude": -34.034776,
     "longitude": -54.280123,
-    "presence": "listed",
-    "connectors": 1,
-    "operational": 1,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 2,
-    "outOfService": 2
+    "absent": 3,
+    "outOfService": 3
   },
   {
     "slug": "ancap-vichadero",
@@ -1513,11 +1513,11 @@
     "longitude": -57.835495,
     "presence": "listed",
     "connectors": 7,
-    "operational": 6,
-    "faulted": 1,
+    "operational": 7,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "colonia-valdense",
@@ -1849,11 +1849,11 @@
     "longitude": -54.951832,
     "presence": "listed",
     "connectors": 2,
-    "operational": 2,
-    "faulted": 0,
+    "operational": 1,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "estacion-punta-del-este-club-ituzaingo",
@@ -2231,13 +2231,13 @@
     "department": "Montevideo",
     "latitude": -34.9142932,
     "longitude": -56.1833816,
-    "presence": "delisted",
-    "connectors": 0,
-    "operational": 0,
+    "presence": "listed",
+    "connectors": 1,
+    "operational": 1,
     "faulted": 0,
     "unknown": 0,
-    "absent": 2,
-    "outOfService": 2
+    "absent": 0,
+    "outOfService": 0
   },
   {
     "slug": "la-paloma",
@@ -2409,11 +2409,11 @@
     "longitude": -54.944933,
     "presence": "listed",
     "connectors": 2,
-    "operational": 2,
-    "faulted": 0,
+    "operational": 0,
+    "faulted": 2,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 2
   },
   {
     "slug": "macromercado-rivera",
@@ -2457,11 +2457,11 @@
     "longitude": -55.4714895,
     "presence": "listed",
     "connectors": 2,
-    "operational": 0,
-    "faulted": 2,
+    "operational": 2,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 2
+    "outOfService": 0
   },
   {
     "slug": "montevideo-shopping",
@@ -2633,11 +2633,11 @@
     "longitude": -56.194744,
     "presence": "listed",
     "connectors": 1,
-    "operational": 0,
-    "faulted": 1,
+    "operational": 1,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "palacio-legislativo-dc",
