@@ -105,11 +105,11 @@
     "longitude": -57.406569,
     "presence": "listed",
     "connectors": 1,
-    "operational": 1,
-    "faulted": 0,
+    "operational": 0,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "ancap-bella-union",
@@ -505,11 +505,11 @@
     "longitude": -56.744655,
     "presence": "listed",
     "connectors": 3,
-    "operational": 3,
-    "faulted": 0,
+    "operational": 1,
+    "faulted": 2,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 2
   },
   {
     "slug": "ancap-los-cerrillos",
@@ -1112,8 +1112,8 @@
     "latitude": -34.958432,
     "longitude": -54.940934,
     "presence": "listed",
-    "connectors": 2,
-    "operational": 2,
+    "connectors": 1,
+    "operational": 1,
     "faulted": 0,
     "unknown": 0,
     "absent": 0,
@@ -1385,11 +1385,11 @@
     "longitude": -56.1696179,
     "presence": "listed",
     "connectors": 4,
-    "operational": 4,
-    "faulted": 0,
+    "operational": 2,
+    "faulted": 2,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 2
   },
   {
     "slug": "centro-cultural-la-paloma",
@@ -1513,11 +1513,11 @@
     "longitude": -57.835495,
     "presence": "listed",
     "connectors": 7,
-    "operational": 7,
-    "faulted": 0,
+    "operational": 6,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "colonia-valdense",
@@ -1689,11 +1689,11 @@
     "longitude": -57.2672754,
     "presence": "listed",
     "connectors": 1,
-    "operational": 1,
-    "faulted": 0,
+    "operational": 0,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "electrolinera-leguizamon",
@@ -1753,11 +1753,11 @@
     "longitude": -54.951846,
     "presence": "listed",
     "connectors": 3,
-    "operational": 3,
-    "faulted": 0,
+    "operational": 2,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "estacion-centenario-montevideo",
@@ -1768,8 +1768,8 @@
     "latitude": -34.882873,
     "longitude": -56.152962,
     "presence": "listed",
-    "connectors": 4,
-    "operational": 4,
+    "connectors": 3,
+    "operational": 3,
     "faulted": 0,
     "unknown": 0,
     "absent": 0,
@@ -1849,11 +1849,11 @@
     "longitude": -54.951832,
     "presence": "listed",
     "connectors": 2,
-    "operational": 1,
-    "faulted": 1,
+    "operational": 2,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "estacion-punta-del-este-club-ituzaingo",
@@ -1895,13 +1895,13 @@
     "department": "Montevideo",
     "latitude": -34.8917115,
     "longitude": -56.1543685,
-    "presence": "listed",
-    "connectors": 1,
-    "operational": 1,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "estadio-martinez-monegal",
@@ -2473,11 +2473,11 @@
     "longitude": -56.136669,
     "presence": "listed",
     "connectors": 2,
-    "operational": 2,
-    "faulted": 0,
+    "operational": 1,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "moreira-automoviles-atlantida",
@@ -2521,11 +2521,11 @@
     "longitude": -54.9400916,
     "presence": "listed",
     "connectors": 3,
-    "operational": 1,
-    "faulted": 2,
+    "operational": 0,
+    "faulted": 3,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 2
+    "outOfService": 3
   },
   {
     "slug": "municipio-vergara",
@@ -2567,13 +2567,13 @@
     "department": "Maldonado",
     "latitude": -34.935722,
     "longitude": -54.937054,
-    "presence": "listed",
-    "connectors": 2,
-    "operational": 2,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 2,
+    "outOfService": 2
   },
   {
     "slug": "nueva-helvecia-dc-avenida",
@@ -3184,6 +3184,22 @@
     "outOfService": 0
   },
   {
+    "slug": "plaza-lazaro-cabrera",
+    "name": "Plaza Lázaro Cabrera",
+    "address": "Sarandí entre 25 de Agosto y Ruta 8",
+    "city": "Solís de Mataojo",
+    "department": "Lavalleja",
+    "latitude": -34.598733,
+    "longitude": -55.466932,
+    "presence": "listed",
+    "connectors": 2,
+    "operational": 2,
+    "faulted": 0,
+    "unknown": 0,
+    "absent": 0,
+    "outOfService": 0
+  },
+  {
     "slug": "plaza-libertad-san-javier",
     "name": "Plaza Libertad, San Javier",
     "address": "18 de Julio esquina José Pedro Varela",
@@ -3417,11 +3433,11 @@
     "longitude": -54.932418,
     "presence": "listed",
     "connectors": 4,
-    "operational": 2,
-    "faulted": 2,
+    "operational": 4,
+    "faulted": 0,
     "unknown": 0,
     "absent": 2,
-    "outOfService": 4
+    "outOfService": 2
   },
   {
     "slug": "punta-shopping",
@@ -3449,11 +3465,11 @@
     "longitude": -57.1992881,
     "presence": "listed",
     "connectors": 1,
-    "operational": 1,
-    "faulted": 0,
+    "operational": 0,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "rocha-oficina-de-turismo",
@@ -3561,11 +3577,11 @@
     "longitude": -56.0580876,
     "presence": "listed",
     "connectors": 12,
-    "operational": 12,
-    "faulted": 0,
+    "operational": 9,
+    "faulted": 3,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 3
   },
   {
     "slug": "talice",
@@ -3993,11 +4009,11 @@
     "longitude": -56.615782,
     "presence": "listed",
     "connectors": 3,
-    "operational": 3,
-    "faulted": 0,
+    "operational": 2,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "utec-durazno",
@@ -4030,6 +4046,22 @@
     "unknown": 0,
     "absent": 0,
     "outOfService": 1
+  },
+  {
+    "slug": "via-disegno",
+    "name": "Via Disegno",
+    "address": "Via Disegno, Ruta 101-Capitan Juan Antonio...",
+    "city": "Ciudad de la Costa",
+    "department": "Desconocido",
+    "latitude": -34.843931,
+    "longitude": -56.016247,
+    "presence": "listed",
+    "connectors": 2,
+    "operational": 2,
+    "faulted": 0,
+    "unknown": 0,
+    "absent": 0,
+    "outOfService": 0
   },
   {
     "slug": "vieja-usina-ute-treinta-y-tres",
