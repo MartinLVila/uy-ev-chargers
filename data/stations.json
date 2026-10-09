@@ -103,12 +103,12 @@
     "department": "Río Negro",
     "latitude": -32.913389,
     "longitude": -57.406569,
-    "presence": "listed",
-    "connectors": 1,
+    "presence": "delisted",
+    "connectors": 0,
     "operational": 0,
-    "faulted": 1,
+    "faulted": 0,
     "unknown": 0,
-    "absent": 0,
+    "absent": 1,
     "outOfService": 1
   },
   {
@@ -137,11 +137,11 @@
     "longitude": -55.664532,
     "presence": "listed",
     "connectors": 1,
-    "operational": 1,
-    "faulted": 0,
+    "operational": 0,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "ancap-canelones",
@@ -473,11 +473,11 @@
     "longitude": -54.527432,
     "presence": "listed",
     "connectors": 1,
-    "operational": 1,
-    "faulted": 0,
+    "operational": 0,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "ancap-la-paz",
@@ -1385,11 +1385,11 @@
     "longitude": -56.1696179,
     "presence": "listed",
     "connectors": 4,
-    "operational": 2,
-    "faulted": 2,
+    "operational": 4,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 2
+    "outOfService": 0
   },
   {
     "slug": "centro-cultural-la-paloma",
@@ -1465,11 +1465,11 @@
     "longitude": -53.448956,
     "presence": "listed",
     "connectors": 4,
-    "operational": 4,
-    "faulted": 0,
+    "operational": 2,
+    "faulted": 2,
     "unknown": 0,
     "absent": 1,
-    "outOfService": 1
+    "outOfService": 3
   },
   {
     "slug": "ciudad-rodriguez",
@@ -1689,11 +1689,11 @@
     "longitude": -57.2672754,
     "presence": "listed",
     "connectors": 1,
-    "operational": 0,
-    "faulted": 1,
+    "operational": 1,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "electrolinera-leguizamon",
@@ -1753,11 +1753,11 @@
     "longitude": -54.951846,
     "presence": "listed",
     "connectors": 3,
-    "operational": 2,
-    "faulted": 1,
+    "operational": 3,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "estacion-centenario-montevideo",
@@ -1768,8 +1768,8 @@
     "latitude": -34.882873,
     "longitude": -56.152962,
     "presence": "listed",
-    "connectors": 3,
-    "operational": 3,
+    "connectors": 4,
+    "operational": 4,
     "faulted": 0,
     "unknown": 0,
     "absent": 0,
@@ -1895,13 +1895,13 @@
     "department": "Montevideo",
     "latitude": -34.8917115,
     "longitude": -56.1543685,
-    "presence": "delisted",
-    "connectors": 0,
-    "operational": 0,
+    "presence": "listed",
+    "connectors": 1,
+    "operational": 1,
     "faulted": 0,
     "unknown": 0,
-    "absent": 1,
-    "outOfService": 1
+    "absent": 0,
+    "outOfService": 0
   },
   {
     "slug": "estadio-martinez-monegal",
@@ -2409,11 +2409,11 @@
     "longitude": -54.944933,
     "presence": "listed",
     "connectors": 2,
-    "operational": 0,
-    "faulted": 2,
+    "operational": 2,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 2
+    "outOfService": 0
   },
   {
     "slug": "macromercado-rivera",
@@ -2567,13 +2567,13 @@
     "department": "Maldonado",
     "latitude": -34.935722,
     "longitude": -54.937054,
-    "presence": "delisted",
-    "connectors": 0,
-    "operational": 0,
+    "presence": "listed",
+    "connectors": 2,
+    "operational": 2,
     "faulted": 0,
     "unknown": 0,
-    "absent": 2,
-    "outOfService": 2
+    "absent": 0,
+    "outOfService": 0
   },
   {
     "slug": "nueva-helvecia-dc-avenida",
@@ -3465,11 +3465,11 @@
     "longitude": -57.1992881,
     "presence": "listed",
     "connectors": 1,
-    "operational": 0,
-    "faulted": 1,
+    "operational": 1,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "rocha-oficina-de-turismo",
@@ -3577,11 +3577,11 @@
     "longitude": -56.0580876,
     "presence": "listed",
     "connectors": 12,
-    "operational": 9,
-    "faulted": 3,
+    "operational": 12,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 3
+    "outOfService": 0
   },
   {
     "slug": "talice",
