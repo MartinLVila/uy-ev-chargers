@@ -185,11 +185,11 @@
     "longitude": -54.966438,
     "presence": "listed",
     "connectors": 1,
-    "operational": 1,
-    "faulted": 0,
+    "operational": 0,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "ancap-cardona",
@@ -425,11 +425,11 @@
     "longitude": -55.15019,
     "presence": "listed",
     "connectors": 1,
-    "operational": 1,
-    "faulted": 0,
+    "operational": 0,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "ancap-jose-enrique-rodo",
@@ -665,11 +665,11 @@
     "longitude": -53.416144,
     "presence": "listed",
     "connectors": 1,
-    "operational": 1,
-    "faulted": 0,
+    "operational": 0,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "ancap-rivera",
@@ -793,11 +793,11 @@
     "longitude": -55.835642,
     "presence": "listed",
     "connectors": 1,
-    "operational": 0,
-    "faulted": 1,
+    "operational": 1,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "ancap-san-jose-de-mayo-ocampo",
@@ -921,11 +921,11 @@
     "longitude": -55.758813,
     "presence": "listed",
     "connectors": 1,
-    "operational": 1,
-    "faulted": 0,
+    "operational": 0,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "ancap-treinta-y-tres",
@@ -1017,11 +1017,11 @@
     "longitude": -54.687176,
     "presence": "listed",
     "connectors": 1,
-    "operational": 1,
-    "faulted": 0,
+    "operational": 0,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "ancap-young",
@@ -1417,11 +1417,11 @@
     "longitude": -55.7644038,
     "presence": "listed",
     "connectors": 2,
-    "operational": 2,
-    "faulted": 0,
+    "operational": 1,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "centro-de-eventos-latu",
@@ -1544,8 +1544,8 @@
     "latitude": -34.890037,
     "longitude": -56.160966,
     "presence": "listed",
-    "connectors": 1,
-    "operational": 1,
+    "connectors": 2,
+    "operational": 2,
     "faulted": 0,
     "unknown": 0,
     "absent": 0,
@@ -1641,11 +1641,11 @@
     "longitude": -58.24494,
     "presence": "listed",
     "connectors": 4,
-    "operational": 4,
-    "faulted": 0,
+    "operational": 2,
+    "faulted": 2,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 2
   },
   {
     "slug": "ecilda-paullier",
@@ -1705,11 +1705,11 @@
     "longitude": -56.140618,
     "presence": "listed",
     "connectors": 22,
-    "operational": 20,
-    "faulted": 2,
+    "operational": 22,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 2
+    "outOfService": 0
   },
   {
     "slug": "electrolinera-malvin",
@@ -1721,11 +1721,11 @@
     "longitude": -56.104194,
     "presence": "listed",
     "connectors": 6,
-    "operational": 4,
-    "faulted": 2,
+    "operational": 3,
+    "faulted": 3,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 2
+    "outOfService": 3
   },
   {
     "slug": "estacion-atlantida",
@@ -1864,8 +1864,8 @@
     "latitude": -34.940428,
     "longitude": -54.924829,
     "presence": "listed",
-    "connectors": 4,
-    "operational": 4,
+    "connectors": 3,
+    "operational": 3,
     "faulted": 0,
     "unknown": 0,
     "absent": 0,
@@ -2265,11 +2265,11 @@
     "longitude": -55.576405,
     "presence": "listed",
     "connectors": 1,
-    "operational": 1,
-    "faulted": 0,
+    "operational": 0,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "la-pedrera",
@@ -2391,13 +2391,13 @@
     "department": "Canelones",
     "latitude": -34.7319728,
     "longitude": -56.248159,
-    "presence": "delisted",
-    "connectors": 0,
-    "operational": 0,
+    "presence": "listed",
+    "connectors": 1,
+    "operational": 1,
     "faulted": 0,
     "unknown": 0,
-    "absent": 1,
-    "outOfService": 1
+    "absent": 0,
+    "outOfService": 0
   },
   {
     "slug": "macromercado-maldonado",
@@ -2471,13 +2471,13 @@
     "department": "Montevideo",
     "latitude": -34.903968,
     "longitude": -56.136669,
-    "presence": "listed",
-    "connectors": 2,
-    "operational": 2,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 2,
+    "outOfService": 2
   },
   {
     "slug": "moreira-automoviles-atlantida",
@@ -3081,11 +3081,11 @@
     "longitude": -55.917378,
     "presence": "listed",
     "connectors": 1,
-    "operational": 1,
-    "faulted": 0,
+    "operational": 0,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "plaza-de-deportes-de-pando",
@@ -3337,11 +3337,11 @@
     "longitude": -55.8711889,
     "presence": "listed",
     "connectors": 1,
-    "operational": 1,
-    "faulted": 0,
+    "operational": 0,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "plaza-san-martin",
@@ -3417,11 +3417,11 @@
     "longitude": -54.937023,
     "presence": "listed",
     "connectors": 4,
-    "operational": 4,
-    "faulted": 0,
+    "operational": 3,
+    "faulted": 1,
     "unknown": 0,
     "absent": 1,
-    "outOfService": 1
+    "outOfService": 2
   },
   {
     "slug": "punta-del-este-parada-5",
@@ -3495,13 +3495,13 @@
     "department": "San José",
     "latitude": -34.342544,
     "longitude": -56.70298,
-    "presence": "delisted",
-    "connectors": 0,
-    "operational": 0,
+    "presence": "listed",
+    "connectors": 1,
+    "operational": 1,
     "faulted": 0,
     "unknown": 0,
-    "absent": 1,
-    "outOfService": 1
+    "absent": 0,
+    "outOfService": 0
   },
   {
     "slug": "san-rafael",
@@ -3880,12 +3880,12 @@
     "latitude": -34.86203,
     "longitude": -55.274783,
     "presence": "listed",
-    "connectors": 8,
-    "operational": 6,
-    "faulted": 2,
+    "connectors": 7,
+    "operational": 7,
+    "faulted": 0,
     "unknown": 0,
     "absent": 3,
-    "outOfService": 5
+    "outOfService": 3
   },
   {
     "slug": "terminal-punta-del-diablo",
