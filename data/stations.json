@@ -247,13 +247,13 @@
     "department": "Rocha",
     "latitude": -33.694694,
     "longitude": -53.455267,
-    "presence": "delisted",
-    "connectors": 0,
-    "operational": 0,
+    "presence": "listed",
+    "connectors": 1,
+    "operational": 1,
     "faulted": 0,
     "unknown": 0,
-    "absent": 1,
-    "outOfService": 1
+    "absent": 0,
+    "outOfService": 0
   },
   {
     "slug": "ancap-ciudad-del-plata",
@@ -281,11 +281,11 @@
     "longitude": -57.841764,
     "presence": "listed",
     "connectors": 2,
-    "operational": 2,
-    "faulted": 0,
+    "operational": 0,
+    "faulted": 2,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 2
   },
   {
     "slug": "ancap-conchillas",
@@ -1031,13 +1031,13 @@
     "department": "Río Negro",
     "latitude": -32.704954,
     "longitude": -57.630866,
-    "presence": "listed",
-    "connectors": 2,
-    "operational": 2,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 2,
+    "outOfService": 2
   },
   {
     "slug": "atlantida-dc2",
@@ -1721,11 +1721,11 @@
     "longitude": -56.104194,
     "presence": "listed",
     "connectors": 6,
-    "operational": 5,
-    "faulted": 1,
+    "operational": 6,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "estacion-atlantida",
@@ -2231,13 +2231,13 @@
     "department": "Montevideo",
     "latitude": -34.9142932,
     "longitude": -56.1833816,
-    "presence": "listed",
-    "connectors": 1,
-    "operational": 1,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "la-paloma",
@@ -2249,11 +2249,11 @@
     "longitude": -54.157528,
     "presence": "listed",
     "connectors": 4,
-    "operational": 2,
-    "faulted": 2,
+    "operational": 4,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 2
+    "outOfService": 0
   },
   {
     "slug": "la-paloma-durazno",
@@ -2695,13 +2695,13 @@
     "department": "Montevideo",
     "latitude": -34.908805,
     "longitude": -56.20082,
-    "presence": "listed",
-    "connectors": 1,
-    "operational": 1,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "parque-de-la-amistad",
@@ -3353,11 +3353,11 @@
     "longitude": -56.200208,
     "presence": "listed",
     "connectors": 4,
-    "operational": 4,
-    "faulted": 0,
+    "operational": 3,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "plaza-sarandi-durazno",
@@ -3847,13 +3847,13 @@
     "department": "Montevideo",
     "latitude": -34.873204,
     "longitude": -56.249964,
-    "presence": "delisted",
-    "connectors": 0,
-    "operational": 0,
+    "presence": "listed",
+    "connectors": 2,
+    "operational": 2,
     "faulted": 0,
     "unknown": 0,
-    "absent": 2,
-    "outOfService": 2
+    "absent": 0,
+    "outOfService": 0
   },
   {
     "slug": "terminal-fray-bentos",
