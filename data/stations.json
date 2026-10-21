@@ -375,13 +375,13 @@
     "department": "Paysandú",
     "latitude": -32.3183645,
     "longitude": -58.0743682,
-    "presence": "listed",
-    "connectors": 2,
-    "operational": 2,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 2,
+    "outOfService": 2
   },
   {
     "slug": "ancap-fray-bentos",
@@ -848,6 +848,22 @@
     "outOfService": 0
   },
   {
+    "slug": "ancap-santa-rosa",
+    "name": "ANCAP Santa Rosa",
+    "address": "Ruta 6 y Ruta 11",
+    "city": "Santa Rosa",
+    "department": "Canelones",
+    "latitude": -34.504957,
+    "longitude": -56.047679,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
+    "faulted": 0,
+    "unknown": 0,
+    "absent": 4,
+    "outOfService": 4
+  },
+  {
     "slug": "ancap-sarandi-del-yi",
     "name": "ANCAP Sarandí del Yí",
     "address": "Pte. Bernardo Berro 604",
@@ -1241,11 +1257,11 @@
     "longitude": -56.132189,
     "presence": "listed",
     "connectors": 4,
-    "operational": 3,
-    "faulted": 1,
+    "operational": 4,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "campera-almacen-1",
@@ -1513,11 +1529,11 @@
     "longitude": -57.835495,
     "presence": "listed",
     "connectors": 7,
-    "operational": 7,
-    "faulted": 0,
+    "operational": 6,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "colonia-valdense",
@@ -1657,11 +1673,11 @@
     "longitude": -57.0574784,
     "presence": "listed",
     "connectors": 4,
-    "operational": 4,
-    "faulted": 0,
+    "operational": 3,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "ecoparque-talice",
@@ -1673,11 +1689,11 @@
     "longitude": -56.937011,
     "presence": "listed",
     "connectors": 2,
-    "operational": 1,
-    "faulted": 1,
+    "operational": 2,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "el-eucalipto",
@@ -2071,13 +2087,13 @@
     "department": "Montevideo",
     "latitude": -34.86731,
     "longitude": -56.160038,
-    "presence": "listed",
-    "connectors": 2,
-    "operational": 2,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 2,
+    "outOfService": 2
   },
   {
     "slug": "hospital-de-ojos-saint-bois",
@@ -2391,13 +2407,13 @@
     "department": "Canelones",
     "latitude": -34.7319728,
     "longitude": -56.248159,
-    "presence": "delisted",
-    "connectors": 0,
-    "operational": 0,
+    "presence": "listed",
+    "connectors": 1,
+    "operational": 1,
     "faulted": 0,
     "unknown": 0,
-    "absent": 1,
-    "outOfService": 1
+    "absent": 0,
+    "outOfService": 0
   },
   {
     "slug": "macromercado-maldonado",
@@ -2409,11 +2425,11 @@
     "longitude": -54.944933,
     "presence": "listed",
     "connectors": 2,
-    "operational": 2,
-    "faulted": 0,
+    "operational": 0,
+    "faulted": 2,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 2
   },
   {
     "slug": "macromercado-rivera",
@@ -2521,11 +2537,11 @@
     "longitude": -54.9400916,
     "presence": "listed",
     "connectors": 3,
-    "operational": 3,
-    "faulted": 0,
+    "operational": 2,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "municipio-vergara",
@@ -3047,13 +3063,13 @@
     "department": "Paysandú",
     "latitude": -32.316711,
     "longitude": -58.081011,
-    "presence": "listed",
-    "connectors": 1,
-    "operational": 1,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "plaza-constitucion-trinidad",
@@ -3178,6 +3194,22 @@
     "presence": "listed",
     "connectors": 1,
     "operational": 1,
+    "faulted": 0,
+    "unknown": 0,
+    "absent": 0,
+    "outOfService": 0
+  },
+  {
+    "slug": "plaza-las-delicias",
+    "name": "Plaza Las Delicias",
+    "address": "Ansina casi Garibaldi",
+    "city": "Minas",
+    "department": "Lavalleja",
+    "latitude": -34.36645,
+    "longitude": -55.224245,
+    "presence": "listed",
+    "connectors": 2,
+    "operational": 2,
     "faulted": 0,
     "unknown": 0,
     "absent": 0,
@@ -3336,8 +3368,8 @@
     "latitude": -34.5441427,
     "longitude": -55.8711889,
     "presence": "listed",
-    "connectors": 1,
-    "operational": 1,
+    "connectors": 3,
+    "operational": 3,
     "faulted": 0,
     "unknown": 0,
     "absent": 0,
@@ -3353,11 +3385,11 @@
     "longitude": -56.200208,
     "presence": "listed",
     "connectors": 4,
-    "operational": 3,
-    "faulted": 1,
+    "operational": 4,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "plaza-sarandi-durazno",
@@ -3529,11 +3561,11 @@
     "longitude": -55.958338,
     "presence": "listed",
     "connectors": 2,
-    "operational": 1,
-    "faulted": 1,
+    "operational": 2,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "shopping-las-piedras",
@@ -3687,13 +3719,13 @@
     "department": "Soriano",
     "latitude": -33.250149,
     "longitude": -58.028526,
-    "presence": "delisted",
-    "connectors": 0,
-    "operational": 0,
+    "presence": "listed",
+    "connectors": 2,
+    "operational": 2,
     "faulted": 0,
     "unknown": 0,
-    "absent": 2,
-    "outOfService": 2
+    "absent": 0,
+    "outOfService": 0
   },
   {
     "slug": "tata-paysandu",
@@ -4009,11 +4041,11 @@
     "longitude": -56.615782,
     "presence": "listed",
     "connectors": 3,
-    "operational": 2,
-    "faulted": 1,
+    "operational": 1,
+    "faulted": 2,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 2
   },
   {
     "slug": "utec-durazno",
@@ -4056,8 +4088,8 @@
     "latitude": -34.843931,
     "longitude": -56.016247,
     "presence": "listed",
-    "connectors": 2,
-    "operational": 2,
+    "connectors": 1,
+    "operational": 1,
     "faulted": 0,
     "unknown": 0,
     "absent": 0,
