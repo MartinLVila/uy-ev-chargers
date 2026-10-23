@@ -25,7 +25,23 @@
     "longitude": -56.15184,
     "presence": "listed",
     "connectors": 8,
-    "operational": 8,
+    "operational": 6,
+    "faulted": 2,
+    "unknown": 0,
+    "absent": 0,
+    "outOfService": 2
+  },
+  {
+    "slug": "aeropuerto-de-carrasco",
+    "name": "Aeropuerto de Carrasco",
+    "address": "Aeropuerto Internacional De Carrasco, Ruta...",
+    "city": "Ciudad de la Costa",
+    "department": "Desconocido",
+    "latitude": -34.837595,
+    "longitude": -56.015783,
+    "presence": "listed",
+    "connectors": 4,
+    "operational": 4,
     "faulted": 0,
     "unknown": 0,
     "absent": 0,
@@ -953,11 +969,11 @@
     "longitude": -54.39778,
     "presence": "listed",
     "connectors": 1,
-    "operational": 1,
-    "faulted": 0,
+    "operational": 0,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "ancap-trinidad",
@@ -1128,8 +1144,8 @@
     "latitude": -34.958432,
     "longitude": -54.940934,
     "presence": "listed",
-    "connectors": 1,
-    "operational": 1,
+    "connectors": 2,
+    "operational": 2,
     "faulted": 0,
     "unknown": 0,
     "absent": 0,
@@ -1330,11 +1346,11 @@
   {
     "slug": "car-one-center-3",
     "name": "Car One Center 3",
-    "address": "Car One, Interbalnearia",
+    "address": "Car One Center, Acceso B",
     "city": "Ciudad de la Costa",
     "department": "Desconocido",
-    "latitude": -34.817924,
-    "longitude": -55.9820255,
+    "latitude": -34.816515,
+    "longitude": -55.978709,
     "presence": "listed",
     "connectors": 1,
     "operational": 1,
@@ -1584,6 +1600,22 @@
     "outOfService": 0
   },
   {
+    "slug": "disco-fresh-market-la-cabana",
+    "name": "Disco Fresh Market La Cabaña",
+    "address": "Disco La Cabaña, Avenida Naciones Unidas",
+    "city": "Ciudad de la Costa",
+    "department": "Desconocido",
+    "latitude": -34.804069,
+    "longitude": -55.908497,
+    "presence": "listed",
+    "connectors": 2,
+    "operational": 2,
+    "faulted": 0,
+    "unknown": 0,
+    "absent": 0,
+    "outOfService": 0
+  },
+  {
     "slug": "disco-fresh-market-legrand",
     "name": "Disco Fresh Market Legrand",
     "address": "Avenida Enrique Legrand & Michigan",
@@ -1736,12 +1768,12 @@
     "latitude": -34.88744,
     "longitude": -56.104194,
     "presence": "listed",
-    "connectors": 6,
-    "operational": 4,
-    "faulted": 2,
+    "connectors": 5,
+    "operational": 5,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 2
+    "outOfService": 0
   },
   {
     "slug": "estacion-atlantida",
@@ -2024,8 +2056,8 @@
     "latitude": -34.866574,
     "longitude": -56.024385,
     "presence": "listed",
-    "connectors": 2,
-    "operational": 2,
+    "connectors": 1,
+    "operational": 1,
     "faulted": 0,
     "unknown": 0,
     "absent": 0,
@@ -2057,11 +2089,11 @@
     "longitude": -56.161484,
     "presence": "listed",
     "connectors": 5,
-    "operational": 5,
-    "faulted": 0,
+    "operational": 4,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "gremial-del-taxi-cpatu",
@@ -2087,13 +2119,13 @@
     "department": "Montevideo",
     "latitude": -34.86731,
     "longitude": -56.160038,
-    "presence": "delisted",
-    "connectors": 0,
-    "operational": 0,
+    "presence": "listed",
+    "connectors": 2,
+    "operational": 2,
     "faulted": 0,
     "unknown": 0,
-    "absent": 2,
-    "outOfService": 2
+    "absent": 0,
+    "outOfService": 0
   },
   {
     "slug": "hospital-de-ojos-saint-bois",
@@ -2281,11 +2313,11 @@
     "longitude": -55.576405,
     "presence": "listed",
     "connectors": 1,
-    "operational": 0,
-    "faulted": 1,
+    "operational": 1,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "la-pedrera",
@@ -2425,11 +2457,11 @@
     "longitude": -54.944933,
     "presence": "listed",
     "connectors": 2,
-    "operational": 2,
-    "faulted": 0,
+    "operational": 0,
+    "faulted": 2,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 2
   },
   {
     "slug": "macromercado-rivera",
@@ -2520,11 +2552,11 @@
     "latitude": -32.699762,
     "longitude": -57.627834,
     "presence": "listed",
-    "connectors": 4,
+    "connectors": 2,
     "operational": 2,
-    "faulted": 2,
+    "faulted": 0,
     "unknown": 0,
-    "absent": 0,
+    "absent": 2,
     "outOfService": 2
   },
   {
@@ -2857,11 +2889,11 @@
     "longitude": -57.970822,
     "presence": "listed",
     "connectors": 2,
-    "operational": 2,
-    "faulted": 0,
+    "operational": 0,
+    "faulted": 2,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 2
   },
   {
     "slug": "plaza-artigas",
@@ -2904,8 +2936,8 @@
     "latitude": -34.759725,
     "longitude": -55.672995,
     "presence": "listed",
-    "connectors": 3,
-    "operational": 2,
+    "connectors": 4,
+    "operational": 3,
     "faulted": 1,
     "unknown": 0,
     "absent": 0,
@@ -3369,11 +3401,11 @@
     "longitude": -55.8711889,
     "presence": "listed",
     "connectors": 3,
-    "operational": 1,
-    "faulted": 2,
+    "operational": 3,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 2
+    "outOfService": 0
   },
   {
     "slug": "plaza-san-martin",
@@ -3433,11 +3465,11 @@
     "longitude": -54.385449,
     "presence": "listed",
     "connectors": 2,
-    "operational": 0,
-    "faulted": 2,
+    "operational": 2,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 2
+    "outOfService": 0
   },
   {
     "slug": "punta-del-este-parada-3",
@@ -3480,8 +3512,8 @@
     "latitude": -34.939691,
     "longitude": -54.934102,
     "presence": "listed",
-    "connectors": 4,
-    "operational": 4,
+    "connectors": 3,
+    "operational": 3,
     "faulted": 0,
     "unknown": 0,
     "absent": 0,
@@ -3513,11 +3545,11 @@
     "longitude": -54.320398,
     "presence": "listed",
     "connectors": 1,
-    "operational": 1,
-    "faulted": 0,
+    "operational": 0,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "san-jose-dc-1",
@@ -3769,11 +3801,11 @@
     "longitude": -54.331616,
     "presence": "listed",
     "connectors": 2,
-    "operational": 2,
-    "faulted": 0,
+    "operational": 0,
+    "faulted": 2,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 2
   },
   {
     "slug": "tata-tacuarembo",
@@ -3793,15 +3825,15 @@
   },
   {
     "slug": "tenis-san-nicolas",
-    "name": "Tenis San Nicolás",
+    "name": "Café Tenis San Nicolás",
     "address": "Maximiliano Rymarkiewicz & Camino Pichinch...",
     "city": "Montevideo",
     "department": "Montevideo",
     "latitude": -34.861207,
     "longitude": -56.0733388,
     "presence": "listed",
-    "connectors": 2,
-    "operational": 2,
+    "connectors": 1,
+    "operational": 1,
     "faulted": 0,
     "unknown": 0,
     "absent": 0,
@@ -3833,11 +3865,11 @@
     "longitude": -57.5222452,
     "presence": "listed",
     "connectors": 2,
-    "operational": 2,
-    "faulted": 0,
+    "operational": 0,
+    "faulted": 2,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 2
   },
   {
     "slug": "terminal-castillos",
@@ -4041,11 +4073,11 @@
     "longitude": -56.615782,
     "presence": "listed",
     "connectors": 3,
-    "operational": 1,
-    "faulted": 2,
+    "operational": 2,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 2
+    "outOfService": 1
   },
   {
     "slug": "utec-durazno",
