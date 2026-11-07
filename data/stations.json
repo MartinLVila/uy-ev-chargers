@@ -473,11 +473,11 @@
     "longitude": -54.644789,
     "presence": "listed",
     "connectors": 4,
-    "operational": 2,
-    "faulted": 2,
+    "operational": 4,
+    "faulted": 0,
     "unknown": 0,
     "absent": 1,
-    "outOfService": 3
+    "outOfService": 1
   },
   {
     "slug": "ancap-jose-pedro-varela",
@@ -665,11 +665,11 @@
     "longitude": -55.856194,
     "presence": "listed",
     "connectors": 1,
-    "operational": 0,
-    "faulted": 1,
+    "operational": 1,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "ancap-rio-branco",
@@ -1385,11 +1385,11 @@
     "longitude": -56.391217,
     "presence": "listed",
     "connectors": 2,
-    "operational": 2,
-    "faulted": 0,
+    "operational": 0,
+    "faulted": 2,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 2
   },
   {
     "slug": "carlos-reyles",
@@ -1449,11 +1449,11 @@
     "longitude": -55.7644038,
     "presence": "listed",
     "connectors": 2,
-    "operational": 1,
-    "faulted": 1,
+    "operational": 2,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "centro-de-eventos-latu",
@@ -1753,11 +1753,11 @@
     "longitude": -56.140618,
     "presence": "listed",
     "connectors": 22,
-    "operational": 22,
-    "faulted": 0,
+    "operational": 20,
+    "faulted": 2,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 2
   },
   {
     "slug": "electrolinera-malvin",
@@ -1801,11 +1801,11 @@
     "longitude": -54.951846,
     "presence": "listed",
     "connectors": 3,
-    "operational": 2,
-    "faulted": 1,
+    "operational": 3,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "estacion-centenario-montevideo",
@@ -2521,11 +2521,11 @@
     "longitude": -56.136669,
     "presence": "listed",
     "connectors": 2,
-    "operational": 1,
-    "faulted": 1,
+    "operational": 2,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "moreira-automoviles-atlantida",
@@ -3321,11 +3321,11 @@
     "longitude": -56.0377477,
     "presence": "listed",
     "connectors": 18,
-    "operational": 18,
-    "faulted": 0,
+    "operational": 16,
+    "faulted": 2,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 2
   },
   {
     "slug": "plaza-rivera-fray-bentos",
@@ -3497,11 +3497,11 @@
     "longitude": -54.932418,
     "presence": "listed",
     "connectors": 4,
-    "operational": 4,
-    "faulted": 0,
+    "operational": 2,
+    "faulted": 2,
     "unknown": 0,
     "absent": 2,
-    "outOfService": 2
+    "outOfService": 4
   },
   {
     "slug": "punta-shopping",
@@ -3625,11 +3625,11 @@
     "longitude": -56.169246,
     "presence": "listed",
     "connectors": 2,
-    "operational": 1,
-    "faulted": 1,
+    "operational": 2,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "skatepark-carrasco",
@@ -4041,11 +4041,11 @@
     "longitude": -56.2699141,
     "presence": "listed",
     "connectors": 3,
-    "operational": 3,
-    "faulted": 0,
+    "operational": 1,
+    "faulted": 2,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 2
   },
   {
     "slug": "ute-bella-union",
@@ -4055,13 +4055,13 @@
     "department": "Artigas",
     "latitude": -30.259375,
     "longitude": -57.599202,
-    "presence": "delisted",
-    "connectors": 0,
-    "operational": 0,
+    "presence": "listed",
+    "connectors": 2,
+    "operational": 2,
     "faulted": 0,
     "unknown": 0,
-    "absent": 2,
-    "outOfService": 2
+    "absent": 0,
+    "outOfService": 0
   },
   {
     "slug": "ute-libertad",
