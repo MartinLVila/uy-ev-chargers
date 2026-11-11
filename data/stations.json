@@ -665,11 +665,11 @@
     "longitude": -55.856194,
     "presence": "listed",
     "connectors": 1,
-    "operational": 1,
-    "faulted": 0,
+    "operational": 0,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "ancap-rio-branco",
@@ -1559,13 +1559,13 @@
     "department": "Colonia",
     "latitude": -34.3371311,
     "longitude": -57.2530074,
-    "presence": "delisted",
-    "connectors": 0,
-    "operational": 0,
+    "presence": "listed",
+    "connectors": 1,
+    "operational": 1,
     "faulted": 0,
     "unknown": 0,
-    "absent": 1,
-    "outOfService": 1
+    "absent": 0,
+    "outOfService": 0
   },
   {
     "slug": "disco-8-de-octubre-y-garibaldi",
@@ -1847,13 +1847,13 @@
     "department": "Montevideo",
     "latitude": -34.878667,
     "longitude": -54.949929,
-    "presence": "listed",
-    "connectors": 2,
-    "operational": 2,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 2,
+    "outOfService": 2
   },
   {
     "slug": "estacion-mercedes",
@@ -1863,6 +1863,22 @@
     "department": "Montevideo",
     "latitude": -33.249869,
     "longitude": -58.027995,
+    "presence": "listed",
+    "connectors": 2,
+    "operational": 2,
+    "faulted": 0,
+    "unknown": 0,
+    "absent": 0,
+    "outOfService": 0
+  },
+  {
+    "slug": "estacion-migues",
+    "name": "Estación Migues",
+    "address": "Ruta 39, km 7.200 - Maldonado",
+    "city": "Montevideo",
+    "department": "Montevideo",
+    "latitude": -34.485763,
+    "longitude": -55.630724,
     "presence": "listed",
     "connectors": 2,
     "operational": 2,
@@ -2153,11 +2169,11 @@
     "longitude": -56.2417871,
     "presence": "listed",
     "connectors": 4,
-    "operational": 4,
-    "faulted": 0,
+    "operational": 2,
+    "faulted": 2,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 2
   },
   {
     "slug": "hospital-de-pan-de-azucar",
@@ -2215,13 +2231,13 @@
     "department": "Montevideo",
     "latitude": -34.905827,
     "longitude": -56.185525,
-    "presence": "listed",
-    "connectors": 6,
-    "operational": 6,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 6,
+    "outOfService": 6
   },
   {
     "slug": "joanico",
@@ -2280,8 +2296,8 @@
     "latitude": -34.914665,
     "longitude": -56.185604,
     "presence": "listed",
-    "connectors": 4,
-    "operational": 4,
+    "connectors": 1,
+    "operational": 1,
     "faulted": 0,
     "unknown": 0,
     "absent": 0,
@@ -2537,11 +2553,11 @@
     "longitude": -56.136669,
     "presence": "listed",
     "connectors": 2,
-    "operational": 2,
-    "faulted": 0,
+    "operational": 1,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "moreira-automoviles-atlantida",
@@ -2905,11 +2921,11 @@
     "longitude": -57.970822,
     "presence": "listed",
     "connectors": 2,
-    "operational": 2,
-    "faulted": 0,
+    "operational": 0,
+    "faulted": 2,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 2
   },
   {
     "slug": "plaza-artigas",
@@ -3079,13 +3095,13 @@
     "department": "Montevideo",
     "latitude": -34.805776,
     "longitude": -56.221745,
-    "presence": "listed",
-    "connectors": 2,
-    "operational": 2,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 2,
+    "outOfService": 2
   },
   {
     "slug": "plaza-constitucion-fray-bentos",
@@ -3255,13 +3271,13 @@
     "department": "Lavalleja",
     "latitude": -34.36645,
     "longitude": -55.224245,
-    "presence": "listed",
-    "connectors": 2,
-    "operational": 2,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 2,
+    "outOfService": 2
   },
   {
     "slug": "plaza-lazaro-cabrera",
@@ -3337,11 +3353,11 @@
     "longitude": -56.0377477,
     "presence": "listed",
     "connectors": 18,
-    "operational": 16,
-    "faulted": 2,
+    "operational": 14,
+    "faulted": 4,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 2
+    "outOfService": 4
   },
   {
     "slug": "plaza-rivera-fray-bentos",
@@ -3767,13 +3783,13 @@
     "department": "Soriano",
     "latitude": -33.250149,
     "longitude": -58.028526,
-    "presence": "listed",
-    "connectors": 2,
-    "operational": 2,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 2,
+    "outOfService": 2
   },
   {
     "slug": "tata-paysandu",
@@ -4057,11 +4073,11 @@
     "longitude": -56.2699141,
     "presence": "listed",
     "connectors": 3,
-    "operational": 3,
-    "faulted": 0,
+    "operational": 2,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "ute-bella-union",
@@ -4089,11 +4105,11 @@
     "longitude": -56.615782,
     "presence": "listed",
     "connectors": 3,
-    "operational": 2,
-    "faulted": 1,
+    "operational": 3,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "utec-durazno",
@@ -4121,11 +4137,11 @@
     "longitude": -55.5476072,
     "presence": "listed",
     "connectors": 1,
-    "operational": 0,
-    "faulted": 1,
+    "operational": 1,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "via-disegno",
