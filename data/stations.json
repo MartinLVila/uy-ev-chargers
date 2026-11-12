@@ -7,13 +7,13 @@
     "department": "Cerro Largo",
     "latitude": -31.8678235,
     "longitude": -54.1667246,
-    "presence": "listed",
-    "connectors": 1,
-    "operational": 1,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 2,
-    "outOfService": 2
+    "absent": 3,
+    "outOfService": 3
   },
   {
     "slug": "acceso-emergencia-hospital-de-clinicas",
@@ -521,11 +521,11 @@
     "longitude": -56.744655,
     "presence": "listed",
     "connectors": 3,
-    "operational": 2,
-    "faulted": 1,
+    "operational": 3,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "ancap-los-cerrillos",
@@ -553,11 +553,11 @@
     "longitude": -54.782152,
     "presence": "listed",
     "connectors": 3,
-    "operational": 3,
-    "faulted": 0,
+    "operational": 2,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "ancap-melo",
@@ -713,11 +713,11 @@
     "longitude": -54.327217,
     "presence": "listed",
     "connectors": 4,
-    "operational": 4,
-    "faulted": 0,
+    "operational": 2,
+    "faulted": 2,
     "unknown": 0,
     "absent": 2,
-    "outOfService": 2
+    "outOfService": 4
   },
   {
     "slug": "ancap-roosevelt-punta-del-este",
@@ -727,13 +727,13 @@
     "department": "Maldonado",
     "latitude": -34.933228,
     "longitude": -54.941723,
-    "presence": "delisted",
-    "connectors": 0,
-    "operational": 0,
+    "presence": "listed",
+    "connectors": 1,
+    "operational": 1,
     "faulted": 0,
     "unknown": 0,
-    "absent": 2,
-    "outOfService": 2
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "ancap-rosario",
@@ -1449,11 +1449,11 @@
     "longitude": -55.7644038,
     "presence": "listed",
     "connectors": 2,
-    "operational": 2,
-    "faulted": 0,
+    "operational": 1,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "centro-de-eventos-latu",
@@ -1545,11 +1545,11 @@
     "longitude": -57.835495,
     "presence": "listed",
     "connectors": 7,
-    "operational": 7,
-    "faulted": 0,
+    "operational": 0,
+    "faulted": 7,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 7
   },
   {
     "slug": "colonia-valdense",
@@ -2807,13 +2807,13 @@
     "department": "Lavalleja",
     "latitude": -34.4254385,
     "longitude": -55.1938313,
-    "presence": "listed",
-    "connectors": 4,
-    "operational": 4,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 4,
+    "outOfService": 4
   },
   {
     "slug": "parque-del-plata",
@@ -2873,11 +2873,11 @@
     "longitude": -53.552156,
     "presence": "listed",
     "connectors": 4,
-    "operational": 4,
-    "faulted": 0,
+    "operational": 2,
+    "faulted": 2,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 2
   },
   {
     "slug": "paseo-del-este-1",
@@ -2921,11 +2921,11 @@
     "longitude": -57.970822,
     "presence": "listed",
     "connectors": 2,
-    "operational": 0,
-    "faulted": 2,
+    "operational": 2,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 2
+    "outOfService": 0
   },
   {
     "slug": "plaza-artigas",
@@ -3271,13 +3271,13 @@
     "department": "Lavalleja",
     "latitude": -34.36645,
     "longitude": -55.224245,
-    "presence": "delisted",
-    "connectors": 0,
-    "operational": 0,
+    "presence": "listed",
+    "connectors": 2,
+    "operational": 2,
     "faulted": 0,
     "unknown": 0,
-    "absent": 2,
-    "outOfService": 2
+    "absent": 0,
+    "outOfService": 0
   },
   {
     "slug": "plaza-lazaro-cabrera",
@@ -3529,11 +3529,11 @@
     "longitude": -54.932418,
     "presence": "listed",
     "connectors": 4,
-    "operational": 2,
-    "faulted": 2,
+    "operational": 4,
+    "faulted": 0,
     "unknown": 0,
     "absent": 2,
-    "outOfService": 4
+    "outOfService": 2
   },
   {
     "slug": "punta-shopping",
@@ -3561,11 +3561,11 @@
     "longitude": -57.1992881,
     "presence": "listed",
     "connectors": 1,
-    "operational": 0,
-    "faulted": 1,
+    "operational": 1,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "rocha-oficina-de-turismo",
@@ -3658,6 +3658,22 @@
     "presence": "listed",
     "connectors": 2,
     "operational": 2,
+    "faulted": 0,
+    "unknown": 0,
+    "absent": 0,
+    "outOfService": 0
+  },
+  {
+    "slug": "shopping-sineriz",
+    "name": "Shopping Siñeriz",
+    "address": "Av Sepe 51",
+    "city": "Rivera",
+    "department": "Rivera",
+    "latitude": -30.90026,
+    "longitude": -55.523848,
+    "presence": "listed",
+    "connectors": 4,
+    "operational": 4,
     "faulted": 0,
     "unknown": 0,
     "absent": 0,
@@ -3783,13 +3799,13 @@
     "department": "Soriano",
     "latitude": -33.250149,
     "longitude": -58.028526,
-    "presence": "delisted",
-    "connectors": 0,
-    "operational": 0,
+    "presence": "listed",
+    "connectors": 2,
+    "operational": 2,
     "faulted": 0,
     "unknown": 0,
-    "absent": 2,
-    "outOfService": 2
+    "absent": 0,
+    "outOfService": 0
   },
   {
     "slug": "tata-paysandu",
@@ -4040,8 +4056,8 @@
     "latitude": -34.883584,
     "longitude": -56.0816265,
     "presence": "listed",
-    "connectors": 4,
-    "operational": 4,
+    "connectors": 3,
+    "operational": 3,
     "faulted": 0,
     "unknown": 0,
     "absent": 0,
