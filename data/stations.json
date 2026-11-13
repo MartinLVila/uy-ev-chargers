@@ -695,12 +695,12 @@
     "department": "Rivera",
     "latitude": -30.914811,
     "longitude": -55.539302,
-    "presence": "delisted",
-    "connectors": 0,
+    "presence": "listed",
+    "connectors": 2,
     "operational": 0,
-    "faulted": 0,
+    "faulted": 2,
     "unknown": 0,
-    "absent": 2,
+    "absent": 0,
     "outOfService": 2
   },
   {
@@ -727,13 +727,13 @@
     "department": "Maldonado",
     "latitude": -34.933228,
     "longitude": -54.941723,
-    "presence": "listed",
-    "connectors": 1,
-    "operational": 1,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 1,
-    "outOfService": 1
+    "absent": 2,
+    "outOfService": 2
   },
   {
     "slug": "ancap-rosario",
@@ -1255,13 +1255,13 @@
     "department": "Montevideo",
     "latitude": -34.890289,
     "longitude": -56.185279,
-    "presence": "listed",
-    "connectors": 6,
-    "operational": 6,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 6,
+    "outOfService": 6
   },
   {
     "slug": "belloni",
@@ -1287,13 +1287,13 @@
     "department": "Desconocido",
     "latitude": -34.707086,
     "longitude": -55.92769,
-    "presence": "delisted",
-    "connectors": 0,
-    "operational": 0,
+    "presence": "listed",
+    "connectors": 2,
+    "operational": 2,
     "faulted": 0,
     "unknown": 0,
-    "absent": 1,
-    "outOfService": 1
+    "absent": 0,
+    "outOfService": 0
   },
   {
     "slug": "campera-almacen-2",
@@ -1304,8 +1304,8 @@
     "latitude": -34.707027,
     "longitude": -55.92774,
     "presence": "listed",
-    "connectors": 2,
-    "operational": 2,
+    "connectors": 1,
+    "operational": 1,
     "faulted": 0,
     "unknown": 0,
     "absent": 0,
@@ -1336,12 +1336,12 @@
     "latitude": -34.816702,
     "longitude": -55.978758,
     "presence": "listed",
-    "connectors": 2,
-    "operational": 2,
+    "connectors": 1,
+    "operational": 1,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "car-one-center-3",
@@ -1449,11 +1449,11 @@
     "longitude": -55.7644038,
     "presence": "listed",
     "connectors": 2,
-    "operational": 1,
-    "faulted": 1,
+    "operational": 2,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "centro-de-eventos-latu",
@@ -1545,11 +1545,11 @@
     "longitude": -57.835495,
     "presence": "listed",
     "connectors": 7,
-    "operational": 0,
-    "faulted": 7,
+    "operational": 7,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 7
+    "outOfService": 0
   },
   {
     "slug": "colonia-valdense",
@@ -1975,13 +1975,13 @@
     "department": "Montevideo",
     "latitude": -34.8917115,
     "longitude": -56.1543685,
-    "presence": "listed",
-    "connectors": 1,
-    "operational": 1,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "estadio-martinez-monegal",
@@ -2553,11 +2553,11 @@
     "longitude": -56.136669,
     "presence": "listed",
     "connectors": 2,
-    "operational": 1,
-    "faulted": 1,
+    "operational": 2,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "moreira-automoviles-atlantida",
@@ -2873,11 +2873,11 @@
     "longitude": -53.552156,
     "presence": "listed",
     "connectors": 4,
-    "operational": 2,
-    "faulted": 2,
+    "operational": 4,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 2
+    "outOfService": 0
   },
   {
     "slug": "paseo-del-este-1",
@@ -3353,11 +3353,11 @@
     "longitude": -56.0377477,
     "presence": "listed",
     "connectors": 18,
-    "operational": 14,
-    "faulted": 4,
+    "operational": 16,
+    "faulted": 2,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 4
+    "outOfService": 2
   },
   {
     "slug": "plaza-rivera-fray-bentos",
@@ -3632,6 +3632,22 @@
     "outOfService": 0
   },
   {
+    "slug": "semi-public-test",
+    "name": "semi-public test",
+    "address": "Air France",
+    "city": "Colonia Nicolich",
+    "department": "Desconocido",
+    "latitude": -34.794604,
+    "longitude": -55.9982013,
+    "presence": "listed",
+    "connectors": 6,
+    "operational": 6,
+    "faulted": 0,
+    "unknown": 0,
+    "absent": 0,
+    "outOfService": 0
+  },
+  {
     "slug": "shopping-las-piedras",
     "name": "Shopping Las Piedras",
     "address": "Av. José Gervasio Artigas esq. Francisca Arnal de Artigas",
@@ -3880,8 +3896,8 @@
     "latitude": -34.861207,
     "longitude": -56.0733388,
     "presence": "listed",
-    "connectors": 1,
-    "operational": 1,
+    "connectors": 2,
+    "operational": 2,
     "faulted": 0,
     "unknown": 0,
     "absent": 0,
@@ -4041,11 +4057,11 @@
     "longitude": -57.610165,
     "presence": "listed",
     "connectors": 1,
-    "operational": 0,
-    "faulted": 1,
+    "operational": 1,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "tienda-inglesa-central",
@@ -4056,8 +4072,8 @@
     "latitude": -34.883584,
     "longitude": -56.0816265,
     "presence": "listed",
-    "connectors": 3,
-    "operational": 3,
+    "connectors": 4,
+    "operational": 4,
     "faulted": 0,
     "unknown": 0,
     "absent": 0,
