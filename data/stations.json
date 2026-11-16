@@ -727,13 +727,13 @@
     "department": "Maldonado",
     "latitude": -34.933228,
     "longitude": -54.941723,
-    "presence": "delisted",
-    "connectors": 0,
-    "operational": 0,
+    "presence": "listed",
+    "connectors": 1,
+    "operational": 1,
     "faulted": 0,
     "unknown": 0,
-    "absent": 2,
-    "outOfService": 2
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "ancap-rosario",
@@ -1769,11 +1769,11 @@
     "longitude": -56.104194,
     "presence": "listed",
     "connectors": 6,
-    "operational": 4,
-    "faulted": 2,
+    "operational": 6,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 2
+    "outOfService": 0
   },
   {
     "slug": "estacion-atlantida",
@@ -1816,8 +1816,8 @@
     "latitude": -34.882873,
     "longitude": -56.152962,
     "presence": "listed",
-    "connectors": 3,
-    "operational": 3,
+    "connectors": 4,
+    "operational": 4,
     "faulted": 0,
     "unknown": 0,
     "absent": 0,
@@ -2553,11 +2553,11 @@
     "longitude": -56.136669,
     "presence": "listed",
     "connectors": 2,
-    "operational": 1,
-    "faulted": 1,
+    "operational": 2,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "moreira-automoviles-atlantida",
@@ -2601,11 +2601,11 @@
     "longitude": -54.9400916,
     "presence": "listed",
     "connectors": 3,
-    "operational": 3,
-    "faulted": 0,
+    "operational": 1,
+    "faulted": 2,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 2
   },
   {
     "slug": "municipio-vergara",
@@ -2857,11 +2857,11 @@
     "longitude": -57.632967,
     "presence": "listed",
     "connectors": 3,
-    "operational": 2,
-    "faulted": 1,
+    "operational": 3,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "parque-santa-teresa",
@@ -3383,13 +3383,13 @@
     "department": "Lavalleja",
     "latitude": -34.37563,
     "longitude": -55.242589,
-    "presence": "delisted",
-    "connectors": 0,
-    "operational": 0,
+    "presence": "listed",
+    "connectors": 2,
+    "operational": 2,
     "faulted": 0,
     "unknown": 0,
-    "absent": 2,
-    "outOfService": 2
+    "absent": 0,
+    "outOfService": 0
   },
   {
     "slug": "plaza-romay-nuevo-berlin",
@@ -3529,11 +3529,11 @@
     "longitude": -54.932418,
     "presence": "listed",
     "connectors": 4,
-    "operational": 3,
-    "faulted": 1,
+    "operational": 4,
+    "faulted": 0,
     "unknown": 0,
     "absent": 2,
-    "outOfService": 3
+    "outOfService": 2
   },
   {
     "slug": "punta-shopping",
@@ -3591,13 +3591,13 @@
     "department": "San José",
     "latitude": -34.342544,
     "longitude": -56.70298,
-    "presence": "listed",
-    "connectors": 1,
-    "operational": 1,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "san-rafael",
@@ -3705,11 +3705,11 @@
     "longitude": -56.0580876,
     "presence": "listed",
     "connectors": 12,
-    "operational": 9,
-    "faulted": 3,
+    "operational": 11,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 3
+    "outOfService": 1
   },
   {
     "slug": "talice",
@@ -4119,13 +4119,13 @@
     "department": "Artigas",
     "latitude": -30.259375,
     "longitude": -57.599202,
-    "presence": "delisted",
-    "connectors": 0,
-    "operational": 0,
+    "presence": "listed",
+    "connectors": 2,
+    "operational": 2,
     "faulted": 0,
     "unknown": 0,
-    "absent": 2,
-    "outOfService": 2
+    "absent": 0,
+    "outOfService": 0
   },
   {
     "slug": "ute-libertad",
