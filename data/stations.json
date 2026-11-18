@@ -7,13 +7,13 @@
     "department": "Cerro Largo",
     "latitude": -31.8678235,
     "longitude": -54.1667246,
-    "presence": "delisted",
-    "connectors": 0,
-    "operational": 0,
+    "presence": "listed",
+    "connectors": 1,
+    "operational": 1,
     "faulted": 0,
     "unknown": 0,
-    "absent": 3,
-    "outOfService": 3
+    "absent": 2,
+    "outOfService": 2
   },
   {
     "slug": "acceso-emergencia-hospital-de-clinicas",
@@ -25,11 +25,11 @@
     "longitude": -56.15184,
     "presence": "listed",
     "connectors": 8,
-    "operational": 7,
-    "faulted": 1,
+    "operational": 8,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "aeropuerto-de-carrasco",
@@ -663,13 +663,13 @@
     "department": "Canelones",
     "latitude": -34.694035,
     "longitude": -55.856194,
-    "presence": "delisted",
-    "connectors": 0,
-    "operational": 0,
+    "presence": "listed",
+    "connectors": 1,
+    "operational": 1,
     "faulted": 0,
     "unknown": 0,
-    "absent": 1,
-    "outOfService": 1
+    "absent": 0,
+    "outOfService": 0
   },
   {
     "slug": "ancap-rio-branco",
@@ -953,11 +953,11 @@
     "longitude": -55.758813,
     "presence": "listed",
     "connectors": 1,
-    "operational": 0,
-    "faulted": 1,
+    "operational": 1,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "ancap-treinta-y-tres",
@@ -1385,11 +1385,11 @@
     "longitude": -56.391217,
     "presence": "listed",
     "connectors": 2,
-    "operational": 0,
-    "faulted": 2,
+    "operational": 2,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 2
+    "outOfService": 0
   },
   {
     "slug": "carlos-reyles",
@@ -1753,11 +1753,11 @@
     "longitude": -56.140618,
     "presence": "listed",
     "connectors": 22,
-    "operational": 20,
-    "faulted": 2,
+    "operational": 22,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 2
+    "outOfService": 0
   },
   {
     "slug": "electrolinera-malvin",
@@ -1769,11 +1769,11 @@
     "longitude": -56.104194,
     "presence": "listed",
     "connectors": 8,
-    "operational": 8,
-    "faulted": 0,
+    "operational": 6,
+    "faulted": 2,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 2
   },
   {
     "slug": "estacion-atlantida",
@@ -2240,6 +2240,22 @@
     "outOfService": 1
   },
   {
+    "slug": "jardines-de-la-sierra",
+    "name": "Jardines de La Sierra",
+    "address": "Roosevelt esq. Oslo edificio Jardines de la Sierra",
+    "city": "Punta del Este",
+    "department": "Maldonado",
+    "latitude": -34.9375506,
+    "longitude": -54.935737,
+    "presence": "listed",
+    "connectors": 4,
+    "operational": 4,
+    "faulted": 0,
+    "unknown": 0,
+    "absent": 0,
+    "outOfService": 0
+  },
+  {
     "slug": "joanico",
     "name": "Joanicó",
     "address": "Joanicó esquina Bv. Jose Batlle y Ordoñez",
@@ -2297,11 +2313,11 @@
     "longitude": -56.185604,
     "presence": "listed",
     "connectors": 4,
-    "operational": 3,
-    "faulted": 1,
+    "operational": 4,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "la-cumparsita-dc",
@@ -2793,11 +2809,11 @@
     "longitude": -56.146114,
     "presence": "listed",
     "connectors": 4,
-    "operational": 3,
-    "faulted": 1,
+    "operational": 4,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "parque-de-minas",
@@ -3127,13 +3143,13 @@
     "department": "Paysandú",
     "latitude": -32.316711,
     "longitude": -58.081011,
-    "presence": "listed",
-    "connectors": 1,
-    "operational": 1,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "plaza-constitucion-trinidad",
@@ -3271,13 +3287,13 @@
     "department": "Lavalleja",
     "latitude": -34.36645,
     "longitude": -55.224245,
-    "presence": "delisted",
-    "connectors": 0,
-    "operational": 0,
+    "presence": "listed",
+    "connectors": 2,
+    "operational": 2,
     "faulted": 0,
     "unknown": 0,
-    "absent": 2,
-    "outOfService": 2
+    "absent": 0,
+    "outOfService": 0
   },
   {
     "slug": "plaza-lazaro-cabrera",
@@ -3512,11 +3528,11 @@
     "latitude": -34.95026,
     "longitude": -54.937023,
     "presence": "listed",
-    "connectors": 4,
-    "operational": 2,
-    "faulted": 2,
+    "connectors": 6,
+    "operational": 6,
+    "faulted": 0,
     "unknown": 0,
-    "absent": 1,
+    "absent": 3,
     "outOfService": 3
   },
   {
@@ -3657,11 +3673,11 @@
     "longitude": -56.2027049,
     "presence": "listed",
     "connectors": 2,
-    "operational": 2,
-    "faulted": 0,
+    "operational": 1,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "shopping-nuevocentro",
@@ -3817,11 +3833,11 @@
     "longitude": -58.028526,
     "presence": "listed",
     "connectors": 2,
-    "operational": 1,
-    "faulted": 1,
+    "operational": 2,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "tata-paysandu",
@@ -4072,8 +4088,8 @@
     "latitude": -34.883584,
     "longitude": -56.0816265,
     "presence": "listed",
-    "connectors": 3,
-    "operational": 3,
+    "connectors": 4,
+    "operational": 4,
     "faulted": 0,
     "unknown": 0,
     "absent": 0,
@@ -4137,11 +4153,11 @@
     "longitude": -56.615782,
     "presence": "listed",
     "connectors": 3,
-    "operational": 1,
-    "faulted": 2,
+    "operational": 2,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 2
+    "outOfService": 1
   },
   {
     "slug": "utec-durazno",
@@ -4201,11 +4217,11 @@
     "longitude": -54.3985881,
     "presence": "listed",
     "connectors": 4,
-    "operational": 4,
-    "faulted": 0,
+    "operational": 2,
+    "faulted": 2,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 2
   },
   {
     "slug": "voltt-test",
