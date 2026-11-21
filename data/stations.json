@@ -841,11 +841,11 @@
     "longitude": -55.576509,
     "presence": "listed",
     "connectors": 2,
-    "operational": 2,
-    "faulted": 0,
+    "operational": 1,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "ancap-santa-lucia",
@@ -1063,13 +1063,13 @@
     "department": "Río Negro",
     "latitude": -32.704954,
     "longitude": -57.630866,
-    "presence": "listed",
-    "connectors": 2,
-    "operational": 2,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 2,
+    "outOfService": 2
   },
   {
     "slug": "atlantida-dc2",
@@ -1113,11 +1113,11 @@
     "longitude": -56.153853,
     "presence": "listed",
     "connectors": 4,
-    "operational": 2,
-    "faulted": 2,
+    "operational": 4,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 2
+    "outOfService": 0
   },
   {
     "slug": "axion-carrasco",
@@ -1559,13 +1559,13 @@
     "department": "Colonia",
     "latitude": -34.3371311,
     "longitude": -57.2530074,
-    "presence": "listed",
-    "connectors": 1,
-    "operational": 1,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "disco-8-de-octubre-y-garibaldi",
@@ -2073,11 +2073,11 @@
     "longitude": -58.0716883,
     "presence": "listed",
     "connectors": 4,
-    "operational": 2,
-    "faulted": 2,
+    "operational": 4,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 2
+    "outOfService": 0
   },
   {
     "slug": "fing-reissig",
@@ -3015,13 +3015,13 @@
     "department": "Colonia",
     "latitude": -33.8758797,
     "longitude": -57.3708861,
-    "presence": "delisted",
-    "connectors": 0,
-    "operational": 0,
+    "presence": "listed",
+    "connectors": 1,
+    "operational": 1,
     "faulted": 0,
     "unknown": 0,
-    "absent": 1,
-    "outOfService": 1
+    "absent": 0,
+    "outOfService": 0
   },
   {
     "slug": "plaza-artigas-la-floresta",
@@ -3577,11 +3577,11 @@
     "longitude": -54.937023,
     "presence": "listed",
     "connectors": 6,
-    "operational": 6,
-    "faulted": 0,
+    "operational": 5,
+    "faulted": 1,
     "unknown": 0,
     "absent": 3,
-    "outOfService": 3
+    "outOfService": 4
   },
   {
     "slug": "punta-del-este-parada-5",
@@ -3639,13 +3639,13 @@
     "department": "Rocha",
     "latitude": -34.488761,
     "longitude": -54.320398,
-    "presence": "listed",
-    "connectors": 1,
-    "operational": 1,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "san-jose-dc-1",
@@ -3655,13 +3655,13 @@
     "department": "San José",
     "latitude": -34.342544,
     "longitude": -56.70298,
-    "presence": "listed",
-    "connectors": 1,
-    "operational": 1,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "san-rafael",
@@ -3689,11 +3689,11 @@
     "longitude": -55.958338,
     "presence": "listed",
     "connectors": 2,
-    "operational": 2,
-    "faulted": 0,
+    "operational": 1,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "semi-public-test",
@@ -3721,11 +3721,11 @@
     "longitude": -56.2027049,
     "presence": "listed",
     "connectors": 2,
-    "operational": 1,
-    "faulted": 1,
+    "operational": 2,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "shopping-nuevocentro",
