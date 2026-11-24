@@ -48,6 +48,22 @@
     "outOfService": 0
   },
   {
+    "slug": "alberdi-cooper",
+    "name": "Alberdi/Cooper",
+    "address": "Avenida Dr. Juan Bautista Alberdi 6486",
+    "city": "Montevideo",
+    "department": "Montevideo",
+    "latitude": -34.88055,
+    "longitude": -56.0673406,
+    "presence": "listed",
+    "connectors": 6,
+    "operational": 6,
+    "faulted": 0,
+    "unknown": 0,
+    "absent": 0,
+    "outOfService": 0
+  },
+  {
     "slug": "almenara-mall",
     "name": "Almenara Mall",
     "address": "Ruta Gral. Líber Seregni km 22,500",
@@ -265,11 +281,11 @@
     "longitude": -53.455267,
     "presence": "listed",
     "connectors": 1,
-    "operational": 1,
-    "faulted": 0,
+    "operational": 0,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "ancap-ciudad-del-plata",
@@ -1192,8 +1208,8 @@
     "latitude": -34.336191,
     "longitude": -57.2594725,
     "presence": "listed",
-    "connectors": 1,
-    "operational": 1,
+    "connectors": 2,
+    "operational": 2,
     "faulted": 0,
     "unknown": 0,
     "absent": 0,
@@ -1273,11 +1289,11 @@
     "longitude": -56.132189,
     "presence": "listed",
     "connectors": 4,
-    "operational": 3,
-    "faulted": 1,
+    "operational": 4,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "campera-almacen-1",
@@ -1545,11 +1561,11 @@
     "longitude": -57.835495,
     "presence": "listed",
     "connectors": 7,
-    "operational": 7,
-    "faulted": 0,
+    "operational": 6,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "colonia-valdense",
@@ -1559,13 +1575,13 @@
     "department": "Colonia",
     "latitude": -34.3371311,
     "longitude": -57.2530074,
-    "presence": "listed",
-    "connectors": 1,
-    "operational": 1,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "disco-8-de-octubre-y-garibaldi",
@@ -1624,8 +1640,8 @@
     "latitude": -34.889881,
     "longitude": -56.098493,
     "presence": "listed",
-    "connectors": 1,
-    "operational": 1,
+    "connectors": 2,
+    "operational": 2,
     "faulted": 0,
     "unknown": 0,
     "absent": 0,
@@ -1863,13 +1879,13 @@
     "department": "Montevideo",
     "latitude": -34.792,
     "longitude": -55.9375,
-    "presence": "listed",
-    "connectors": 2,
-    "operational": 2,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 2,
+    "outOfService": 2
   },
   {
     "slug": "estacion-mercedes",
@@ -1911,13 +1927,13 @@
     "department": "Montevideo",
     "latitude": -34.3695,
     "longitude": -55.2331,
-    "presence": "listed",
-    "connectors": 2,
-    "operational": 2,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 2,
+    "outOfService": 2
   },
   {
     "slug": "estacion-panamericana-ancap-sarandi-grande",
@@ -1991,13 +2007,13 @@
     "department": "Montevideo",
     "latitude": -34.288,
     "longitude": -53.736,
-    "presence": "listed",
-    "connectors": 4,
-    "operational": 4,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 4,
+    "outOfService": 4
   },
   {
     "slug": "estacion-sarandi-grande-florida",
@@ -2313,11 +2329,11 @@
     "longitude": -56.148899,
     "presence": "listed",
     "connectors": 4,
-    "operational": 1,
-    "faulted": 3,
+    "operational": 3,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 3
+    "outOfService": 1
   },
   {
     "slug": "junta-local-centenario",
@@ -2489,11 +2505,11 @@
     "longitude": -54.940704,
     "presence": "listed",
     "connectors": 8,
-    "operational": 8,
-    "faulted": 0,
+    "operational": 7,
+    "faulted": 1,
     "unknown": 0,
     "absent": 2,
-    "outOfService": 2
+    "outOfService": 3
   },
   {
     "slug": "liv-district-carrasco-1",
@@ -2745,11 +2761,11 @@
     "longitude": -56.195179,
     "presence": "listed",
     "connectors": 8,
-    "operational": 8,
-    "faulted": 0,
+    "operational": 7,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "palacio-de-la-luz-dc-mendoza",
@@ -2985,11 +3001,11 @@
     "longitude": -57.970822,
     "presence": "listed",
     "connectors": 2,
-    "operational": 0,
-    "faulted": 2,
+    "operational": 2,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 2
+    "outOfService": 0
   },
   {
     "slug": "plaza-artigas",
@@ -3033,11 +3049,11 @@
     "longitude": -55.672995,
     "presence": "listed",
     "connectors": 4,
-    "operational": 4,
-    "faulted": 0,
+    "operational": 2,
+    "faulted": 2,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 2
   },
   {
     "slug": "plaza-artigas-mercedes",
@@ -3191,13 +3207,13 @@
     "department": "Paysandú",
     "latitude": -32.316711,
     "longitude": -58.081011,
-    "presence": "listed",
-    "connectors": 1,
-    "operational": 1,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "plaza-constitucion-trinidad",
@@ -3207,13 +3223,13 @@
     "department": "Flores",
     "latitude": -33.517081,
     "longitude": -56.898402,
-    "presence": "delisted",
-    "connectors": 0,
-    "operational": 0,
+    "presence": "listed",
+    "connectors": 2,
+    "operational": 2,
     "faulted": 0,
     "unknown": 0,
-    "absent": 2,
-    "outOfService": 2
+    "absent": 0,
+    "outOfService": 0
   },
   {
     "slug": "plaza-de-chamizo",
@@ -3417,11 +3433,11 @@
     "longitude": -56.0377477,
     "presence": "listed",
     "connectors": 18,
-    "operational": 18,
-    "faulted": 0,
+    "operational": 17,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "plaza-rivera-fray-bentos",
@@ -3608,8 +3624,8 @@
     "latitude": -34.939691,
     "longitude": -54.934102,
     "presence": "listed",
-    "connectors": 4,
-    "operational": 4,
+    "connectors": 3,
+    "operational": 3,
     "faulted": 0,
     "unknown": 0,
     "absent": 0,
@@ -3704,8 +3720,8 @@
     "latitude": -34.794604,
     "longitude": -55.9982013,
     "presence": "listed",
-    "connectors": 6,
-    "operational": 6,
+    "connectors": 7,
+    "operational": 7,
     "faulted": 0,
     "unknown": 0,
     "absent": 0,
@@ -3737,11 +3753,11 @@
     "longitude": -56.169246,
     "presence": "listed",
     "connectors": 2,
-    "operational": 2,
-    "faulted": 0,
+    "operational": 1,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "shopping-sineriz",
@@ -3960,8 +3976,8 @@
     "latitude": -34.861207,
     "longitude": -56.0733388,
     "presence": "listed",
-    "connectors": 2,
-    "operational": 2,
+    "connectors": 1,
+    "operational": 1,
     "faulted": 0,
     "unknown": 0,
     "absent": 0,
@@ -4136,8 +4152,8 @@
     "latitude": -34.883584,
     "longitude": -56.0816265,
     "presence": "listed",
-    "connectors": 3,
-    "operational": 3,
+    "connectors": 4,
+    "operational": 4,
     "faulted": 0,
     "unknown": 0,
     "absent": 0,
@@ -4201,11 +4217,11 @@
     "longitude": -56.615782,
     "presence": "listed",
     "connectors": 3,
-    "operational": 3,
-    "faulted": 0,
+    "operational": 2,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "utec-durazno",
