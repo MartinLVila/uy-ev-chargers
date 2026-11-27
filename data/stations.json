@@ -40,8 +40,8 @@
     "latitude": -34.837595,
     "longitude": -56.015783,
     "presence": "listed",
-    "connectors": 3,
-    "operational": 3,
+    "connectors": 1,
+    "operational": 1,
     "faulted": 0,
     "unknown": 0,
     "absent": 0,
@@ -855,13 +855,13 @@
     "department": "Canelones",
     "latitude": -34.77033,
     "longitude": -55.576509,
-    "presence": "delisted",
-    "connectors": 0,
-    "operational": 0,
-    "faulted": 0,
+    "presence": "listed",
+    "connectors": 2,
+    "operational": 1,
+    "faulted": 1,
     "unknown": 0,
-    "absent": 2,
-    "outOfService": 2
+    "absent": 0,
+    "outOfService": 1
   },
   {
     "slug": "ancap-santa-lucia",
@@ -1304,8 +1304,8 @@
     "latitude": -34.707086,
     "longitude": -55.92769,
     "presence": "listed",
-    "connectors": 2,
-    "operational": 2,
+    "connectors": 1,
+    "operational": 1,
     "faulted": 0,
     "unknown": 0,
     "absent": 0,
@@ -1368,8 +1368,8 @@
     "latitude": -34.816515,
     "longitude": -55.978709,
     "presence": "listed",
-    "connectors": 1,
-    "operational": 1,
+    "connectors": 2,
+    "operational": 2,
     "faulted": 0,
     "unknown": 0,
     "absent": 0,
@@ -1640,8 +1640,8 @@
     "latitude": -34.889881,
     "longitude": -56.098493,
     "presence": "listed",
-    "connectors": 2,
-    "operational": 2,
+    "connectors": 1,
+    "operational": 1,
     "faulted": 0,
     "unknown": 0,
     "absent": 0,
@@ -1769,11 +1769,11 @@
     "longitude": -56.140618,
     "presence": "listed",
     "connectors": 22,
-    "operational": 22,
-    "faulted": 0,
+    "operational": 21,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "electrolinera-malvin",
@@ -2105,11 +2105,11 @@
     "longitude": -58.0716883,
     "presence": "listed",
     "connectors": 4,
-    "operational": 2,
-    "faulted": 2,
+    "operational": 4,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 2
+    "outOfService": 0
   },
   {
     "slug": "fing-reissig",
@@ -2601,11 +2601,11 @@
     "longitude": -55.5398168,
     "presence": "listed",
     "connectors": 2,
-    "operational": 0,
-    "faulted": 2,
+    "operational": 2,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 2
+    "outOfService": 0
   },
   {
     "slug": "macromercado-san-martin",
@@ -3017,11 +3017,11 @@
     "longitude": -57.970822,
     "presence": "listed",
     "connectors": 2,
-    "operational": 2,
-    "faulted": 0,
+    "operational": 0,
+    "faulted": 2,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 2
   },
   {
     "slug": "plaza-artigas",
@@ -3449,11 +3449,11 @@
     "longitude": -56.0377477,
     "presence": "listed",
     "connectors": 18,
-    "operational": 17,
-    "faulted": 1,
+    "operational": 18,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "plaza-rivera-fray-bentos",
@@ -3529,11 +3529,11 @@
     "longitude": -55.8711889,
     "presence": "listed",
     "connectors": 3,
-    "operational": 2,
-    "faulted": 1,
+    "operational": 3,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "plaza-san-martin",
@@ -3687,13 +3687,13 @@
     "department": "San José",
     "latitude": -34.342544,
     "longitude": -56.70298,
-    "presence": "listed",
-    "connectors": 1,
-    "operational": 1,
+    "presence": "delisted",
+    "connectors": 0,
+    "operational": 0,
     "faulted": 0,
     "unknown": 0,
-    "absent": 0,
-    "outOfService": 0
+    "absent": 1,
+    "outOfService": 1
   },
   {
     "slug": "san-rafael",
@@ -3769,11 +3769,11 @@
     "longitude": -56.169246,
     "presence": "listed",
     "connectors": 2,
-    "operational": 2,
-    "faulted": 0,
+    "operational": 1,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "shopping-sineriz",
@@ -4041,11 +4041,11 @@
     "longitude": -53.849058,
     "presence": "listed",
     "connectors": 4,
-    "operational": 3,
-    "faulted": 1,
+    "operational": 4,
+    "faulted": 0,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 1
+    "outOfService": 0
   },
   {
     "slug": "terminal-del-cerro",
@@ -4297,11 +4297,11 @@
     "longitude": -54.3985881,
     "presence": "listed",
     "connectors": 4,
-    "operational": 4,
-    "faulted": 0,
+    "operational": 3,
+    "faulted": 1,
     "unknown": 0,
     "absent": 0,
-    "outOfService": 0
+    "outOfService": 1
   },
   {
     "slug": "voltt-test",
